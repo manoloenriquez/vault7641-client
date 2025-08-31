@@ -1,0 +1,182 @@
+Vault 7641 Site Blueprint
+1) North Star & Objectives
+• Primary Goals: (1) Convert visitors into members/minters/buyers, (2) Build trust &
+legitimacy (transparent, compliant), (3) Activate community daily, (4) Grow organic
+traffic (SEO moat), (5) Enable rapid iteration via reusable components.
+2) Audience
+• Segments: Retail traders/investors (PH-centric), Builders/Devs, NFT Gamers,
+DeFi/Airdrop hunters, Partners/Sponsors, Media/Regulators.
+3) Information Architecture (IA) & Sitemap
+Public
+• Home (hero + value prop + live metrics)
+• Ecosystem Hubs:
+o NFT Mint / PFP Guilds (Vault 7641) — mint/claim/rarity/tools
+o Education Hub — playlists, starter packs, reports
+o Community — events calendar, quests, leaderboard
+o Products — Coming Soon
+• About → Story, Guild Leaders, Partners, Careers
+• Transparency → Roadmap, Updates
+• Contact → Partnerships, Support
+Member-gated
+• Dashboard (profile, wallet, badges, XP)
+• Guild Spaces (Trader / DeFi & Airdrops / NFTs & Gaming / Developer / Careers)
+• Resources: Signals/notes (educational), tool access, claims
+Legal
+• Disclaimers (not financial advice), Terms, Privacy, Cookie, Risk, Jurisdiction notes
+(PH-aware), SEC/KOL compliance statement.
+4) Critical User Flows (step-by-step)
+1. Guild Claim / PFP
+o Holder verifies → Choose Guild → Generate/assign PFP → Display in profile →
+Unlock guild area.
+2. Waitlist → Member Activation
+o CTA → Discord → Welcome sequence → Warm-up content → Convert to mint or
+product purchase.
+3. Community Join
+o Social proof + incentives → One-click deep links (Discord) → Verification →
+First quest.
+4. Support / Safety Net
+o “Having trouble?” modal → live FAQ, chat/AI assistant, fallback instructions
+(step-by-step wallet help).
+5) Conversion System — Reusable Components
+• Hero: Event/Drop Countdown
+• Social Proof Bar: partners, testimonials, case stats
+• Feature Grid (3x3), Problem-Agitate-Solve block, Before/After carousel
+• Live Metrics: supply left, minters online, treasury snapshot
+• Roadmap/Timeline (quarterly + shipped log)
+• Pricing / Mint tiers with real-time state
+• FAQ (searchable + rich snippets)
+• Press bar + awards + audit badges
+• Discord join card
+• “Trust drawer”: policies, security notes
+6) Pre-Launch Checklist
+• Domain + DNS + SSL + redirects; 404/500 custom pages
+• Analytics + consent banner hooked to tag firing rules
+• CMS content seeded (≥10 posts, ≥15 FAQs, 1 transparency page)
+• Mint sandbox tested (desktop/mobile, low bandwidth, error states)
+• Discord verification + deep links working
+• SEO baseline audit (CWV, meta/OG, schema validation)
+• Uptime & log monitoring; incident comms template ready
+7) Launch Day Runbook
+• Final cache warm + edge config
+• Content drops scheduled (blog, X threads, reels)
+• Partner RTM kit (assets, copy, UTM links)
+• Live war-room: perf, errors, mint metrics; fix fast
+• Post-launch patch window (T+2h, T+24h) with hotfix plan
+Vault 7641 Website Outline v1
+Objective: Drive WL claims, Discord joins, and mint CTR while establishing trust, clarity,
+and smooth wallet UX for Solana (Candy Machine + Sugar). Mobile-first; handles ~20k
+concurrent visitors.
+A. Information Architecture & Routes (mint day)
+Primary (one-page) with anchor sections, plus a few light subpages for legal/support.
+Routes:
+• / (Mint Landing — canonical)
+• /mint (alias → same page, scroll to Mint widget)
+• /claim (post-mint: guild select + PFP claim)
+• /guilds (light overview; optional modal on landing)
+• /faq (can be an accordion on landing + separate path for SEO)
+• /status (mint status JSON + human page for incidents)
+• /terms, /privacy, /disclaimer (legal)
+• /support (troubleshooting + wallet guides)
+Minimize nav friction on mint day: header CTAs always include Connect Wallet, WL Claim,
+Join Discord.
+B. Page-Level Wireframe (above-the-fold → footer)
+1. Hero (two states)
+o Countdown State (when date set): H1 (value-proof + urgency), subhead
+(what you unlock), countdown, CTAs: Get Priority Access (WL) /Get Your Pass
+(Mint)
+o Coming Soon State (no date yet): H1 + Discord CTA,
+2. Mint Module (sticky card)
+o Shows current phase (WL/Public/Paused/Sold Out), supply bar, price,
+per-wallet cap, network status; buttons: Mint 1, +/–, Max.
+o States: not connected / connecting / wrong network / not eligible (WL) / cap
+reached / tx pending / success (confetti) / fail (error code + retry) / sold out.
+o Edge UX: auto-retry on RPC 429; fee payer fallback; pre-flight sim + exact fee
+preview.
+3. How It Works (3-step)
+o Step 1: Mint your Base Pass
+o Step 2: Choose your Guild (72h window recommended) & claim PFP
+o Step 3: Verify in Discord → start quests & rank up (XP).
+o Inline micro-FAQ links.
+4. The Guilds (carousel or 5-card grid)
+o Trader/HODLers, DeFi & Airdrops, NFTs & Gaming, Developer, Careers.
+o Each card: short “who it’s for”, 3 perks, sample PFP tile, View more (opens
+/guilds or modal).
+5. Member Benefits (value-proof)
+o Immediate access to the vault, raffles, progression/leaderboards, Inter-Guild
+Cup.
+o Small, honest copy: “Membership collectible. Not an investment.”
+6. Roadmap / Season Model
+o Season length, renewal concept, etc.
+7. Social Proof
+o KOL/partner logo strip, credentials, “as seen on” PR slots.
+8. FAQ
+o Mint mechanics, wallets, guild lock/claim, support, refunds policy (none),
+terms of use.
+9. Footer (Compliance-first)
+o Disclaimers link, terms/privacy, contact, social links.
+C. Component Specs & Microcopy
+• Hero H1 options (choose 1 to A/B later):
+1. Your crypto homebase. One pass. Real value.
+2. Get Entry Access. Join a guild. Survive & Thrive Together.
+3. No hype. Just skills, tools, and opportunities.
+• Subhead: A curated Web3 community with unlimited education, opportunities, and
+fun perks.
+• Primary CTAs: Connect Wallet, Claim WL, Join Discord.
+• Mint Card Copy:
+o Title: Base Pass — S1 (Supply: 7,641).
+o Phase pill: Priority Access / OGs / Public / Sold out.
+• How-it-works bullets: Mint → Choose guild → Claim PFP → Verify.
+D. States & Logic (happy & failure paths)
+• Eligibility: WL list; else Public.
+• Caps: parameterized (e.g., WL 2 / Public 1 per tx) — surfaced in UI + disabled
+controls when reached.
+• Anti-bot: edge rate limits, human challenge on suspicious velocity,
+• RPC hygiene: preconnect, fallback providers, exponential backoff.
+E. Post-Mint Claim Flow (/claim)
+1. Connect wallet → detect Base Pass.
+2. Choose Guild (finalize within 72h recommended), confirm choice.
+3. Receive PFP
+4. Update metadata
+5. View Profile (shows guild badge, XP seed).
+F. Navigation & Header Behavior
+• Sticky header with scroll-shrink;
+• Left: logo; Center: hash links (How it works, Guilds, FAQ); Right: Claim WL, Join
+Discord, Connect Wallet (stateful avatar when connected).
+• Mobile: menu drawer + persistent Mint button.
+G. Visual System (mint day)
+• Style: “Vault-tech” modern—dark neutral base with a bold accent per guild;
+rounded-2xl cards; soft shadows; neon micro-accents only on key CTAs.
+• Hero: subtle animated grid; no heavy video.
+• PFP tiles: show Common/Uncommon/Rare/Legendary shells.
+H. Performance & Reliability
+• SSR for mint module only; rest SSG.
+• Image CDN + responsive images; prefetch wallet SDKs behind intent.
+• Cloudflare in front; queue/edge KV for rate-limit counters.
+• Budget: JS ≤ 170KB gz, CSS ≤ 60KB; LCP < 1.9s on 4G; INP < 200ms.
+• Status page + incident banner.
+I. Anti-Bot & Abuse Controls
+• WL Merkle validation at edge; signed payloads for mints.
+• Per-IP velocity caps; device fingerprint to cool down abusers; manual pause switch.
+• Obscure Candy Machine IDs client-side; rotate endpoints when under attack.
+J. Analytics (focus KPIs)
+• Events: wl_claim_success, join_discord_click, join_discord_success (if deep link
+returns), mint_card_view, mint_click, mint_success, mint_fail, faq_open,
+support_open.
+• Dashboards: Real-time funnel (Landing → WL claim → Wallet connect → Mint start →
+Success); cohort of Discord joiners; RPC error heatmap.
+• Stack: GA4 + Plausible (privacy) + Mixpanel (product events) with consent gating.
+K. Content Blocks (copy skeletons)
+• Guilds (5): one-liner “who it’s for” + 3 perks; include sample weekly activity list.
+• Benefits: access in 48h to gated channels, weekly calendar, quests/XP; partner
+perks; raffles; leaderboards/Inter-Guild Cup.
+• Roadmap: Season model + renewal concept; shipped log.
+L. Legal & Compliance (PH-aware, non-investment stance)
+• Prominent Disclaimer: This is a digital membership collectible that grants access to
+community content and perks. It is not an investment, security, or deposit product.
+No profit-sharing, yield, or price promises. NFTs are non-refundable.
+• Terms of Use: acceptable behavior, fraud/abuse, resale notes, jurisdiction.
+• Privacy (NPC compliant): data handling for emails/wallet addresses; cookie
+consent.
+N. Launch-Day Checklist (mint mode)
+• Flip from “Coming Soon” to Countdown; warm caches; heartbeat monitors.
+• WL import + canary mint; cross-device tests; Discord verification flow dry-run.
