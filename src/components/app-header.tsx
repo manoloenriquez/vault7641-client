@@ -36,6 +36,7 @@ export function AppHeader({ links }: { links: { label: string; path: string }[] 
       const element = document.querySelector(path)
       element?.scrollIntoView({ behavior: 'smooth' })
     }
+    // For regular routes, Link component will handle navigation
   }
 
   return (
@@ -55,15 +56,21 @@ export function AppHeader({ links }: { links: { label: string; path: string }[] 
         {/* Desktop Navigation */}
         <div className="hidden md:flex items-center gap-8">
           <nav className="flex items-center gap-6">
-            {navigationLinks.map(({ label, path }) => (
-              <button
-                key={path}
-                onClick={() => handleNavClick(path)}
-                className="text-sm font-medium hover:text-primary transition-colors cursor-pointer"
-              >
-                {label}
-              </button>
-            ))}
+            {navigationLinks.map(({ label, path }) =>
+              path.startsWith('#') ? (
+                <button
+                  key={path}
+                  onClick={() => handleNavClick(path)}
+                  className="text-sm font-medium hover:text-primary transition-colors cursor-pointer"
+                >
+                  {label}
+                </button>
+              ) : (
+                <Link key={path} href={path} className="text-sm font-medium hover:text-primary transition-colors">
+                  {label}
+                </Link>
+              ),
+            )}
           </nav>
 
           {/* CTAs */}
@@ -99,15 +106,26 @@ export function AppHeader({ links }: { links: { label: string; path: string }[] 
             <div className="flex flex-col p-6 gap-6 border-t border-border/50">
               {/* Navigation */}
               <nav className="flex flex-col gap-4">
-                {navigationLinks.map(({ label, path }) => (
-                  <button
-                    key={path}
-                    onClick={() => handleNavClick(path)}
-                    className="text-left text-lg py-2 hover:text-primary transition-colors"
-                  >
-                    {label}
-                  </button>
-                ))}
+                {navigationLinks.map(({ label, path }) =>
+                  path.startsWith('#') ? (
+                    <button
+                      key={path}
+                      onClick={() => handleNavClick(path)}
+                      className="text-left text-lg py-2 hover:text-primary transition-colors"
+                    >
+                      {label}
+                    </button>
+                  ) : (
+                    <Link
+                      key={path}
+                      href={path}
+                      onClick={() => setShowMenu(false)}
+                      className="text-left text-lg py-2 hover:text-primary transition-colors"
+                    >
+                      {label}
+                    </Link>
+                  ),
+                )}
               </nav>
 
               {/* Mobile CTAs */}
