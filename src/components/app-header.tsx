@@ -5,17 +5,22 @@ import Link from 'next/link'
 import { Button } from '@/components/ui/button'
 import { Menu, X } from 'lucide-react'
 import { WalletButton } from '@/components/solana/solana-provider'
+import { useAuth } from '@/components/auth/auth-guard'
 
 const navigationLinks = [
-  { label: 'How it works', path: '#how-it-works' },
-  { label: 'Guilds', path: '#guilds' },
-  { label: 'FAQ', path: '#faq' },
+  { label: 'Education', path: '/education' },
+  { label: 'Community', path: '/community' },
+  { label: 'Guilds', path: '/guilds' },
+  { label: 'About', path: '/about' },
 ]
 
-export function AppHeader({ links = [] }: { links: { label: string; path: string }[] }) {
-  const pathname = usePathname()
+export function AppHeader({ links }: { links: { label: string; path: string }[] }) {
   const [showMenu, setShowMenu] = useState(false)
   const [isScrolled, setIsScrolled] = useState(false)
+  const auth = useAuth()
+
+  // Suppress unused variable warnings
+  void links
 
   useEffect(() => {
     const handleScroll = () => {
@@ -24,10 +29,6 @@ export function AppHeader({ links = [] }: { links: { label: string; path: string
     window.addEventListener('scroll', handleScroll)
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
-
-  function isActive(path: string) {
-    return path === '/' ? pathname === '/' : pathname.startsWith(path)
-  }
 
   const handleNavClick = (path: string) => {
     setShowMenu(false)
@@ -67,12 +68,22 @@ export function AppHeader({ links = [] }: { links: { label: string; path: string
 
           {/* CTAs */}
           <div className="flex items-center gap-3">
-            <Button variant="ghost" size="sm" className="text-sm">
-              Claim WL
-            </Button>
-            <Button variant="ghost" size="sm" className="text-sm">
-              Join Discord
-            </Button>
+            {auth.hasNFT ? (
+              <Link href="/dashboard">
+                <Button variant="ghost" size="sm" className="text-sm">
+                  Dashboard
+                </Button>
+              </Link>
+            ) : (
+              <>
+                <Button variant="ghost" size="sm" className="text-sm">
+                  Claim WL
+                </Button>
+                <Button variant="ghost" size="sm" className="text-sm">
+                  Join Discord
+                </Button>
+              </>
+            )}
             <WalletButton size="sm" />
           </div>
         </div>
@@ -101,11 +112,21 @@ export function AppHeader({ links = [] }: { links: { label: string; path: string
 
               {/* Mobile CTAs */}
               <div className="flex flex-col gap-3 pt-4 border-t border-border/50">
-                <Button className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90">
-                  Mint Pass
-                </Button>
-                <Button variant="outline">Claim WL</Button>
-                <Button variant="outline">Join Discord</Button>
+                {auth.hasNFT ? (
+                  <Link href="/dashboard">
+                    <Button className="w-full bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90">
+                      Dashboard
+                    </Button>
+                  </Link>
+                ) : (
+                  <>
+                    <Button className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90">
+                      Mint Pass
+                    </Button>
+                    <Button variant="outline">Claim WL</Button>
+                    <Button variant="outline">Join Discord</Button>
+                  </>
+                )}
                 <WalletButton />
               </div>
             </div>

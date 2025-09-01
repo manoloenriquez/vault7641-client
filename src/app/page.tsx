@@ -1,5 +1,4 @@
 import { VaultHero } from '@/components/vault/vault-hero'
-import { MintModule } from '@/components/vault/mint-module'
 import { HowItWorks } from '@/components/vault/how-it-works'
 import { GuildsSection } from '@/components/vault/guilds-section'
 import { MemberBenefits } from '@/components/vault/member-benefits'
@@ -11,7 +10,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-background">
       <VaultHero />
-      <MintModule />
+      {/* <MintModule /> */}
       <HowItWorks />
       <GuildsSection />
       <MemberBenefits />

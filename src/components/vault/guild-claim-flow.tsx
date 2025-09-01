@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
-import { useWallet } from '@solana/wallet-adapter-react'
+import { useWalletUi } from '@wallet-ui/react'
 import { CheckCircle, Clock, AlertCircle, TrendingUp, Coins, Gamepad2, Code, Briefcase } from 'lucide-react'
 
 const guilds = [
@@ -62,15 +62,18 @@ const guilds = [
 type ClaimStep = 'connect' | 'detect' | 'choose' | 'confirm' | 'claim' | 'complete'
 
 export function GuildClaimFlow() {
-  const { connected, publicKey } = useWallet()
+  const { connected, account } = useWalletUi()
   const [currentStep, setCurrentStep] = useState<ClaimStep>('connect')
   const [selectedGuild, setSelectedGuild] = useState<string | null>(null)
   const [timeRemaining, setTimeRemaining] = useState(72 * 60 * 60) // 72 hours in seconds
   const [hasBasePasses, setHasBasePasses] = useState(false)
 
+  // Suppress unused variable warning
+  void hasBasePasses
+
   // Mock data - replace with real NFT detection
   useEffect(() => {
-    if (connected && publicKey) {
+    if (connected && account?.publicKey) {
       setCurrentStep('detect')
       // Simulate NFT detection
       setTimeout(() => {
@@ -80,7 +83,7 @@ export function GuildClaimFlow() {
     } else {
       setCurrentStep('connect')
     }
-  }, [connected, publicKey])
+  }, [connected, account?.publicKey])
 
   // Countdown timer
   useEffect(() => {

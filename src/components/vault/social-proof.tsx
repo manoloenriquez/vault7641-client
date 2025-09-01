@@ -24,7 +24,7 @@ const testimonials = [
     name: 'Sarah Kim',
     role: 'NFT Collector',
     guild: 'NFTs & Gaming',
-    content: "The mint alerts and rarity analysis tools have saved me thousands. Best investment I've made.",
+    content: 'The mint alerts and rarity analysis tools have saved me thousands. Best investment I&apos;ve made.',
     avatar: '/avatars/sarah.jpg',
   },
   {
@@ -59,8 +59,8 @@ export function SocialProof() {
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-bold mb-4">Trusted by Thousands</h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Join a community that's already helping members achieve their Web3 goals with real results and genuine
-              connections.
+              Join a community that&apos;s already helping members achieve their Web3 goals with real results and
+              genuine connections.
             </p>
           </div>
 
@@ -81,7 +81,9 @@ export function SocialProof() {
               {testimonials.map((testimonial, index) => (
                 <div key={index} className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-6">
                   <Quote className="w-8 h-8 text-primary/40 mb-4" />
-                  <p className="text-sm text-muted-foreground mb-4 leading-relaxed">"{testimonial.content}"</p>
+                  <p className="text-sm text-muted-foreground mb-4 leading-relaxed">
+                    &ldquo;{testimonial.content}&rdquo;
+                  </p>
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full flex items-center justify-center">
                       <span className="text-sm font-bold">

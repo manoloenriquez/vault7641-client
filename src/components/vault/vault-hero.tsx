@@ -13,10 +13,10 @@ export function VaultHero() {
     seconds: number
   }>({ days: 0, hours: 0, minutes: 0, seconds: 0 })
 
-  // Mock countdown to mint date - you can replace with actual date
-  const mintDate = new Date('2024-12-31T00:00:00Z')
-
   useEffect(() => {
+    // Mock countdown to mint date - you can replace with actual date
+    const mintDate = new Date('2024-12-31T00:00:00Z')
+
     const timer = setInterval(() => {
       const now = new Date().getTime()
       const distance = mintDate.getTime() - now
@@ -32,7 +32,7 @@ export function VaultHero() {
     }, 1000)
 
     return () => clearInterval(timer)
-  }, [mintDate])
+  }, [])
 
   return (
     <section className="relative min-h-screen flex items-center justify-center bg-gradient-to-br from-background via-background to-muted/20">

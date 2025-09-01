@@ -17,7 +17,7 @@ type MintState =
   | 'error'
 
 export function MintModule() {
-  const { connected, account } = useWalletUi()
+  const { connected } = useWalletUi()
   const [mintAmount, setMintAmount] = useState(1)
   const [mintState, setMintState] = useState<MintState>('idle')
   const [mintPhase] = useState<MintPhase>('countdown') // This would come from your mint logic
@@ -45,6 +45,7 @@ export function MintModule() {
       setMintState('success')
       setTimeout(() => setMintState('idle'), 3000)
     } catch (error) {
+      console.error('Mint failed:', error)
       setMintState('error')
       setTimeout(() => setMintState('idle'), 3000)
     }

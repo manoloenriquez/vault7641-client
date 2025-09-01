@@ -37,7 +37,7 @@ const faqs = [
       {
         question: 'How long do I have to choose my guild?',
         answer:
-          "You have 72 hours after minting to select your guild. After this window, you'll be assigned to a guild based on your wallet activity.",
+          'You have 72 hours after minting to select your guild. After this window, you&apos;ll be assigned to a guild based on your wallet activity.',
       },
       {
         question: 'Can I change guilds later?',
@@ -45,7 +45,7 @@ const faqs = [
           'Guild changes are not currently supported. Choose carefully as this determines your specialized content and community.',
       },
       {
-        question: "What if I don't fit into any guild?",
+        question: 'What if I don&apos;t fit into any guild?',
         answer:
           'Every member finds value in at least one guild. Our onboarding quiz helps match you to the best fit based on your interests and goals.',
       },
@@ -77,12 +77,12 @@ const faqs = [
       {
         question: 'What if I have trouble connecting my wallet?',
         answer:
-          "Try refreshing the page, checking your wallet is unlocked, and ensuring you're on the correct network. Our support bot can help troubleshoot specific issues.",
+          'Try refreshing the page, checking your wallet is unlocked, and ensuring you&apos;re on the correct network. Our support bot can help troubleshoot specific issues.',
       },
       {
         question: 'Is there a refund policy?',
         answer:
-          "All sales are final. NFTs are non-refundable digital collectibles. Please make sure you understand what you're purchasing.",
+          'All sales are final. NFTs are non-refundable digital collectibles. Please make sure you understand what you&apos;re purchasing.',
       },
       {
         question: 'How do I get help if something goes wrong?',
@@ -126,8 +126,8 @@ export function FAQSection() {
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-bold mb-4">Frequently Asked Questions</h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Got questions? We've got answers. Can't find what you're looking for? Join our Discord for real-time
-              support.
+              Got questions? We&apos;ve got answers. Can&apos;t find what you&apos;re looking for? Join our Discord for
+              real-time support.
             </p>
           </div>
 
@@ -187,7 +187,7 @@ export function FAQSection() {
           {/* No Results */}
           {filteredFAQs.length === 0 && searchTerm && (
             <div className="text-center py-12">
-              <p className="text-muted-foreground mb-4">No FAQs found matching "{searchTerm}"</p>
+              <p className="text-muted-foreground mb-4">No FAQs found matching &ldquo;{searchTerm}&rdquo;</p>
               <Button variant="outline" onClick={() => setSearchTerm('')}>
                 Clear Search
               </Button>

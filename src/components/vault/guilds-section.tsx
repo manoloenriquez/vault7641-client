@@ -83,8 +83,8 @@ export function GuildsSection() {
           <div className="text-center mb-16">
             <h2 className="text-3xl md:text-5xl font-bold mb-4">Choose Your Guild</h2>
             <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
-              Each guild offers specialized knowledge, tools, and community tailored to your Web3 journey. You'll have
-              72 hours after minting to make your choice.
+              Each guild offers specialized knowledge, tools, and community tailored to your Web3 journey. You&apos;ll
+              have 72 hours after minting to make your choice.
             </p>
           </div>
 
@@ -105,7 +105,9 @@ export function GuildsSection() {
                       style={{ color: guild.color.split(' ')[1].replace('to-', '') }}
                     />
                   </div>
-                  <Badge className={`${rarityColors[guild.rarity]} border-0`}>{guild.rarity}</Badge>
+                  <Badge className={`${rarityColors[guild.rarity as keyof typeof rarityColors]} border-0`}>
+                    {guild.rarity}
+                  </Badge>
                 </div>
 
                 {/* Guild Info */}
