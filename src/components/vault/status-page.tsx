@@ -148,19 +148,19 @@ export function StatusPage() {
   const StatusIcon = statusConfig[overallStatus].icon
 
   return (
-    <div className="min-h-screen bg-background py-20">
+    <div className="py-12">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
           <div className="text-center mb-16">
             <h1 className="text-4xl md:text-6xl font-bold mb-4">System Status</h1>
-            <p className="text-xl text-muted-foreground">
+            <p className="text-xl text-zinc-400">
               Current operational status of Vault 7641 services and infrastructure
             </p>
           </div>
 
           {/* Overall Status */}
-          <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8 mb-12 text-center">
+          <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-8 mb-12 text-center">
             <div className="flex items-center justify-center gap-3 mb-4">
               <StatusIcon className="w-8 h-8 text-current" />
               <h2 className="text-3xl font-bold">
@@ -171,12 +171,12 @@ export function StatusPage() {
                     : 'Service Disruption'}
               </h2>
             </div>
-            <p className="text-muted-foreground mb-4">
+            <p className="text-zinc-400 mb-4">
               {overallStatus === 'operational'
                 ? 'All systems are running smoothly'
                 : 'Some services may be experiencing issues'}
             </p>
-            <div className="text-sm text-muted-foreground">Last updated: {lastUpdated.toLocaleString()}</div>
+            <div className="text-sm text-zinc-400">Last updated: {lastUpdated.toLocaleString()}</div>
           </div>
 
           {/* Active Incidents */}
@@ -185,10 +185,7 @@ export function StatusPage() {
               <h2 className="text-2xl font-bold mb-6">Active Incidents</h2>
               <div className="space-y-6">
                 {activeIncidents.map((incident) => (
-                  <div
-                    key={incident.id}
-                    className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-6"
-                  >
+                  <div key={incident.id} className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6">
                     <div className="flex items-start justify-between mb-4">
                       <div>
                         <h3 className="text-xl font-bold mb-2">{incident.title}</h3>
@@ -201,20 +198,18 @@ export function StatusPage() {
                           </Badge>
                         </div>
                       </div>
-                      <div className="text-sm text-muted-foreground">
+                      <div className="text-sm text-zinc-400">
                         Started: {new Date(incident.startTime).toLocaleString()}
                       </div>
                     </div>
 
-                    <p className="text-muted-foreground mb-4">{incident.description}</p>
+                    <p className="text-zinc-400 mb-4">{incident.description}</p>
 
                     <div className="space-y-3">
                       <h4 className="font-semibold">Updates:</h4>
                       {incident.updates.map((update, index) => (
                         <div key={index} className="flex gap-4 text-sm">
-                          <div className="text-muted-foreground min-w-fit">
-                            {new Date(update.time).toLocaleString()}
-                          </div>
+                          <div className="text-zinc-400 min-w-fit">{new Date(update.time).toLocaleString()}</div>
                           <div>{update.message}</div>
                         </div>
                       ))}
@@ -232,25 +227,25 @@ export function StatusPage() {
               {services.map((service, index) => {
                 const config = statusConfig[service.status as keyof typeof statusConfig]
                 return (
-                  <div key={index} className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-6">
+                  <div key={index} className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6">
                     <div className="flex items-center justify-between">
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-muted/30 rounded-xl flex items-center justify-center">
-                          <service.icon className="w-6 h-6 text-muted-foreground" />
+                          <service.icon className="w-6 h-6 text-zinc-400" />
                         </div>
                         <div>
                           <h3 className="font-bold text-lg">{service.name}</h3>
-                          <p className="text-sm text-muted-foreground">{service.description}</p>
+                          <p className="text-sm text-zinc-400">{service.description}</p>
                         </div>
                       </div>
 
                       <div className="flex items-center gap-6">
                         <div className="text-center">
-                          <div className="text-sm text-muted-foreground">Uptime</div>
+                          <div className="text-sm text-zinc-400">Uptime</div>
                           <div className="font-semibold">{service.uptime}</div>
                         </div>
                         <div className="text-center">
-                          <div className="text-sm text-muted-foreground">Response</div>
+                          <div className="text-sm text-zinc-400">Response</div>
                           <div className="font-semibold">{service.responseTime}</div>
                         </div>
                         <Badge className={config.color}>
@@ -270,7 +265,7 @@ export function StatusPage() {
             <h2 className="text-2xl font-bold mb-6">Recent Incidents</h2>
             <div className="space-y-4">
               {incidents.map((incident) => (
-                <div key={incident.id} className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-6">
+                <div key={incident.id} className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6">
                   <div className="flex items-start justify-between mb-3">
                     <div>
                       <h3 className="font-bold mb-2">{incident.title}</h3>
@@ -283,12 +278,12 @@ export function StatusPage() {
                         </Badge>
                       </div>
                     </div>
-                    <div className="text-sm text-muted-foreground text-right">
+                    <div className="text-sm text-zinc-400 text-right">
                       <div>Started: {new Date(incident.startTime).toLocaleString()}</div>
                       {incident.endTime && <div>Resolved: {new Date(incident.endTime).toLocaleString()}</div>}
                     </div>
                   </div>
-                  <p className="text-muted-foreground">{incident.description}</p>
+                  <p className="text-zinc-400">{incident.description}</p>
                 </div>
               ))}
             </div>
@@ -297,7 +292,7 @@ export function StatusPage() {
           {/* Subscribe to Updates */}
           <div className="bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 border border-primary/10 rounded-2xl p-8 text-center">
             <h3 className="text-2xl font-bold mb-4">Stay Updated</h3>
-            <p className="text-muted-foreground mb-6">Get notified about service updates and maintenance windows</p>
+            <p className="text-zinc-400 mb-6">Get notified about service updates and maintenance windows</p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
                 href="#"

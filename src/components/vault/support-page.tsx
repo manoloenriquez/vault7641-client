@@ -183,13 +183,13 @@ export function SupportPage() {
     .filter((category) => category.articles.length > 0 || searchTerm === '')
 
   return (
-    <div className="min-h-screen bg-background py-20">
+    <div className="py-12">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="text-center mb-16">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">Support Center</h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white">Support Center</h1>
+            <p className="text-xl text-zinc-400 max-w-3xl mx-auto">
               Find answers to common questions, get help with technical issues, and connect with our support team for
               personalized assistance.
             </p>
@@ -197,7 +197,7 @@ export function SupportPage() {
 
           {/* Search */}
           <div className="relative mb-12 max-w-2xl mx-auto">
-            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-muted-foreground w-5 h-5" />
+            <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 text-zinc-400 w-5 h-5" />
             <Input
               placeholder="Search for help articles, guides, and solutions..."
               value={searchTerm}
@@ -211,7 +211,7 @@ export function SupportPage() {
             {quickActions.map((action, index) => (
               <div
                 key={index}
-                className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-6 hover:bg-card/80 transition-all duration-300 cursor-pointer"
+                className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 hover:bg-card/80 transition-all duration-300 cursor-pointer"
               >
                 <div className="flex items-center gap-4 mb-4">
                   <div className={`w-12 h-12 ${action.color} rounded-xl flex items-center justify-center`}>
@@ -221,7 +221,7 @@ export function SupportPage() {
                     <h3 className="font-bold">{action.title}</h3>
                   </div>
                 </div>
-                <p className="text-sm text-muted-foreground mb-4">{action.description}</p>
+                <p className="text-sm text-zinc-400 mb-4">{action.description}</p>
                 <Button size="sm" className="w-full">
                   {action.action}
                   <ExternalLink className="ml-2 w-3 h-3" />
@@ -232,7 +232,7 @@ export function SupportPage() {
 
           {/* Support Categories */}
           <div className="mb-16">
-            <h2 className="text-3xl font-bold mb-8 text-center">Browse by Category</h2>
+            <h2 className="text-3xl font-bold text-white mb-8 text-center">Browse by Category</h2>
 
             {/* Category Filters */}
             <div className="flex flex-wrap justify-center gap-3 mb-12">
@@ -275,7 +275,7 @@ export function SupportPage() {
                       {category.articles.map((article, articleIndex) => (
                         <div
                           key={articleIndex}
-                          className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-6 hover:bg-card/80 transition-all duration-300 cursor-pointer"
+                          className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 hover:bg-card/80 transition-all duration-300 cursor-pointer"
                         >
                           <div className="flex items-start justify-between mb-3">
                             <h4 className="font-bold text-lg pr-4">{article.title}</h4>
@@ -284,10 +284,10 @@ export function SupportPage() {
                             </Badge>
                           </div>
 
-                          <p className="text-muted-foreground mb-4 leading-relaxed">{article.description}</p>
+                          <p className="text-zinc-400 mb-4 leading-relaxed">{article.description}</p>
 
                           <div className="flex items-center justify-between">
-                            <span className="text-sm text-muted-foreground">{article.readTime} read</span>
+                            <span className="text-sm text-zinc-400">{article.readTime} read</span>
                             <Button size="sm" variant="ghost">
                               Read Article →
                             </Button>
@@ -302,8 +302,8 @@ export function SupportPage() {
 
           {/* Contact Section */}
           <div className="bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 border border-primary/10 rounded-2xl p-8 text-center">
-            <h3 className="text-2xl font-bold mb-4">Still Need Help?</h3>
-            <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+            <h3 className="text-2xl font-bold text-white mb-4">Still Need Help?</h3>
+            <p className="text-zinc-400 mb-6 max-w-2xl mx-auto">
               Can&apos;t find what you&apos;re looking for? Our support team is here to help. Join our Discord for
               real-time assistance or submit a support ticket.
             </p>
@@ -324,7 +324,7 @@ export function SupportPage() {
           {/* Emergency Contact */}
           <div className="mt-12 text-center">
             <div className="bg-card/30 border border-border/50 rounded-xl p-4">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-zinc-400">
                 <strong>Emergency Issues:</strong> For urgent security concerns or critical bugs, contact our team
                 immediately at{' '}
                 <a href="mailto:security@vault7641.com" className="text-primary hover:underline">

@@ -160,18 +160,18 @@ const guildColors = {
   'NFTs & Gaming': 'bg-purple-500/20 text-purple-400',
   Developer: 'bg-orange-500/20 text-orange-400',
   Careers: 'bg-indigo-500/20 text-indigo-400',
-  'All Guilds': 'bg-muted text-muted-foreground',
+  'All Guilds': 'bg-muted text-zinc-400',
 }
 
 export function AboutPage() {
   return (
-    <div className="min-h-screen bg-background py-20">
+    <div className="py-12">
       <div className="container mx-auto px-4">
         <div className="max-w-6xl mx-auto">
           {/* Hero Section */}
           <div className="text-center mb-20">
             <h1 className="text-4xl md:text-6xl font-bold mb-6">About Vault 7641</h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            <p className="text-xl text-zinc-400 max-w-3xl mx-auto">
               We&apos;re building the most valuable Web3 community by focusing on real education, genuine utility, and
               meaningful connections. No hype, just results.
             </p>
@@ -180,7 +180,7 @@ export function AboutPage() {
           {/* Story Section */}
           <section className="mb-20">
             <h2 className="text-3xl font-bold mb-8 text-center">Our Story</h2>
-            <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8">
+            <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-8">
               <div className="prose prose-lg dark:prose-invert max-w-none">
                 <p className="text-lg leading-relaxed mb-6">
                   Vault 7641 was born from frustration with the Web3 space&apos;s focus on speculation over education.
@@ -207,14 +207,14 @@ export function AboutPage() {
             <h2 className="text-3xl font-bold mb-12 text-center">Our Values</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {values.map((value, index) => (
-                <div key={index} className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-6">
+                <div key={index} className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6">
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center border border-primary/20 flex-shrink-0">
                       <value.icon className="w-6 h-6 text-primary" />
                     </div>
                     <div>
                       <h3 className="text-xl font-bold mb-3">{value.title}</h3>
-                      <p className="text-muted-foreground leading-relaxed">{value.description}</p>
+                      <p className="text-zinc-400 leading-relaxed">{value.description}</p>
                     </div>
                   </div>
                 </div>
@@ -229,7 +229,7 @@ export function AboutPage() {
               {teamMembers.map((member, index) => (
                 <div
                   key={index}
-                  className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-6 hover:bg-card/80 transition-all duration-300"
+                  className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 hover:bg-card/80 transition-all duration-300"
                 >
                   <div className="text-center mb-6">
                     <div className="w-20 h-20 bg-gradient-to-br from-primary/20 to-accent/20 rounded-full mx-auto mb-4 flex items-center justify-center">
@@ -241,13 +241,13 @@ export function AboutPage() {
                       </span>
                     </div>
                     <h3 className="text-xl font-bold mb-1">{member.name}</h3>
-                    <p className="text-muted-foreground mb-2">{member.role}</p>
+                    <p className="text-zinc-400 mb-2">{member.role}</p>
                     <Badge className={guildColors[member.guild as keyof typeof guildColors]} variant="outline">
                       {member.guild}
                     </Badge>
                   </div>
 
-                  <p className="text-sm text-muted-foreground mb-4 leading-relaxed">{member.bio}</p>
+                  <p className="text-sm text-zinc-400 mb-4 leading-relaxed">{member.bio}</p>
 
                   <div className="mb-4">
                     <h4 className="text-sm font-semibold mb-2">Expertise:</h4>
@@ -280,11 +280,11 @@ export function AboutPage() {
               {partners.map((partner, index) => (
                 <div
                   key={index}
-                  className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-6 hover:bg-card/80 transition-all duration-300"
+                  className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 hover:bg-card/80 transition-all duration-300"
                 >
                   <div className="flex items-start gap-4">
                     <div className="w-12 h-12 bg-muted/30 rounded-xl flex items-center justify-center flex-shrink-0">
-                      <span className="text-xs font-semibold text-muted-foreground">
+                      <span className="text-xs font-semibold text-zinc-400">
                         {partner.name.split(' ')[0].slice(0, 2)}
                       </span>
                     </div>
@@ -295,7 +295,7 @@ export function AboutPage() {
                           {partner.type}
                         </Badge>
                       </div>
-                      <p className="text-sm text-muted-foreground">{partner.description}</p>
+                      <p className="text-sm text-zinc-400">{partner.description}</p>
                     </div>
                   </div>
                 </div>
@@ -318,7 +318,7 @@ export function AboutPage() {
                       {index % 2 !== 0 && (
                         <div className="hidden md:block">
                           <h3 className="text-xl font-bold mb-2">{milestone.title}</h3>
-                          <p className="text-muted-foreground">{milestone.description}</p>
+                          <p className="text-zinc-400">{milestone.description}</p>
                         </div>
                       )}
                     </div>
@@ -335,12 +335,12 @@ export function AboutPage() {
                     <div className="flex-1 md:pl-8">
                       <div className="md:hidden">
                         <h3 className="text-xl font-bold mb-2">{milestone.title}</h3>
-                        <p className="text-muted-foreground">{milestone.description}</p>
+                        <p className="text-zinc-400">{milestone.description}</p>
                       </div>
                       {index % 2 === 0 && (
                         <div className="hidden md:block">
                           <h3 className="text-xl font-bold mb-2">{milestone.title}</h3>
-                          <p className="text-muted-foreground">{milestone.description}</p>
+                          <p className="text-zinc-400">{milestone.description}</p>
                         </div>
                       )}
                     </div>
@@ -354,7 +354,7 @@ export function AboutPage() {
           <section className="mb-20">
             <div className="bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 border border-primary/10 rounded-2xl p-8 text-center">
               <h2 className="text-3xl font-bold mb-4">Join Our Team</h2>
-              <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+              <p className="text-zinc-400 mb-6 max-w-2xl mx-auto">
                 We&apos;re always looking for passionate individuals who share our vision of making Web3 education and
                 community accessible to everyone. Join us in building the future.
               </p>

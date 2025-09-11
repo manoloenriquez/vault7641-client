@@ -117,7 +117,7 @@ const guildColors = {
   'NFTs & Gaming': 'bg-purple-500/20 text-purple-400',
   Developer: 'bg-orange-500/20 text-orange-400',
   Careers: 'bg-indigo-500/20 text-indigo-400',
-  'All Guilds': 'bg-muted text-muted-foreground',
+  'All Guilds': 'bg-muted text-zinc-400',
 }
 
 const difficultyColors = {
@@ -130,13 +130,13 @@ export function CommunityHub() {
   const [activeTab, setActiveTab] = useState<'events' | 'quests' | 'leaderboard'>('events')
 
   return (
-    <div className="min-h-screen bg-background py-20">
-      <div className="container mx-auto px-4">
+    <div className="py-12">
+      <div className="mx-auto max-w-7xl px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="text-center mb-16">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">Community Hub</h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white">Community Hub</h1>
+            <p className="text-xl text-zinc-400 max-w-3xl mx-auto">
               Connect, learn, and grow with fellow Web3 enthusiasts. Participate in events, complete quests, and climb
               the leaderboard to earn rewards and recognition.
             </p>
@@ -144,21 +144,21 @@ export function CommunityHub() {
 
           {/* Stats Overview */}
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-12">
-            <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-6 text-center">
-              <div className="text-3xl font-bold text-primary mb-2">5,247</div>
-              <div className="text-sm text-muted-foreground">Active Members</div>
+            <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 text-center">
+              <div className="text-3xl font-bold text-white mb-2">5,247</div>
+              <div className="text-sm text-zinc-400">Active Members</div>
             </div>
-            <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-6 text-center">
-              <div className="text-3xl font-bold text-primary mb-2">127</div>
-              <div className="text-sm text-muted-foreground">Events This Month</div>
+            <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 text-center">
+              <div className="text-3xl font-bold text-white mb-2">127</div>
+              <div className="text-sm text-zinc-400">Events This Month</div>
             </div>
-            <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-6 text-center">
-              <div className="text-3xl font-bold text-primary mb-2">43</div>
-              <div className="text-sm text-muted-foreground">Active Quests</div>
+            <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 text-center">
+              <div className="text-3xl font-bold text-white mb-2">43</div>
+              <div className="text-sm text-zinc-400">Active Quests</div>
             </div>
-            <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-6 text-center">
-              <div className="text-3xl font-bold text-primary mb-2">2.4M</div>
-              <div className="text-sm text-muted-foreground">XP Distributed</div>
+            <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 text-center">
+              <div className="text-3xl font-bold text-white mb-2">2.4M</div>
+              <div className="text-sm text-zinc-400">XP Distributed</div>
             </div>
           </div>
 
@@ -177,7 +177,7 @@ export function CommunityHub() {
                     className={`flex items-center gap-2 px-6 py-3 rounded-xl font-medium transition-all ${
                       activeTab === tab.id
                         ? 'bg-primary text-primary-foreground shadow-lg'
-                        : 'text-muted-foreground hover:text-foreground hover:bg-muted/50'
+                        : 'text-zinc-400 hover:text-foreground hover:bg-muted/50'
                     }`}
                   >
                     <tab.icon className="w-4 h-4" />
@@ -200,7 +200,7 @@ export function CommunityHub() {
                 {upcomingEvents.map((event) => (
                   <div
                     key={event.id}
-                    className={`bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-6 hover:bg-card/80 transition-all duration-300 ${event.featured ? 'ring-2 ring-primary/20' : ''}`}
+                    className={`bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 hover:bg-card/80 transition-all duration-300 ${event.featured ? 'ring-2 ring-primary/20' : ''}`}
                   >
                     <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
                       <div className="flex-1">
@@ -214,9 +214,9 @@ export function CommunityHub() {
                           </Badge>
                         </div>
 
-                        <p className="text-muted-foreground mb-4">{event.description}</p>
+                        <p className="text-zinc-400 mb-4">{event.description}</p>
 
-                        <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                        <div className="flex flex-wrap items-center gap-4 text-sm text-zinc-400">
                           <div className="flex items-center gap-1">
                             <Calendar className="w-4 h-4" />
                             {new Date(event.date).toLocaleDateString()} at {event.time}
@@ -235,7 +235,7 @@ export function CommunityHub() {
                         </div>
 
                         <div className="mt-4 text-sm">
-                          <span className="text-muted-foreground">Hosted by </span>
+                          <span className="text-zinc-400">Hosted by </span>
                           <span className="font-semibold">{event.host}</span>
                         </div>
                       </div>
@@ -270,7 +270,7 @@ export function CommunityHub() {
                 {activeQuests.map((quest) => (
                   <div
                     key={quest.id}
-                    className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-6 hover:bg-card/80 transition-all duration-300"
+                    className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 hover:bg-card/80 transition-all duration-300"
                   >
                     <div className="flex items-start justify-between mb-4">
                       <h3 className="text-lg font-bold">{quest.title}</h3>
@@ -279,7 +279,7 @@ export function CommunityHub() {
                       </Badge>
                     </div>
 
-                    <p className="text-sm text-muted-foreground mb-4">{quest.description}</p>
+                    <p className="text-sm text-zinc-400 mb-4">{quest.description}</p>
 
                     <div className="mb-4">
                       <div className="flex items-center justify-between text-sm mb-2">
@@ -296,15 +296,15 @@ export function CommunityHub() {
 
                     <div className="space-y-2 mb-6 text-sm">
                       <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Reward:</span>
+                        <span className="text-zinc-400">Reward:</span>
                         <span className="font-semibold">{quest.reward}</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Time left:</span>
+                        <span className="text-zinc-400">Time left:</span>
                         <span>{quest.timeLeft}</span>
                       </div>
                       <div className="flex items-center justify-between">
-                        <span className="text-muted-foreground">Participants:</span>
+                        <span className="text-zinc-400">Participants:</span>
                         <span>{quest.participants}</span>
                       </div>
                     </div>
@@ -335,8 +335,8 @@ export function CommunityHub() {
                 </div>
               </div>
 
-              <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl overflow-hidden">
-                <div className="grid grid-cols-6 gap-4 p-4 border-b border-border/50 text-sm font-semibold text-muted-foreground">
+              <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl overflow-hidden">
+                <div className="grid grid-cols-6 gap-4 p-4 border-b border-border/50 text-sm font-semibold text-zinc-400">
                   <div>Rank</div>
                   <div className="col-span-2">Member</div>
                   <div>Guild</div>
@@ -383,7 +383,7 @@ export function CommunityHub() {
           {/* CTA Section */}
           <section className="mt-20 bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 border border-primary/10 rounded-2xl p-8 text-center">
             <h3 className="text-2xl font-bold mb-4">Join the Community</h3>
-            <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+            <p className="text-zinc-400 mb-6 max-w-2xl mx-auto">
               Connect with like-minded Web3 enthusiasts, participate in exclusive events, and earn rewards for your
               contributions to the community.
             </p>

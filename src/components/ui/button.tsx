@@ -17,6 +17,20 @@ const buttonVariants = cva(
         secondary: 'bg-secondary text-secondary-foreground shadow-xs hover:bg-secondary/80',
         ghost: 'hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50',
         link: 'text-primary underline-offset-4 hover:underline',
+        gradient:
+          'bg-gradient-to-r from-primary to-accent text-primary-foreground shadow-lg hover:from-primary/90 hover:to-accent/90 hover:shadow-xl',
+        'gradient-pink':
+          'bg-gradient-to-r from-pink-500 to-purple-600 text-white shadow-lg hover:from-pink-600 hover:to-purple-700 hover:shadow-xl',
+        'gradient-blue':
+          'bg-gradient-to-r from-blue-500 to-cyan-600 text-white shadow-lg hover:from-blue-600 hover:to-cyan-700 hover:shadow-xl',
+        'gradient-green':
+          'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-lg hover:from-green-600 hover:to-emerald-700 hover:shadow-xl',
+        'gradient-orange':
+          'bg-gradient-to-r from-orange-500 to-red-600 text-white shadow-lg hover:from-orange-600 hover:to-red-700 hover:shadow-xl',
+        discord: 'bg-[#5865F2] text-white shadow-lg hover:bg-[#4752C4] hover:shadow-xl',
+        success: 'bg-green-600 text-white shadow-lg hover:bg-green-700 hover:shadow-xl',
+        warning: 'bg-yellow-600 text-white shadow-lg hover:bg-yellow-700 hover:shadow-xl',
+        danger: 'bg-red-600 text-white shadow-lg hover:bg-red-700 hover:shadow-xl',
       },
       size: {
         default: 'h-9 px-4 py-2 has-[>svg]:px-3',

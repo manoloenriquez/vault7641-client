@@ -231,6 +231,7 @@ export function useAuth() {
           guild: nftData.guild || null,
           loading: false,
         })
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (error) {
         setAuthData({
           isAuthenticated: connected,

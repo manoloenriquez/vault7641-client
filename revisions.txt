@@ -1,0 +1,119 @@
+Pre-Mint Website
+What to ADD, CHANGE, REDUCE
+Add (P0 = must have before WL opens)
+1. Guilds in Preview Mode web section (5 cards + 5 lightweight /guild-preview pages)
+Each card = “Who this is for” + Free Benefits) + “ List of Benefits Holders unlock
+after mint.”
+2. Safety-First ribbon (fixed top): “Staff never DM first • Official links • Report scam” →
+links to /safety.
+3. WL Meter + Deadlines block (homepage + /how-to-wl)
+Live % filled, “last 24h WL added,” and the next cutoff; matches the Discord nightly
+post.
+4. Event strip (PH time) with one-click “Set Reminder” (Twitter/YouTube/Calendar) +
+Discord Stage link.
+5. /status (human page + JSON feed) for incidents + banner hook on mint day. (You
+already scoped this—surface earlier, not just mint day.)
+6. /safety (pre-mint) with verified official links + report form; show last 3 takedowns
+(from Discord #scam-alerts).
+Change (P0/P1)
+1. Home above-the-fold: Replace generic hero with a claim-forward layout
+(countdown + two primary CTAs only: Claim Access Pass and Join Discord; “Mint”
+CTA stays but demoted until further notice).
+2. How-it-Works: Explicit 3-step flow with micro-FAQ (Mint Access Pass → Choose
+Guild (+72h to finalize) → Verify in Discord → Start Learning & Earning). You outlined
+this flow—promote it higher and add Discord deep links.
+3. Guild grid: Rename to match the refined audiences: Builder / Trader / Gamer /
+Farmer / Pathfinder and surface a preview quest link on each card.
+4. Legal copy: Elevate “membership collectible / not an investment” line near the hero
+and Mint module, not just footer. (You already noted the stance—make it
+prominent.)
+5. Header CTAs: Keep Join Discord, Claim WL, Connect Wallet sticky; hide low-
+intent items behind a “More” menu during pre-mint to reduce clicks lost.
+Reduce (P1)
+1. Deep subpages pre-mint: Keep to Home, /how-to-wl (or /faq), /guild-preview/*,
+/safety, /press, /status, /terms/privacy/disclaimer. Push everything else into
+scannable sections.
+PAGE-BY-PAGE STRUCTURE, COPY, AND COMPONENTS
+Home / (pre-mint state)
+Hero
+• H1: “Your crypto homebase in the Philippines. Learn, Earn, Build, and look out for each other.”
+• Sub: “Progress over Hype. Choose a Guild, Finish Quests, and Earn Access.”
+• CTAs: Claim WL • Join Discord (Secondary: View Guilds in Preview)
+• Countdown (if date set) → Mint Week.
+Road to WL (sticky mini-widget)
+• Step chips (live checkmarks): Join Discord → Preview Guilds → Finish Daily Quests → Earn WL (All
+deep-links + UTM.)
+WL Meter + Deadlines
+• Progress bar + “last 24h WL added” + next batch deadline + “How WL works” link.
+Guilds (Preview cards)
+• 5 cards, each with “Who this is for,” 5 perks, “Do a Quest,” “Watch the Class.”
+Event strip (PH-time)
+• Tonight 21:30 PH: <Title> (RSVP/Set Reminder) + “Join Stage” → Discord deep-link.
+Member Benefits
+Access Exclusive Guilds, led by trusted experts and mentors. Safety-First Always, Learn -> Check -> Do,
+Progress & Climb our Leaderboards, Claim Weekly Givebacks, Jobs & Paid Bounties. Preview Mode now; full
+unlock after mint
+Roadmap / Season model + Shipped log
+• 12 cards + Key Events
+Social proof & Press
+• KOLs, Ambassadors, Partner logos, testimonials, “As seen on” PR slots, audit badge area.
+FAQ slice → expands to /how-to-wl or /faq with anchor IDs.
+Footer (compliance-first)
+• Disclaimers, Terms, Privacy, Cookie, Risk, SEC/KOL statement; official links list; report a scam.
+/how-to-wl (or /faq)
+• “3 paths to WL”: Progress WL 60 points via events & quests, Community WL, Safety WL.
+• “What counts as proof,” “When wallet form opens,” “How to change guild (until T-1),” “Key rules
+(48h).”
+• “Check points” button opens the Discord /redeem command doc.
+/guild-preview/* (5 pages)
+Template for each:
+• H1: “Is the [Guild] for you?”
+• Who belongs here (our finalized role copy) + 3 weekly activities.
+o Builders: Makers who turn ideas into real solutions. For Developers, founders, no-code
+tinkerers, designers, and tech writers who like creating useful things.
+o Traders: Process-first traders and long-term holders who care about strategy, risk, and
+finding only the best opportunities.
+o Farmers: DeFi users and airdrop farmers who run systems safely and consistently. Always
+bridging, staking/restaking, LPs, quests, and running testnets with checklists, trackers, and
+tons of risk control.
+o Gamers: Competitive P2E players and NFT collectors who break games, analyze metas,
+and curate collections. clips,
+o Pathfinders: Web3 career seekers and bounty hunters mapping routes to paid work—
+researching teams, prepping portfolios, pitching clearly, and delivering safely.
+• Try it now: Founding Quests
+• Open Class (watch-only): next date/time (PH) + RSVP.
+• Holders unlock: (List of benefits)
+• CTA: Join Discord • Claim WL • See tonight’s event.
+/safety
+• Official links, anti-phishing checklist, last 3 takedowns (auto-pull headlines from Discord digest),
+report form.
+/mint (alias to Mint card anchor on Home)
+• Visible but “soft” until T-3. On T-3, elevate card and show Count-down + eligibility states (WL/Public)
+with precise error states and retries. (Keep your RPC hygiene & fallback design.)
+/status
+• Human page (incident timeline + workarounds) + JSON feed. Hook a site-wide banner that appears
+on non-200 JSON states.
+Analytics & tracking (implement now)
+Core events (Mixpanel/GA4/Plausible—consent-gated):
+• wl_claim_start, wl_claim_success
+• discord_click, discord_join_confirmed (use deep-link pingback)
+• quest_click, event_rsvp_click (from site to Discord)
+• mint_card_view, mint_click, mint_success, mint_fail
+• faq_open, safety_open, status_open
+Properties: source (UTM), guild_interest (from clicked card), device, region, language.
+Dashboards: Landing → WL → Discord → Quest start → RSVP → Mint funnel; RPC error heatmap; mobile CWV.
+(Matches your blueprint; keep budgets: JS ≤170KBgz, CSS ≤60KB, LCP <1.9s 4G).
+Deep-link map to Discord (critical)
+• Join Discord → #start-here
+• How WL works → #how-to-wl pin
+• Today’s Quest → #daily-quests message ID
+• Taster Quests → per-guild #*-preview pinned thread
+• RSVP → the Event object link (Discord Stage)
+• Support → #open-a-ticket button
+Use UTMs on every link so you can attribute by page/section.
+Performance, reliability, security (non-negotiables)
+• Keep the mint module SSR and everything else SSG; strict perf budgets as in your outline; Cloudflare
+in front; incident banner from /status.
+• Anti-bot: WL Merkle at edge, rate caps, human challenge on velocity spikes, canary mint, pause
+switch—already in your spec; ensure it’s wired before T-3.
+• Legal: Disclaimer above fold near Mint card; Terms/Privacy/Cookie; PH-aware notes.

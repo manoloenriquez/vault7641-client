@@ -122,7 +122,7 @@ export function GuildClaimFlow() {
   const selectedGuildData = guilds.find((g) => g.id === selectedGuild)
 
   return (
-    <div className="min-h-screen bg-background py-20">
+    <div className="py-12">
       <div className="container mx-auto px-4">
         <div className="max-w-4xl mx-auto">
           {/* Header */}
@@ -134,7 +134,7 @@ export function GuildClaimFlow() {
 
             {/* Time Remaining */}
             {timeRemaining > 0 && currentStep !== 'complete' && (
-              <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-xl p-4 inline-block">
+              <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-4 inline-block">
                 <div className="flex items-center gap-2 text-sm">
                   <Clock className="w-4 h-4 text-primary" />
                   <span>Time remaining to choose: </span>
@@ -185,7 +185,7 @@ export function GuildClaimFlow() {
           </div>
 
           {/* Step Content */}
-          <div className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-8">
+          <div className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-8">
             {/* Step 1: Connect Wallet */}
             {currentStep === 'connect' && (
               <div className="text-center">

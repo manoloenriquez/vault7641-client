@@ -120,30 +120,32 @@ const levelColors = {
 
 export function EducationHub() {
   return (
-    <div className="min-h-screen bg-background py-20">
-      <div className="container mx-auto px-4">
+    <div className="py-12">
+      <div className="mx-auto max-w-7xl px-4">
         <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="text-center mb-16">
-            <h1 className="text-4xl md:text-6xl font-bold mb-4">Education Hub</h1>
-            <p className="text-xl text-muted-foreground max-w-3xl mx-auto">
+            <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white">Education Hub</h1>
+            <p className="text-xl text-zinc-400 max-w-3xl mx-auto">
               Accelerate your Web3 journey with curated content, expert insights, and guild-specific learning paths
               designed by industry professionals.
             </p>
           </div>
 
           {/* Video Playlists */}
-          <section className="mb-20">
+          <section className="mb-12">
             <div className="flex items-center justify-between mb-8">
-              <h2 className="text-3xl font-bold">Video Playlists</h2>
-              <Button variant="outline">View All Playlists</Button>
+              <h2 className="text-3xl font-bold text-white">Video Playlists</h2>
+              <Button variant="outline" className="border-zinc-700 text-zinc-300 hover:bg-zinc-800">
+                View All Playlists
+              </Button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-6">
               {playlists.map((playlist) => (
                 <div
                   key={playlist.id}
-                  className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl overflow-hidden hover:scale-105 transition-all duration-300 cursor-pointer"
+                  className="bg-zinc-900/50 border border-zinc-800 rounded-2xl overflow-hidden hover:scale-105 transition-all duration-300 cursor-pointer"
                 >
                   <div className="aspect-video bg-gradient-to-br from-primary/20 to-accent/20 flex items-center justify-center relative">
                     <PlayCircle className="w-16 h-16 text-white/80" />
@@ -159,17 +161,17 @@ export function EducationHub() {
 
                   <div className="p-6">
                     <div className="flex items-start justify-between mb-3">
-                      <h3 className="text-xl font-bold">{playlist.title}</h3>
-                      <div className="flex items-center gap-1 text-sm text-muted-foreground">
+                      <h3 className="text-xl font-bold text-white">{playlist.title}</h3>
+                      <div className="flex items-center gap-1 text-sm text-zinc-400">
                         <Star className="w-4 h-4 fill-yellow-400 text-yellow-400" />
                         {playlist.rating}
                       </div>
                     </div>
 
-                    <p className="text-sm text-muted-foreground mb-4">{playlist.description}</p>
+                    <p className="text-sm text-zinc-400 mb-4">{playlist.description}</p>
 
                     <div className="flex items-center justify-between">
-                      <div className="text-sm text-muted-foreground">by {playlist.instructor}</div>
+                      <div className="text-sm text-zinc-400">by {playlist.instructor}</div>
                       <Badge variant="outline" className="text-xs">
                         {playlist.guild}
                       </Badge>
@@ -181,25 +183,27 @@ export function EducationHub() {
           </section>
 
           {/* Starter Packs */}
-          <section className="mb-20">
+          <section className="mb-12">
             <div className="flex items-center justify-between mb-8">
-              <h2 className="text-3xl font-bold">Starter Packs</h2>
-              <Button variant="outline">Browse All Packs</Button>
+              <h2 className="text-3xl font-bold text-white">Starter Packs</h2>
+              <Button variant="outline" className="border-zinc-700 text-zinc-300 hover:bg-zinc-800">
+                Browse All Packs
+              </Button>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {starterPacks.map((pack, index) => (
                 <div
                   key={index}
-                  className="bg-card/50 backdrop-blur-sm border border-border/50 rounded-2xl p-6 hover:bg-card/80 transition-all duration-300"
+                  className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 hover:bg-zinc-800/50 transition-all duration-300"
                 >
                   <div className="flex items-center gap-4 mb-4">
                     <div className="w-12 h-12 bg-primary/10 rounded-xl flex items-center justify-center border border-primary/20">
                       <pack.icon className="w-6 h-6 text-primary" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold">{pack.title}</h3>
-                      <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                      <h3 className="text-lg font-bold text-white">{pack.title}</h3>
+                      <div className="flex items-center gap-2 text-sm text-zinc-400">
                         <Clock className="w-3 h-3" />
                         {pack.duration}
                         <span>•</span>
@@ -210,7 +214,7 @@ export function EducationHub() {
                     </div>
                   </div>
 
-                  <p className="text-sm text-muted-foreground mb-4">{pack.description}</p>
+                  <p className="text-sm text-zinc-400 mb-4">{pack.description}</p>
 
                   <div className="space-y-2 mb-6">
                     {pack.items.map((item, itemIndex) => (
@@ -228,10 +232,12 @@ export function EducationHub() {
           </section>
 
           {/* Research Reports */}
-          <section className="mb-20">
+          <section className="mb-12">
             <div className="flex items-center justify-between mb-8">
-              <h2 className="text-3xl font-bold">Research Reports</h2>
-              <Button variant="outline">View Archive</Button>
+              <h2 className="text-3xl font-bold text-white">Research Reports</h2>
+              <Button variant="outline" className="border-zinc-700 text-zinc-300 hover:bg-zinc-800">
+                View Archive
+              </Button>
             </div>
 
             <div className="space-y-4">
@@ -243,15 +249,15 @@ export function EducationHub() {
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-xl font-bold">{report.title}</h3>
+                        <h3 className="text-xl font-bold text-white">{report.title}</h3>
                         {report.featured && (
                           <Badge className="bg-primary/20 text-primary border-primary/30">Featured</Badge>
                         )}
                       </div>
 
-                      <p className="text-muted-foreground mb-4">{report.description}</p>
+                      <p className="text-zinc-400 mb-4">{report.description}</p>
 
-                      <div className="flex items-center gap-6 text-sm text-muted-foreground">
+                      <div className="flex items-center gap-6 text-sm text-zinc-400">
                         <div className="flex items-center gap-1">
                           <FileText className="w-4 h-4" />
                           {report.pages} pages
@@ -275,16 +281,16 @@ export function EducationHub() {
           </section>
 
           {/* CTA Section */}
-          <section className="bg-gradient-to-r from-primary/5 via-accent/5 to-primary/5 border border-primary/10 rounded-2xl p-8 text-center">
-            <h3 className="text-2xl font-bold mb-4">Ready to Level Up?</h3>
-            <p className="text-muted-foreground mb-6 max-w-2xl mx-auto">
+          <section className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-8 text-center">
+            <h3 className="text-2xl font-bold text-white mb-4">Ready to Level Up?</h3>
+            <p className="text-zinc-400 mb-6 max-w-2xl mx-auto">
               Join Vault 7641 to access exclusive educational content, connect with experts, and accelerate your Web3
               learning journey.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Button
                 size="lg"
-                className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
+                className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700"
               >
                 Join Community
               </Button>
