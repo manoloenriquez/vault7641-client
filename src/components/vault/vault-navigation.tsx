@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Shield, Menu, X } from 'lucide-react'
 import Link from 'next/link'
+import Image from 'next/image'
 import { useAuth } from '@/components/auth/auth-guard'
 
 const scrollToSection = (sectionId: string) => {
@@ -42,8 +43,8 @@ export function VaultNavigation() {
       {/* Main Navigation */}
       <div className="fixed inset-x-0 top-8 z-40 bg-zinc-950/60 backdrop-blur border-b border-zinc-800/50">
         <div className="mx-auto max-w-7xl px-4 py-4 flex items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-cyan-500 rounded-full" />
+          <Link href="/" className="flex items-center gap-3">
+            <Image src="/Logo_transparent.png" alt="Vault 7641 Logo" width={32} height={32} className="w-8 h-8" />
             <span className="text-xl font-bold text-white">VAULT 7641</span>
           </Link>
 

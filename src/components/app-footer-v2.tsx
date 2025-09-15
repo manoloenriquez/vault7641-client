@@ -16,14 +16,6 @@ export function AppFooterV2() {
               investment, security, or deposit product. No profit-sharing, yield, or price promises. NFTs are
               non-refundable. Nothing here is financial advice.
             </p>
-            <div className="flex items-center gap-4">
-              <a href="#" className="text-cyan-400 hover:text-cyan-300 transition-colors text-sm">
-                🐦 Twitter
-              </a>
-              <a href="#" className="text-cyan-400 hover:text-cyan-300 transition-colors text-sm">
-                📊 Discord
-              </a>
-            </div>
           </div>
 
           {/* Official Links */}
@@ -31,19 +23,24 @@ export function AppFooterV2() {
             <h4 className="font-semibold mb-4 text-white">OFFICIAL</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/safety" className="text-zinc-400 hover:text-cyan-400 transition-colors">
-                  /safety
-                </Link>
+                <a
+                  href="https://x.com/Vault7641"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-zinc-400 hover:text-cyan-400 transition-colors"
+                >
+                  /x
+                </a>
               </li>
               <li>
-                <Link href="/status" className="text-zinc-400 hover:text-cyan-400 transition-colors">
-                  /status
-                </Link>
-              </li>
-              <li>
-                <Link href="/press" className="text-zinc-400 hover:text-cyan-400 transition-colors">
-                  /press
-                </Link>
+                <a
+                  href="https://www.facebook.com/vault7641"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-zinc-400 hover:text-cyan-400 transition-colors"
+                >
+                  /facebook
+                </a>
               </li>
             </ul>
           </div>
@@ -53,19 +50,24 @@ export function AppFooterV2() {
             <h4 className="font-semibold mb-4 text-white">LEGAL</h4>
             <ul className="space-y-2 text-sm">
               <li>
-                <Link href="/terms" className="text-zinc-400 hover:text-cyan-400 transition-colors">
+                <a
+                  href="/v7641 Terms of Service.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-zinc-400 hover:text-cyan-400 transition-colors"
+                >
                   /terms
-                </Link>
+                </a>
               </li>
               <li>
-                <Link href="/privacy" className="text-zinc-400 hover:text-cyan-400 transition-colors">
+                <a
+                  href="/v7641 Privacy Policy.pdf"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-zinc-400 hover:text-cyan-400 transition-colors"
+                >
                   /privacy
-                </Link>
-              </li>
-              <li>
-                <Link href="/disclaimer" className="text-zinc-400 hover:text-cyan-400 transition-colors">
-                  /disclaimer
-                </Link>
+                </a>
               </li>
             </ul>
           </div>

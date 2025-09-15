@@ -178,7 +178,7 @@ export function VaultLandingV3() {
               <div className="sticky top-32">
                 <div className="relative">
                   <Image
-                    src="/openart-dc8b91aaa5904448a36d3cccd0a12920_raw.png"
+                    src="/Cube_v2.png"
                     alt="Vault 7641 - Isometric view of different guild spaces with members collaborating"
                     width={800}
                     height={800}
@@ -253,8 +253,14 @@ export function VaultLandingV3() {
 
                 <CardContent>
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-zinc-800 rounded-xl flex items-center justify-center">
-                      <guild.icon className="w-5 h-5 text-white" />
+                    <div className="w-12 h-12 rounded-full overflow-hidden bg-zinc-800 flex items-center justify-center">
+                      <Image
+                        src={`/${guild.id.charAt(0).toUpperCase() + guild.id.slice(1)}_logo.jpg`}
+                        alt={`${guild.name} Logo`}
+                        width={48}
+                        height={48}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                     <h3 className="text-lg font-bold text-white">{guild.name}</h3>
                   </div>
@@ -292,8 +298,14 @@ export function VaultLandingV3() {
 
                 <CardContent>
                   <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-zinc-800 rounded-xl flex items-center justify-center">
-                      <guild.icon className="w-5 h-5 text-white" />
+                    <div className="w-12 h-12 rounded-full overflow-hidden bg-zinc-800 flex items-center justify-center">
+                      <Image
+                        src={`/${guild.id.charAt(0).toUpperCase() + guild.id.slice(1)}_logo.jpg`}
+                        alt={`${guild.name} Logo`}
+                        width={48}
+                        height={48}
+                        className="w-full h-full object-cover"
+                      />
                     </div>
                     <h3 className="text-lg font-bold text-white">{guild.name}</h3>
                   </div>
@@ -370,7 +382,7 @@ export function VaultLandingV3() {
           </div>
 
           {/* Partners */}
-          <div className="flex items-center gap-2 mb-8">
+          {/* <div className="flex items-center gap-2 mb-8">
             <div className="w-2 h-2 bg-green-500 rounded-full" />
             <span className="text-sm font-semibold text-green-500">PARTNERS & KOLS</span>
           </div>
@@ -383,7 +395,7 @@ export function VaultLandingV3() {
                 </CardContent>
               </Card>
             ))}
-          </div>
+          </div> */}
         </div>
       </div>
 
@@ -427,9 +439,8 @@ export function VaultLandingV3() {
       </div>
 
       {/* Status & Safety Section */}
-      <div id="status" className="py-4">
+      {/* <div id="status" className="py-4">
         <div className="mx-auto max-w-7xl px-4">
-          {/* Status */}
           <div className="flex items-center justify-between mb-8">
             <div className="flex items-center gap-2">
               <CheckCircle className="w-4 h-4 text-green-500" />
@@ -438,7 +449,6 @@ export function VaultLandingV3() {
             <button className="text-sm text-cyan-400 hover:text-cyan-300">JSON Feed</button>
           </div>
 
-          {/* Safety Center */}
           <Card className="bg-zinc-950/50 border-zinc-800">
             <CardContent>
               <h3 className="text-lg font-bold text-white mb-4">Safety Center</h3>
@@ -464,7 +474,7 @@ export function VaultLandingV3() {
             </CardContent>
           </Card>
         </div>
-      </div>
+      </div> */}
     </div>
   )
 }
