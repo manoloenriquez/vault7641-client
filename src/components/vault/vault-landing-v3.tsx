@@ -18,6 +18,7 @@ import {
   ChevronDown,
   ChevronUp,
   Wallet,
+  Target,
 } from 'lucide-react'
 
 export function VaultLandingV3() {
@@ -106,11 +107,26 @@ export function VaultLandingV3() {
   ]
 
   const faqs = [
-    { q: 'What is Vault 7641?', a: 'A curated Web3 community focused on education and real opportunities.' },
-    { q: 'How do I get on the whitelist?', a: 'Three paths: Progress WL, Community WL, or Safety WL.' },
-    { q: 'When is mint?', a: 'Date announced 7 days before. WL gets 48h priority access.' },
-    { q: 'What do holders unlock?', a: 'Guild access, educational content, jobs board, and rewards.' },
-    { q: 'Is this financial advice?', a: 'No. Membership collectible only. Not investment advice.' },
+    {
+      q: 'What is Vault 7641?',
+      a: "Vault 7641 is a utility-first Web3 community network led by the leaders of the Philippine Crypto Industry to help members learn, execute, and win across five tracks: Trader • Builder • Gamer • Farmer • Pathfinder (Careers). Inside you'll find our academy, daily briefs, insights, quests, courses, bounties, mentor clinics, and a reward system (XP) tied to real proof-of-work—not spam.",
+    },
+    {
+      q: 'What and when is Mint?',
+      a: 'Mint = our membership pass (on-chain) that unlocks holder-only perks and powers our entire system. Date/chain/price: TBA — all details will post in our channels. How it works? Open the official mint link (once available), connect your wallet, and mint from there.',
+    },
+    {
+      q: 'How do I get on the whitelist?',
+      a: 'Go to our Discord Server for the full rules and current routes. In short: Verify, choose a guild, and start doing quests. Complete starter quests or Academy Beginner Tracks for eligibility. Submit proof in.',
+    },
+    {
+      q: 'What do holders unlock?',
+      a: 'Holders gain full access to all Guild features, including: Vault Academy - Advanced Courses & Curriculum. Guild Holder-only channels & events. Priority access to certain bounties, mentorship seats, and partner allowlists. Exclusive quests with higher XP rewards and shop items. Givebacks, rewards, and grants. Early previews and feature betas. Recognition in leaderboards and spotlights tied to reputation.',
+    },
+    {
+      q: 'Is this financial advice?',
+      a: 'No. Everything here is educational. Nothing in this server is financial, investment, legal, or tax advice. Do your own research and only use official links. We never DM first and will never ask for seed phrases, private keys, or 2FA codes.',
+    },
   ]
 
   return (
@@ -122,7 +138,7 @@ export function VaultLandingV3() {
             {/* Main Content */}
             <div className="lg:col-span-2">
               <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30 mb-6 inline-flex items-center gap-2">
-                🚀 Pre-Mint • PH-first
+                🚀 Pre-Mint Phase
               </Badge>
 
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
@@ -145,36 +161,10 @@ export function VaultLandingV3() {
                   View Guilds
                 </Button>
               </div>
-
-              {/* Countdown */}
-              <div className="inline-block">
-                <div className="flex items-center gap-3 mb-6">
-                  <div className="w-6 h-6 bg-yellow-500 rounded-full flex items-center justify-center">
-                    <Clock className="w-4 h-4 text-yellow-900" />
-                  </div>
-                  <span className="text-lg font-semibold text-white">MINT WEEK COUNTDOWN</span>
-                </div>
-                <div className="grid grid-cols-4 gap-3">
-                  {[
-                    { label: 'DAYS', value: timeLeft.days },
-                    { label: 'HOURS', value: timeLeft.hours },
-                    { label: 'MIN', value: timeLeft.minutes },
-                    { label: 'SEC', value: timeLeft.seconds },
-                  ].map((item) => (
-                    <div
-                      key={item.label}
-                      className="bg-zinc-950/80 border border-zinc-700/50 rounded-2xl p-5 text-center min-w-[80px]"
-                    >
-                      <div className="text-2xl font-bold text-white mb-1">{item.value.toString().padStart(2, '0')}</div>
-                      <div className="text-xs text-white font-medium">{item.label}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
             </div>
 
             {/* Vault Illustration */}
-            <div className="lg:col-span-1">
+            {/* <div className="lg:col-span-1">
               <div className="sticky top-32">
                 <div className="relative">
                   <Image
@@ -187,49 +177,7 @@ export function VaultLandingV3() {
                   />
                 </div>
               </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* How It Works */}
-      <div id="how-it-works" className="py-4">
-        <div className="mx-auto max-w-7xl px-4">
-          <div className="flex items-center gap-2 mb-4">
-            <div className="w-2 h-2 bg-purple-500 rounded-full" />
-            <span className="text-sm font-semibold text-purple-500">HOW IT WORKS</span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            <Card className="bg-zinc-950/50 border-zinc-800">
-              <CardContent>
-                <div className="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center mb-4">
-                  <Wallet className="w-6 h-6 text-purple-400" />
-                </div>
-                <h3 className="text-lg font-bold text-white mb-3">Mint your Base Pass</h3>
-                <p className="text-sm text-zinc-400">Secure your spot for Season 1 and unlock member perks.</p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-zinc-950/50 border-zinc-800">
-              <CardContent>
-                <div className="w-12 h-12 bg-yellow-500/20 rounded-xl flex items-center justify-center mb-4">
-                  <Shield className="w-6 h-6 text-yellow-400" />
-                </div>
-                <h3 className="text-lg font-bold text-white mb-3">Choose your Guild</h3>
-                <p className="text-sm text-zinc-400">You have 72h to finalize. Claim your PFP and badge.</p>
-              </CardContent>
-            </Card>
-
-            <Card className="bg-zinc-950/50 border-zinc-800">
-              <CardContent>
-                <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center mb-4">
-                  <Users className="w-6 h-6 text-green-400" />
-                </div>
-                <h3 className="text-lg font-bold text-white mb-3">Verify & Start Quests</h3>
-                <p className="text-sm text-zinc-400">Join Discord, verify, then Learn → Check → Do.</p>
-              </CardContent>
-            </Card>
+            </div> */}
           </div>
         </div>
       </div>
@@ -334,8 +282,55 @@ export function VaultLandingV3() {
         </div>
       </div>
 
+      {/* How It Works */}
+      <div id="how-it-works" className="py-4">
+        <div className="mx-auto max-w-7xl px-4">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-2 h-2 bg-purple-500 rounded-full" />
+            <span className="text-sm font-semibold text-purple-500">HOW IT WORKS</span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <Card className="bg-zinc-950/50 border-zinc-800">
+              <CardContent>
+                <div className="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center mb-4">
+                  <Users className="w-6 h-6 text-purple-400" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-3">Real Help From Real Experts</h3>
+                <p className="text-sm text-zinc-400">
+                  Learn & Grow With Top Crypto Analysts & Traders on a daily basis. Enroll in our FREE Academy.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-zinc-950/50 border-zinc-800">
+              <CardContent>
+                <div className="w-12 h-12 bg-yellow-500/20 rounded-xl flex items-center justify-center mb-4">
+                  <Target className="w-6 h-6 text-yellow-400" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-3">Habits over hype</h3>
+                <p className="text-sm text-zinc-400">
+                  Built-in gamified system to keep you consistent. Proof of progress {`>`} Hype & Promises.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-zinc-950/50 border-zinc-800">
+              <CardContent>
+                <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center mb-4">
+                  <TrendingUp className="w-6 h-6 text-green-400" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-3">Turn Skills into Income</h3>
+                <p className="text-sm text-zinc-400">
+                  Get hired by a Web3 employer or go for bounties, gigs, and roles.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
       {/* Member Benefits */}
-      <div className="py-4">
+      {/* <div className="py-4">
         <div className="mx-auto max-w-7xl px-4">
           <div className="flex items-center gap-2 mb-4">
             <div className="w-2 h-2 bg-yellow-500 rounded-full" />
@@ -353,10 +348,10 @@ export function VaultLandingV3() {
             ))}
           </div>
         </div>
-      </div>
+      </div> */}
 
       {/* Season Roadmap */}
-      <div className="py-4">
+      <div id="roadmap" className="py-4">
         <div className="mx-auto max-w-7xl px-4">
           <div className="flex items-center gap-2 mb-4">
             <div className="w-2 h-2 bg-pink-500 rounded-full" />
