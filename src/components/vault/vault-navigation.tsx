@@ -44,7 +44,7 @@ export function VaultNavigation() {
       <div className="fixed inset-x-0 top-8 z-40 bg-zinc-950/60 backdrop-blur border-b border-zinc-800/50">
         <div className="mx-auto max-w-7xl px-4 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3">
-            <Image src="/Logo_full.png" alt="Vault 7641 Logo" width={120} height={40} className="h-10 w-auto" />
+            <Image src="/Logo_Full_nobg.png" alt="Vault 7641 Logo" width={120} height={40} className="h-10 w-auto" />
           </Link>
 
           <nav className="hidden md:flex items-center gap-6 text-sm">
@@ -60,14 +60,14 @@ export function VaultNavigation() {
             >
               How it Works
             </button>
-            <button onClick={() => scrollToSection('faq')} className="text-zinc-300 hover:text-white transition-colors">
-              FAQ
-            </button>
             <button
               onClick={() => scrollToSection('roadmap')}
               className="text-zinc-300 hover:text-white transition-colors"
             >
               Roadmap
+            </button>
+            <button onClick={() => scrollToSection('faq')} className="text-zinc-300 hover:text-white transition-colors">
+              FAQ
             </button>
           </nav>
 
@@ -106,15 +106,6 @@ export function VaultNavigation() {
             <div className="px-4 py-6 space-y-4">
               <button
                 onClick={() => {
-                  scrollToSection('how-it-works')
-                  setShowMobileMenu(false)
-                }}
-                className="block text-zinc-300 hover:text-white py-2 transition-colors w-full text-left"
-              >
-                How it Works
-              </button>
-              <button
-                onClick={() => {
                   scrollToSection('guilds')
                   setShowMobileMenu(false)
                 }}
@@ -124,13 +115,14 @@ export function VaultNavigation() {
               </button>
               <button
                 onClick={() => {
-                  scrollToSection('faq')
+                  scrollToSection('how-it-works')
                   setShowMobileMenu(false)
                 }}
                 className="block text-zinc-300 hover:text-white py-2 transition-colors w-full text-left"
               >
-                FAQ
+                How it Works
               </button>
+
               <button
                 onClick={() => {
                   scrollToSection('roadmap')
@@ -139,6 +131,15 @@ export function VaultNavigation() {
                 className="block text-zinc-300 hover:text-white py-2 transition-colors w-full text-left"
               >
                 Roadmap
+              </button>
+              <button
+                onClick={() => {
+                  scrollToSection('faq')
+                  setShowMobileMenu(false)
+                }}
+                className="block text-zinc-300 hover:text-white py-2 transition-colors w-full text-left"
+              >
+                FAQ
               </button>
               <div className="border-t border-zinc-800 pt-4 space-y-3">
                 {auth.hasNFT ? (

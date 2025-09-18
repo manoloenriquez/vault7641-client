@@ -1,108 +1,128 @@
 'use client'
 
-import { useState, useEffect } from 'react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
-import Image from 'next/image'
-import {
-  Shield,
-  Code,
-  TrendingUp,
-  Coins,
-  Gamepad2,
-  Briefcase,
-  Clock,
-  Users,
-  CheckCircle,
-  ChevronDown,
-  ChevronUp,
-  Wallet,
-  Target,
-} from 'lucide-react'
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
+import { GuildBenefitsPopover } from './guild-benefits-popover'
+import { GuildCard } from './guild-card'
+import { Users, Target, TrendingUp } from 'lucide-react'
+import { ExpertsCarousel } from './experts-carousel-v2'
+import { PartnersCarousel } from './partners-carousel-v2'
+
+const scrollToSection = (sectionId: string) => {
+  const element = document.getElementById(sectionId)
+  if (element) {
+    const offset = 120 // Account for fixed navbar height
+    const elementPosition = element.offsetTop - offset
+    window.scrollTo({
+      top: elementPosition,
+      behavior: 'smooth',
+    })
+  }
+}
 
 export function VaultLandingV3() {
-  const [timeLeft, setTimeLeft] = useState({
-    days: 10,
-    hours: 6,
-    minutes: 24,
-    seconds: 24,
-  })
-
-  const [openFAQ, setOpenFAQ] = useState<number | null>(null)
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => ({
-        ...prev,
-        seconds: prev.seconds > 0 ? prev.seconds - 1 : 59,
-      }))
-    }, 1000)
-    return () => clearInterval(timer)
-  }, [])
-
   const guilds = [
     {
       id: 'builder',
       name: 'Builder Guild',
       description:
-        'Developers, founders, no-code tinkerers, designers, and tech writers who turn ideas into real solutions.',
-      icon: Code,
-      gradient: 'from-purple-500 via-blue-500 to-cyan-500',
-      activities: ['Weekly build labs & reviews', 'Tool credits & starter kits', 'Ship logs & portfolio boosts'],
-      classTime: 'Open Class: Fri 8:00 PM PH',
+        'For Web3 engineers, designers, data researchers, automators, founders, product designers, anyone who builds & ships.',
+      gradient: 'from-yellow-300 via-yellow-500 to-yellow-800',
+      activities: [],
+      benefits: [
+        'Forum board',
+        'Build Logs',
+        'Code/Design Reviews',
+        'RFC (Request for Comments) lane',
+        'Advanced learning resources',
+        'Direct mentor & expert chats + AMAs',
+        'Partner perks',
+        'Live sessions + recaps',
+      ],
     },
     {
       id: 'trader',
       name: 'Trader Guild',
       description:
-        'Process-first traders and long-term holders focused on strategy, discipline, and top-tier opportunities.',
-      icon: TrendingUp,
+        'For new and experienced traders & investors who want structured, real market insights, clear setups & opportunities, and a supportive circle led by Licensed Financial/Investment Analysts, Certified Technical Analysts, and full-time traders.',
       gradient: 'from-pink-500 via-orange-500 to-yellow-500',
-      activities: ['Playbooks for entries/exits', 'Risk & journaling systems', 'Weekly market rooms'],
-      classTime: 'Open Class: Wed 9:30 PM PH',
+      activities: [],
+      benefits: [
+        'Exclusive Market Insights & Signals',
+        'Actionable Trade Setups',
+        'Market Watch & News',
+        'On-Chain Data & Reports',
+        'Community Coaching & Feedback',
+        'Market Outlook Newsletters',
+        'Whale Watch',
+        'Private Research',
+        'Track the Projects Our Experts Are Actively Monitoring',
+        'Path To Mentorship Program',
+        'Self-Paced Advanced Courses & Quizzes',
+        'Discussion Rooms with Veteran Traders & Licensed Analysts',
+        'Tool Grants',
+      ],
     },
     {
       id: 'farmer',
       name: 'Farmer Guild',
-      description: 'DeFi & airdrop farmers who run bridges, staking, LPs, testnets—safely and consistently.',
-      icon: Coins,
+      description: 'For DeFi participants, airdrop hunters, points farmers, and yield strategists.',
       gradient: 'from-cyan-500 via-teal-500 to-green-500',
-      activities: ['DeFi checklists & trackers', 'Airdrop calendars', "Security do's & don'ts"],
-      classTime: 'Open Class: Tue 8:00 PM PH',
+      activities: [],
+      benefits: [
+        'Alerts & Routes',
+        'Walkthroughs',
+        'Points Meta',
+        'Risk Desk',
+        'Cohorts',
+        'Advanced resources',
+        'Mentor rooms with seasoned farmers',
+        'Access exclusive guild chat',
+        'Exclusive updates & tips + safety PSAs',
+        'Partner perks where aligned',
+      ],
     },
     {
       id: 'gamer',
       name: 'Gamer Guild',
-      description: 'Competitive P2E players & NFT collectors who analyze metas and curate winning collections.',
-      icon: Gamepad2,
+      description: 'For P2E gamers, NFT collectors, flippers, and enjoyers of game economies.',
       gradient: 'from-purple-500 via-pink-500 to-rose-500',
-      activities: ['Meta reports & tier lists', 'Team scrims & VOD reviews', 'Drop radar & tips'],
-      classTime: 'Open Class: Sat 4:00 PM PH',
+      activities: [],
+      benefits: [
+        'Mints Today & Exclusive Alpha',
+        'Game Nights & Playtests',
+        'Flip Desk',
+        'Economy Watch',
+        'Creator Corner',
+        'Advanced resources',
+        'Mentor rooms with creators and experts',
+        'Access exclusive guild chat',
+        'WL/raffle routes with partners when available',
+      ],
     },
     {
       id: 'pathfinder',
       name: 'Pathfinder Guild',
-      description: 'Web3 jobseekers & bounty hunters mapping routes to paid work—research, portfolios, clear pitches.',
-      icon: Briefcase,
-      gradient: 'from-indigo-500 via-purple-500 to-pink-500',
-      activities: ['CV/portfolio clinics', 'Job & bounty board', 'Interview preps'],
-      classTime: 'Open Class: Sun 7:00 PM PH',
-    },
-  ]
-
-  const benefits = [
-    { title: 'Expert-led Guilds', description: 'Trusted mentors, small group sessions, and practical playbooks.' },
-    { title: 'Progress & Rewards', description: 'Quests, XP, streaks, leaderboards, and weekly givebacks.' },
-    { title: 'Jobs & Bounties', description: 'A curated jobs board and paid tasks for proven members.' },
-  ]
-
-  const roadmap = [
-    { title: 'Kickoff → Foundations', items: ['Mint & Guild Claim', 'AMAs, pilot givebacks', 'Level-Up system'] },
-    { title: 'Habits → Proof', items: ['Peer pods & buddy system', 'Quarterly progress report', 'Partner drops'] },
-    {
-      title: 'Scale → Jobs',
-      items: ['Mentor bootcamps', 'Inter-Guild Cup & Bounty Marathon', 'Legendary Unlock Week, Grants Day'],
+      description:
+        'For Marketers, CMs, devs, analysts, designers, students, unemployed, and professionals who want Web3 careers, paid tasks/bounties, and resume-worthy credentials.',
+      gradient: 'from-cyan-600 via-teal-400 to-cyan-500',
+      activities: [],
+      benefits: [
+        'Curated Job Board',
+        'Bounties & Paid Tasks',
+        'Application Sprints',
+        'Résumé/CV & Portfolio Reviews',
+        'Mock Interviews',
+        'Referral Network',
+        'Proof-of-Work Threads',
+        'Opportunity Radar',
+        'Advanced resources',
+        'Access exclusive guild chat',
+        'Partner perks: course discounts, ATS/tool credits, event passes',
+        'Early listings & "heads-up" drops',
+      ],
     },
   ]
 
@@ -151,12 +171,18 @@ export function VaultLandingV3() {
               </p>
 
               <div className="flex flex-wrap gap-4 mb-8">
-                <Button className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105">
-                  Join Discord
+                <Button
+                  className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
+                  asChild
+                >
+                  <a href="https://discord.gg/vault7641" target="_blank" rel="noopener noreferrer">
+                    Join Discord
+                  </a>
                 </Button>
                 <Button
                   variant="outline"
                   className="border-zinc-700 text-zinc-300 hover:bg-zinc-800 px-8 py-3 rounded-xl font-semibold"
+                  onClick={() => scrollToSection('guilds')}
                 >
                   View Guilds
                 </Button>
@@ -193,90 +219,14 @@ export function VaultLandingV3() {
           {/* First Row - 3 Guilds */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
             {guilds.slice(0, 3).map((guild) => (
-              <Card
-                key={guild.id}
-                className="bg-zinc-950/50 border-zinc-800 group relative overflow-hidden hover:scale-105 transition-all cursor-pointer"
-              >
-                <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${guild.gradient}`} />
-
-                <CardContent>
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 rounded-full overflow-hidden bg-zinc-800 flex items-center justify-center">
-                      <Image
-                        src={`/${guild.id.charAt(0).toUpperCase() + guild.id.slice(1)}_logo.jpg`}
-                        alt={`${guild.name} Logo`}
-                        width={48}
-                        height={48}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <h3 className="text-lg font-bold text-white">{guild.name}</h3>
-                  </div>
-
-                  <p className="text-sm text-zinc-400 mb-6 leading-relaxed">{guild.description}</p>
-
-                  <div className="space-y-2 mb-6">
-                    {guild.activities.map((activity, index) => (
-                      <div key={index} className="flex items-center text-sm">
-                        <div className="w-1 h-1 bg-white rounded-full mr-3 flex-shrink-0" />
-                        <span className="text-zinc-300">{activity}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="space-y-3">
-                    <button className="w-full text-left text-sm text-cyan-400 hover:text-cyan-300">
-                      Preview quest →
-                    </button>
-                    <div className="text-xs text-zinc-500">{guild.classTime}</div>
-                  </div>
-                </CardContent>
-              </Card>
+              <GuildCard key={guild.id} {...guild} />
             ))}
           </div>
 
           {/* Second Row - 2 Guilds */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
             {guilds.slice(3, 5).map((guild) => (
-              <Card
-                key={guild.id}
-                className="bg-zinc-950/50 border-zinc-800 group relative overflow-hidden hover:scale-105 transition-all cursor-pointer"
-              >
-                <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${guild.gradient}`} />
-
-                <CardContent>
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-12 h-12 rounded-full overflow-hidden bg-zinc-800 flex items-center justify-center">
-                      <Image
-                        src={`/${guild.id.charAt(0).toUpperCase() + guild.id.slice(1)}_logo.jpg`}
-                        alt={`${guild.name} Logo`}
-                        width={48}
-                        height={48}
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <h3 className="text-lg font-bold text-white">{guild.name}</h3>
-                  </div>
-
-                  <p className="text-sm text-zinc-400 mb-6 leading-relaxed">{guild.description}</p>
-
-                  <div className="space-y-2 mb-6">
-                    {guild.activities.map((activity, index) => (
-                      <div key={index} className="flex items-center text-sm">
-                        <div className="w-1 h-1 bg-white rounded-full mr-3 flex-shrink-0" />
-                        <span className="text-zinc-300">{activity}</span>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="space-y-3">
-                    <button className="w-full text-left text-sm text-cyan-400 hover:text-cyan-300">
-                      Preview quest →
-                    </button>
-                    <div className="text-xs text-zinc-500">{guild.classTime}</div>
-                  </div>
-                </CardContent>
-              </Card>
+              <GuildCard key={guild.id} {...guild} />
             ))}
           </div>
         </div>
@@ -296,7 +246,7 @@ export function VaultLandingV3() {
                 <div className="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center mb-4">
                   <Users className="w-6 h-6 text-purple-400" />
                 </div>
-                <h3 className="text-lg font-bold text-white mb-3">Real Help From Real Experts</h3>
+                <h3 className="text-lg font-bold text-white mb-3">Real Help from Real Experts</h3>
                 <p className="text-sm text-zinc-400">
                   Learn & Grow With Top Crypto Analysts & Traders on a daily basis. Enroll in our FREE Academy.
                 </p>
@@ -329,6 +279,13 @@ export function VaultLandingV3() {
           </div>
         </div>
       </div>
+
+      {/* Experts Carousel */}
+      <ExpertsCarousel />
+
+      {/* Partners Carousel */}
+      <PartnersCarousel />
+
       {/* Member Benefits */}
       {/* <div className="py-4">
         <div className="mx-auto max-w-7xl px-4">
@@ -351,84 +308,72 @@ export function VaultLandingV3() {
       </div> */}
 
       {/* Season Roadmap */}
-      <div id="roadmap" className="py-4">
-        <div className="mx-auto max-w-7xl px-4">
-          <div className="flex items-center gap-2 mb-4">
+      {/* <div id="roadmap" className="py-4">
+        <div className="mx-auto max-w-3xl px-4">
+          <div className="flex items-center gap-2 mb-8">
             <div className="w-2 h-2 bg-pink-500 rounded-full" />
             <span className="text-sm font-semibold text-pink-500">SEASON ROADMAP (S1)</span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
+          <div className="space-y-8">
             {roadmap.map((phase, index) => (
-              <Card key={index} className="bg-zinc-950/50 border-zinc-800">
-                <CardContent>
-                  <h3 className="text-lg font-bold text-white mb-4">{phase.title}</h3>
-                  <div className="space-y-2">
-                    {phase.items.map((item, itemIndex) => (
-                      <div key={itemIndex} className="flex items-center text-sm">
-                        <div className="w-1 h-1 bg-white rounded-full mr-3 flex-shrink-0" />
-                        <span className="text-zinc-400">{item}</span>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
+              <div
+                key={index}
+                className="relative pl-8 before:absolute before:left-2 before:top-3 before:h-[calc(100%-12px)] before:w-[1px] before:bg-zinc-800 last:before:hidden"
+              >
+                <div className="absolute left-0 top-3 h-4 w-4 rounded-full border border-zinc-800 bg-zinc-950"></div>
+                <Card className="bg-zinc-950/50 border-zinc-800">
+                  <CardContent>
+                    <Accordion type="single" collapsible className="w-full">
+                      <AccordionItem value={`phase-${index}`} className="border-none">
+                        <AccordionTrigger className="text-lg font-bold text-white hover:no-underline">
+                          {phase.title}
+                        </AccordionTrigger>
+                        <AccordionContent>
+                          <div className="space-y-2">
+                            {phase.items.map((item, itemIndex) => (
+                              <div key={itemIndex} className="flex items-center text-sm">
+                                <div className="w-1 h-1 bg-white rounded-full mr-3 flex-shrink-0" />
+                                <span className="text-zinc-400">{item}</span>
+                              </div>
+                            ))}
+                          </div>
+                        </AccordionContent>
+                      </AccordionItem>
+                    </Accordion>
+                  </CardContent>
+                </Card>
+              </div>
             ))}
           </div>
-
-          {/* Partners */}
-          {/* <div className="flex items-center gap-2 mb-8">
-            <div className="w-2 h-2 bg-green-500 rounded-full" />
-            <span className="text-sm font-semibold text-green-500">PARTNERS & KOLS</span>
-          </div>
-
-          <div className="grid grid-cols-3 md:grid-cols-6 gap-4">
-            {Array.from({ length: 12 }, (_, i) => (
-              <Card key={i} className="bg-zinc-950/50 border-zinc-800 aspect-square">
-                <CardContent className="p-4 flex items-center justify-center h-full">
-                  <span className="text-xs font-semibold text-zinc-500">Logo {i + 1}</span>
-                </CardContent>
-              </Card>
-            ))}
-          </div> */}
         </div>
-      </div>
+      </div> */}
 
       {/* FAQ */}
       <div id="faq" className="py-4">
         <div className="mx-auto max-w-7xl px-4">
-          <div className="flex items-center gap-2 mb-4">
+          <div className="flex items-center gap-2 mb-8">
             <div className="w-2 h-2 bg-yellow-500 rounded-full" />
             <span className="text-sm font-semibold text-yellow-500">FAQ</span>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-5xl mx-auto">
-            {faqs.map((faq, index) => {
-              const isOpen = openFAQ === index
-              return (
-                <Card key={index} className="bg-zinc-950/50 border-zinc-800 overflow-hidden ">
-                  <button
-                    className="w-full text-left flex items-center justify-between hover:bg-zinc-800/50 transition-colors"
-                    onClick={() => setOpenFAQ(isOpen ? null : index)}
-                  >
-                    <span className="font-semibold text-white pr-4">{faq.q}</span>
-                    {isOpen ? (
-                      <ChevronUp className="w-4 h-4 text-zinc-400 flex-shrink-0" />
-                    ) : (
-                      <ChevronDown className="w-4 h-4 text-zinc-400 flex-shrink-0" />
-                    )}
-                  </button>
-
-                  {isOpen && (
-                    <div className="px-6 pb-6">
-                      <div className="border-t border-zinc-800 pt-4">
-                        <p className="text-sm text-zinc-400 leading-relaxed">{faq.a}</p>
-                      </div>
-                    </div>
-                  )}
-                </Card>
-              )
-            })}
+            {faqs.map((faq, index) => (
+              <Card key={index} className="bg-zinc-950/50 border-zinc-800">
+                <CardContent className="p-0">
+                  <Accordion type="single" collapsible className="w-full">
+                    <AccordionItem value={`faq-${index}`} className="border-none">
+                      <AccordionTrigger className="px-6 py-4 text-base font-semibold text-white hover:no-underline hover:bg-zinc-800/50">
+                        {faq.q}
+                      </AccordionTrigger>
+                      <AccordionContent className="px-6 pb-6 text-sm text-zinc-400">
+                        <div className="border-t border-zinc-800 pt-4">{faq.a}</div>
+                      </AccordionContent>
+                    </AccordionItem>
+                  </Accordion>
+                </CardContent>
+              </Card>
+            ))}
           </div>
         </div>
       </div>
