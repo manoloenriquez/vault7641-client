@@ -15,10 +15,10 @@ interface GuildCardProps {
 
 export function GuildCard({ id, name, description, gradient, activities, benefits }: GuildCardProps) {
   return (
-    <Card className="bg-zinc-950/50 border-zinc-800 group relative overflow-hidden hover:scale-105 transition-all">
+    <Card className="bg-zinc-950/50 border-zinc-800 group relative overflow-hidden hover:scale-105 transition-all flex flex-col h-full">
       <div className={`absolute inset-x-0 top-0 h-1 bg-gradient-to-r ${gradient}`} />
 
-      <CardContent>
+      <CardContent className="flex-1 flex flex-col">
         <div className="flex items-center gap-3 mb-4">
           <div className="w-12 h-12 rounded-full overflow-hidden bg-zinc-800 flex items-center justify-center">
             <Image
@@ -34,7 +34,7 @@ export function GuildCard({ id, name, description, gradient, activities, benefit
 
         <p className="text-sm text-zinc-400 mb-6 leading-relaxed">{description}</p>
 
-        <div className="space-y-2 mb-6">
+        <div className="space-y-2 flex-1">
           {activities.map((activity, index) => (
             <div key={index} className="flex items-center text-sm">
               <div className="w-1 h-1 bg-white rounded-full mr-3 flex-shrink-0" />
@@ -43,7 +43,7 @@ export function GuildCard({ id, name, description, gradient, activities, benefit
           ))}
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-3 pt-4 border-t border-zinc-800/50">
           <GuildBenefitsPopover benefits={benefits} />
           <a
             href="https://discord.gg/vault7641"

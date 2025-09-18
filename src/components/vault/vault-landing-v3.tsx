@@ -46,8 +46,8 @@ export function VaultLandingV3() {
       id: 'trader',
       name: 'Trader Guild',
       description:
-        'For new and experienced traders & investors who want structured, real market insights, clear setups & opportunities, and a supportive circle led by Licensed Financial/Investment Analysts, Certified Technical Analysts, and full-time traders.',
-      gradient: 'from-pink-500 via-orange-500 to-yellow-500',
+        'For new and experienced traders & investors who want structured, real market insights, clear setups & opportunities, and a supportive circle led by Licensed Financial/Investment Analysts, Certified Technical Analysts, and Full-time Traders.',
+      gradient: 'from-orange-400 via-orange-600 to-red-700',
       activities: [],
       benefits: [
         'Exclusive Market Insights & Signals',
@@ -69,7 +69,7 @@ export function VaultLandingV3() {
       id: 'farmer',
       name: 'Farmer Guild',
       description: 'For DeFi participants, airdrop hunters, points farmers, and yield strategists.',
-      gradient: 'from-cyan-500 via-teal-500 to-green-500',
+      gradient: 'from-lime-600 via-green-900 to-green-600',
       activities: [],
       benefits: [
         'Alerts & Routes',
@@ -88,7 +88,7 @@ export function VaultLandingV3() {
       id: 'gamer',
       name: 'Gamer Guild',
       description: 'For P2E gamers, NFT collectors, flippers, and enjoyers of game economies.',
-      gradient: 'from-purple-500 via-pink-500 to-rose-500',
+      gradient: 'from-fuchsia-600 via-violet-900 to-fuchsia-900',
       activities: [],
       benefits: [
         'Mints Today & Exclusive Alpha',
@@ -122,6 +122,53 @@ export function VaultLandingV3() {
         'Access exclusive guild chat',
         'Partner perks: course discounts, ATS/tool credits, event passes',
         'Early listings & "heads-up" drops',
+      ],
+    },
+  ]
+
+  const roadmap = [
+    {
+      title: 'Phase 1: Genesis → Foundations',
+      items: [
+        'Mint & Guild Access Pass Distribution',
+        'Guild Hub Launch & Core Systems',
+        'Onboarding Flow & Quest System',
+        'Academy Beta Access',
+        'Exclusive AMA Series with Guild Experts',
+        'Initial Partner Perks & Whitelists',
+      ],
+    },
+    {
+      title: 'Phase 2: Growth → Community',
+      items: [
+        'Guild XP & Reputation System',
+        'Advanced Course Library Release',
+        'Inter-Guild Challenges & Events',
+        'Partner Network Expansion',
+        'Weekly Mentor Clinics & Reviews',
+        'Community Task Board Launch',
+      ],
+    },
+    {
+      title: 'Phase 3: Scale → Rewards',
+      items: [
+        'Guild Achievement Badges & Ranks',
+        'Expert Masterclass Series',
+        'Guild Rewards Shop Launch',
+        'Premium Tools & Resource Access',
+        'Cross-Guild Collaboration Program',
+        'Talent Pool & Jobs Network',
+      ],
+    },
+    {
+      title: 'Phase 4: Evolve → Ecosystem',
+      items: [
+        'Advanced Analytics Dashboard',
+        'Guild Governance System',
+        'Community-Led Initiatives Fund',
+        'Partner Integration Platform',
+        'Advanced Mentorship Programs',
+        'Regional Hub Expansion',
       ],
     },
   ]
@@ -162,7 +209,7 @@ export function VaultLandingV3() {
               </Badge>
 
               <h1 className="text-5xl md:text-6xl lg:text-7xl font-bold mb-6 leading-tight">
-                <span className="text-white">Your crypto homebase in the </span>
+                <span className="text-white">Your Crypto Homebase in the </span>
                 <span className="text-white">Philippines.</span>
               </h1>
 
@@ -208,6 +255,54 @@ export function VaultLandingV3() {
         </div>
       </div>
 
+      {/* Level Up */}
+      <div id="level-up" className="py-4">
+        <div className="mx-auto max-w-7xl px-4">
+          <div className="flex items-center gap-2 mb-4">
+            <div className="w-2 h-2 bg-purple-500 rounded-full" />
+            <span className="text-sm font-semibold text-purple-500">LEVEL UP</span>
+          </div>
+
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+            <Card className="bg-zinc-950/50 border-zinc-800">
+              <CardContent>
+                <div className="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center mb-4">
+                  <Users className="w-6 h-6 text-purple-400" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-3">Real Help From Real Experts</h3>
+                <p className="text-sm text-zinc-400">
+                  Learn & Grow with Top Crypto Analysts & Traders on a daily basis. Enroll in our FREE Academy.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-zinc-950/50 border-zinc-800">
+              <CardContent>
+                <div className="w-12 h-12 bg-yellow-500/20 rounded-xl flex items-center justify-center mb-4">
+                  <Target className="w-6 h-6 text-yellow-400" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-3">Habits over hype</h3>
+                <p className="text-sm text-zinc-400">
+                  Built-in gamified system to keep you consistent. Proof of progress {`>`} Hype & Promises.
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-zinc-950/50 border-zinc-800">
+              <CardContent>
+                <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center mb-4">
+                  <TrendingUp className="w-6 h-6 text-green-400" />
+                </div>
+                <h3 className="text-lg font-bold text-white mb-3">Turn Skills into Income</h3>
+                <p className="text-sm text-zinc-400">
+                  Get hired by a Web3 employer or go for bounties, gigs, and roles.
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+
       {/* Guilds Section */}
       <div id="guilds" className="py-4">
         <div className="mx-auto max-w-7xl px-4">
@@ -240,40 +335,101 @@ export function VaultLandingV3() {
             <span className="text-sm font-semibold text-purple-500">HOW IT WORKS</span>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <div className="max-w-3xl mx-auto space-y-4">
             <Card className="bg-zinc-950/50 border-zinc-800">
-              <CardContent>
-                <div className="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center mb-4">
-                  <Users className="w-6 h-6 text-purple-400" />
-                </div>
-                <h3 className="text-lg font-bold text-white mb-3">Real Help from Real Experts</h3>
-                <p className="text-sm text-zinc-400">
-                  Learn & Grow With Top Crypto Analysts & Traders on a daily basis. Enroll in our FREE Academy.
-                </p>
+              <CardContent className="p-0">
+                <Accordion type="single" collapsible className="w-full">
+                  <AccordionItem value="step-1" className="border-none">
+                    <AccordionTrigger className="px-6 py-4 text-lg font-semibold text-white hover:no-underline hover:bg-zinc-800/50 group">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-xl font-bold text-white border-2 border-purple-400/20">
+                          1
+                        </div>
+                        <div className="text-left">
+                          <h3 className="text-lg font-bold text-white">Mint a Pass</h3>
+                          <p className="text-sm text-zinc-400 font-normal">
+                            Your Pass is a digital membership card to the Vault.
+                          </p>
+                        </div>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-6 pb-6">
+                      <div className="pl-16">
+                        <p className="text-sm text-zinc-400 mb-4">
+                          &ldquo;Minting&rdquo; means creating your own copy of the pass on the blockchain. You keep it
+                          in your crypto wallet. The Pass unlocks access to our Guilds, exclusive channels, classes,
+                          resources, quests, and perks. It&apos;s an access collectible, not an investment.
+                        </p>
+                        <p className="text-xs text-zinc-500">
+                          Need help? Open a help ticket in our Discord or email support@vault7641.com
+                        </p>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
               </CardContent>
             </Card>
 
             <Card className="bg-zinc-950/50 border-zinc-800">
-              <CardContent>
-                <div className="w-12 h-12 bg-yellow-500/20 rounded-xl flex items-center justify-center mb-4">
-                  <Target className="w-6 h-6 text-yellow-400" />
-                </div>
-                <h3 className="text-lg font-bold text-white mb-3">Habits over hype</h3>
-                <p className="text-sm text-zinc-400">
-                  Built-in gamified system to keep you consistent. Proof of progress {`>`} Hype & Promises.
-                </p>
+              <CardContent className="p-0">
+                <Accordion type="single" collapsible className="w-full">
+                  <AccordionItem value="step-2" className="border-none">
+                    <AccordionTrigger className="px-6 py-4 text-lg font-semibold text-white hover:no-underline hover:bg-zinc-800/50 group">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-full flex items-center justify-center text-xl font-bold text-white border-2 border-yellow-400/20">
+                          2
+                        </div>
+                        <div className="text-left">
+                          <h3 className="text-lg font-bold text-white">Choose a Guild</h3>
+                          <p className="text-sm text-zinc-400 font-normal">Pick the path that fits your goals.</p>
+                        </div>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-6 pb-6">
+                      <div className="pl-16">
+                        <p className="text-sm text-zinc-400 mb-4">
+                          You can preview each Guild in Discord before you decide. 1 Pass = 1 Guild of choice.
+                        </p>
+                        <p className="text-xs text-zinc-500">
+                          Need help? Open a help ticket in our Discord or email support@vault7641.com
+                        </p>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
               </CardContent>
             </Card>
 
             <Card className="bg-zinc-950/50 border-zinc-800">
-              <CardContent>
-                <div className="w-12 h-12 bg-green-500/20 rounded-xl flex items-center justify-center mb-4">
-                  <TrendingUp className="w-6 h-6 text-green-400" />
-                </div>
-                <h3 className="text-lg font-bold text-white mb-3">Turn Skills into Income</h3>
-                <p className="text-sm text-zinc-400">
-                  Get hired by a Web3 employer or go for bounties, gigs, and roles.
-                </p>
+              <CardContent className="p-0">
+                <Accordion type="single" collapsible className="w-full">
+                  <AccordionItem value="step-3" className="border-none">
+                    <AccordionTrigger className="px-6 py-4 text-lg font-semibold text-white hover:no-underline hover:bg-zinc-800/50 group">
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center text-xl font-bold text-white border-2 border-green-400/20">
+                          3
+                        </div>
+                        <div className="text-left">
+                          <h3 className="text-lg font-bold text-white">Learn, Earn, and Grow</h3>
+                          <p className="text-sm text-zinc-400 font-normal">
+                            Follow our proven Learn → Check → Do framework.
+                          </p>
+                        </div>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="px-6 pb-6">
+                      <div className="pl-16">
+                        <p className="text-sm text-zinc-400 mb-4">
+                          Learn from short lessons & quizzes, practical quests (Learn → Check → Do), weekly open
+                          classes, and join peer pods.
+                        </p>
+                        <p className="text-xs text-zinc-500">
+                          Need help? Open a help ticket in our Discord or email support@vault7641.com
+                        </p>
+                      </div>
+                    </AccordionContent>
+                  </AccordionItem>
+                </Accordion>
               </CardContent>
             </Card>
           </div>
@@ -308,46 +464,69 @@ export function VaultLandingV3() {
       </div> */}
 
       {/* Season Roadmap */}
-      {/* <div id="roadmap" className="py-4">
-        <div className="mx-auto max-w-3xl px-4">
+      <div id="roadmap" className="py-4">
+        <div className="mx-auto max-w-7xl px-4">
           <div className="flex items-center gap-2 mb-8">
             <div className="w-2 h-2 bg-pink-500 rounded-full" />
-            <span className="text-sm font-semibold text-pink-500">SEASON ROADMAP (S1)</span>
+            <span className="text-sm font-semibold text-pink-500">ROADMAP</span>
           </div>
 
-          <div className="space-y-8">
-            {roadmap.map((phase, index) => (
-              <div
-                key={index}
-                className="relative pl-8 before:absolute before:left-2 before:top-3 before:h-[calc(100%-12px)] before:w-[1px] before:bg-zinc-800 last:before:hidden"
-              >
-                <div className="absolute left-0 top-3 h-4 w-4 rounded-full border border-zinc-800 bg-zinc-950"></div>
-                <Card className="bg-zinc-950/50 border-zinc-800">
-                  <CardContent>
-                    <Accordion type="single" collapsible className="w-full">
-                      <AccordionItem value={`phase-${index}`} className="border-none">
-                        <AccordionTrigger className="text-lg font-bold text-white hover:no-underline">
-                          {phase.title}
-                        </AccordionTrigger>
-                        <AccordionContent>
+          <div className="relative min-h-[700px]">
+            <div className="absolute left-0 top-[50%] w-24 h-[2px] bg-gradient-to-r from-zinc-950 to-transparent z-30" />
+            <div className="absolute right-0 top-[50%] w-24 h-[2px] bg-gradient-to-l from-zinc-950 to-transparent z-30" />
+
+            <div className="overflow-x-auto pb-4 hide-scrollbar">
+              <div className="relative flex gap-6 min-w-max px-4 pt-[300px]">
+                {/* Timeline line */}
+                <div className="absolute top-[50%] left-0 right-0 h-[2px] bg-gradient-to-r from-pink-500/50 via-purple-500/50 to-pink-500/50" />
+
+                {roadmap.map((phase, index) => (
+                  <div key={index} className="relative w-[300px]">
+                    {/* Timeline dot with pulse effect */}
+                    <div className="absolute left-1/2 top-[50%] -translate-x-1/2 -translate-y-1/2 z-20">
+                      <div className="w-3 h-3 rounded-full bg-pink-500 ring-2 ring-pink-500/20 ring-offset-2 ring-offset-zinc-950" />
+                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-pink-500/20 animate-ping" />
+                    </div>
+
+                    {/* Card */}
+                    <div className={`relative ${index % 2 === 0 ? 'mt-14' : '-mt-[280px]'}`}>
+                      {/* Connecting line */}
+                      <div
+                        className={`absolute left-1/2 -translate-x-1/2 ${
+                          index % 2 === 0 ? 'top-0 translate-y-[-100%]' : 'bottom-0 translate-y-[100%]'
+                        } w-[2px] h-[56px] bg-gradient-to-b ${
+                          index % 2 === 0 ? 'from-transparent to-pink-500/50' : 'from-pink-500/50 to-transparent'
+                        }`}
+                      />
+
+                      <Card className="bg-zinc-950/50 border-zinc-800/50 backdrop-blur-sm">
+                        <CardContent>
+                          <div className="mb-4 flex items-center gap-4">
+                            <div className="w-10 h-10 rounded-full border border-pink-500/30 bg-pink-500/10 flex items-center justify-center text-lg font-bold text-pink-400">
+                              {index + 1}
+                            </div>
+                            <h3 className="text-lg font-bold text-white">{phase.title}</h3>
+                          </div>
                           <div className="space-y-2">
                             {phase.items.map((item, itemIndex) => (
-                              <div key={itemIndex} className="flex items-center text-sm">
-                                <div className="w-1 h-1 bg-white rounded-full mr-3 flex-shrink-0" />
-                                <span className="text-zinc-400">{item}</span>
+                              <div key={itemIndex} className="flex items-center text-sm group">
+                                <div className="w-1 h-1 bg-pink-500/50 rounded-full mr-3 flex-shrink-0 group-hover:bg-pink-400 transition-colors" />
+                                <span className="text-zinc-400 group-hover:text-zinc-300 transition-colors">
+                                  {item}
+                                </span>
                               </div>
                             ))}
                           </div>
-                        </AccordionContent>
-                      </AccordionItem>
-                    </Accordion>
-                  </CardContent>
-                </Card>
+                        </CardContent>
+                      </Card>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            </div>
           </div>
         </div>
-      </div> */}
+      </div>
 
       {/* FAQ */}
       <div id="faq" className="py-4">

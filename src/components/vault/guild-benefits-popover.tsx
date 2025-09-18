@@ -11,8 +11,8 @@ export function GuildBenefitsPopover({ benefits }: GuildBenefitsPopoverProps) {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <button className="w-full text-left text-sm text-cyan-400 hover:text-cyan-300 flex items-center justify-between relative z-10">
-          <span>View Benefits</span>
+        <button className="w-full text-left text-sm text-white hover:text-zinc-400 flex items-center justify-between relative z-10">
+          <span>View Benefit</span>
           <ChevronDown className="w-4 h-4" />
         </button>
       </PopoverTrigger>

@@ -40,6 +40,14 @@ const mockExperts: Expert[] = [
     specialties: ['Cryptocurrency Trading', 'Forex Trading', 'Market Analysis'],
     image: '/experts/BitJom.jpg',
   },
+  {
+    id: '4',
+    name: 'Gasul Gaming',
+    role: 'Web3 Content Creator',
+    credentials: ['Web3 Content Creator & Streamer', 'Gamer', 'KOL'],
+    specialties: ['Gaming Content', 'Web3 Gaming', 'Content Creation'],
+    image: '/experts/gasul.jpeg',
+  },
 ]
 
 export function ExpertsCarousel() {
@@ -97,14 +105,21 @@ export function ExpertsCarousel() {
 
                     <div>
                       <h3 className="text-lg font-bold mb-1">{expert.name}</h3>
-                      <p className="text-yellow-500 font-medium text-sm mb-2">{expert.role}</p>
+                      {/* <p className="text-zinc-400 font-medium text-sm mb-2">{expert.role}</p> */}
 
                       <div className="space-y-2">
-                        <ul className="text-xs text-zinc-400">
+                        {/* <ul className="text-sm font-medium text-zinc-400">
                           {expert.credentials.map((credential, index) => (
                             <li key={index}>{credential}</li>
                           ))}
-                        </ul>
+                        </ul> */}
+                        <div className="text-sm font-medium text-zinc-400">
+                          {expert.credentials.map((credential, index) => (
+                            <span key={index}>
+                              {credential} {`${index < expert.credentials.length - 1 ? ' | ' : ''}`}
+                            </span>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   </div>
