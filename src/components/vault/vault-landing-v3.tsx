@@ -128,47 +128,135 @@ export function VaultLandingV3() {
 
   const roadmap = [
     {
-      title: 'Phase 1: Genesis → Foundations',
+      title: 'Phase 1: Mint & Kickoff',
       items: [
-        'Mint & Guild Access Pass Distribution',
-        'Guild Hub Launch & Core Systems',
-        'Onboarding Flow & Quest System',
-        'Academy Beta Access',
-        'Exclusive AMA Series with Guild Experts',
-        'Initial Partner Perks & Whitelists',
+        'Limited Guild Pass Mint',
+        'Core Discord Launch',
+        'Guild Selection System',
+        'Basic Academy Setup',
+        'First Expert AMAs',
+        'Early Bird Benefits Distribution',
       ],
     },
     {
-      title: 'Phase 2: Growth → Community',
+      title: 'Phase 2: Build Habits & Early Wins',
       items: [
-        'Guild XP & Reputation System',
-        'Advanced Course Library Release',
-        'Inter-Guild Challenges & Events',
-        'Partner Network Expansion',
-        'Weekly Mentor Clinics & Reviews',
-        'Community Task Board Launch',
+        'Daily Quest System Launch',
+        'Weekly Guild Tasks',
+        'Starter Course Release',
+        'Community Points System',
+        'Basic Mentorship Program',
+        'Quick Win Challenges',
       ],
     },
     {
-      title: 'Phase 3: Scale → Rewards',
+      title: 'Phase 3: Proof & Case Studies',
       items: [
-        'Guild Achievement Badges & Ranks',
-        'Expert Masterclass Series',
-        'Guild Rewards Shop Launch',
-        'Premium Tools & Resource Access',
-        'Cross-Guild Collaboration Program',
-        'Talent Pool & Jobs Network',
+        'Member Success Stories',
+        'Portfolio Building Workshop',
+        'Case Study Creation',
+        'Expert Verification System',
+        'Guild Achievement Tracking',
+        'Proof-of-Work Documentation',
       ],
     },
     {
-      title: 'Phase 4: Evolve → Ecosystem',
+      title: 'Phase 4: Grow Reach Safely',
       items: [
-        'Advanced Analytics Dashboard',
-        'Guild Governance System',
-        'Community-Led Initiatives Fund',
-        'Partner Integration Platform',
-        'Advanced Mentorship Programs',
+        'Vetted Partner Network',
+        'Safe Growth Initiatives',
+        'Cross-Guild Collaborations',
+        'Regional Community Expansion',
+        'Reputation System Launch',
+        'Trust & Safety Framework',
+      ],
+    },
+    {
+      title: 'Phase 5: Turn Skills into $',
+      items: [
+        'Jobs Board Launch',
+        'Paid Task Marketplace',
+        'Client Network Access',
+        'Income Stream Workshop',
+        'Freelance Success Path',
+        'Industry Partner Projects',
+      ],
+    },
+    {
+      title: 'Phase 6: Mid-season',
+      items: [
+        'Guild Milestone Awards',
+        'Advanced Course Library',
+        'Inter-Guild Championships',
+        'Elite Mentorship Tracks',
+        'Community Fund Launch',
+        'Progress Report & Review',
+      ],
+    },
+    {
+      title: 'Phase 7: Level Up',
+      items: [
+        'Master Class Series',
+        'Advanced Tools Access',
+        'Expert Status Program',
+        'Specialized Training Paths',
+        'Guild Leadership Roles',
+        'High-Impact Projects',
+      ],
+    },
+    {
+      title: 'Phase 8: Reach New Audience',
+      items: [
+        'Global Guild Events',
+        'Content Creator Program',
+        'Community Workshops',
+        'Multi-Language Support',
         'Regional Hub Expansion',
+        'Influencer Collaborations',
+      ],
+    },
+    {
+      title: 'Phase 9: Get Hired',
+      items: [
+        'Career Fair Events',
+        'Resume Workshop Series',
+        'Mock Interview Program',
+        'Employer Partnerships',
+        'Placement Support',
+        'Career Mentorship',
+      ],
+    },
+    {
+      title: 'Phase 10: Community Power-Up',
+      items: [
+        'Guild Governance System',
+        'Community-Led Projects',
+        'Member-Run Workshops',
+        'Inter-Guild Council',
+        'Local Chapter Program',
+        'Community Grants',
+      ],
+    },
+    {
+      title: 'Phase 11: Push to Close',
+      items: [
+        'Season Finale Events',
+        'Achievement Celebrations',
+        'Major Partner Reveals',
+        'Special Rewards Unlock',
+        'Success Story Showcase',
+        'Next Season Preview',
+      ],
+    },
+    {
+      title: 'Phase 12: Season 1 End',
+      items: [
+        'Annual Awards Night',
+        'Season 1 Completion NFTs',
+        'Performance Analytics',
+        'Community Impact Report',
+        'Season 2 Roadmap',
+        'Legacy Member Benefits',
       ],
     },
   ]
@@ -439,9 +527,6 @@ export function VaultLandingV3() {
       {/* Experts Carousel */}
       <ExpertsCarousel />
 
-      {/* Partners Carousel */}
-      <PartnersCarousel />
-
       {/* Member Benefits */}
       {/* <div className="py-4">
         <div className="mx-auto max-w-7xl px-4">
@@ -527,6 +612,9 @@ export function VaultLandingV3() {
           </div>
         </div>
       </div>
+
+      {/* Partners Carousel */}
+      <PartnersCarousel />
 
       {/* FAQ */}
       <div id="faq" className="py-4">

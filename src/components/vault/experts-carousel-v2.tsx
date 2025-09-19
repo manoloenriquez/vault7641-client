@@ -48,6 +48,22 @@ const mockExperts: Expert[] = [
     specialties: ['Gaming Content', 'Web3 Gaming', 'Content Creation'],
     image: '/experts/gasul.jpeg',
   },
+  {
+    id: '5',
+    name: 'ChartLizard',
+    role: 'Web3 Content Creator',
+    credentials: ['Financial Planner', 'Full-Time Trader', 'KOL'],
+    specialties: ['Gaming Content', 'Web3 Gaming', 'Content Creation'],
+    image: '/experts/chartlizard.jpg',
+  },
+  {
+    id: '6',
+    name: 'KoroNFT',
+    role: 'Web3 Content Creator',
+    credentials: ['Web3 Gamer', 'Play2Earn Games', 'KOL'],
+    specialties: ['Gaming Content', 'Web3 Gaming', 'Content Creation'],
+    image: '/experts/koro.png',
+  },
 ]
 
 export function ExpertsCarousel() {

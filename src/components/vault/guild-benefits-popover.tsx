@@ -12,7 +12,7 @@ export function GuildBenefitsPopover({ benefits }: GuildBenefitsPopoverProps) {
     <Popover>
       <PopoverTrigger asChild>
         <button className="w-full text-left text-sm text-white hover:text-zinc-400 flex items-center justify-between relative z-10">
-          <span>View Benefit</span>
+          <span>View Benefits</span>
           <ChevronDown className="w-4 h-4" />
         </button>
       </PopoverTrigger>
