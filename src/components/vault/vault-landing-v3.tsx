@@ -424,10 +424,10 @@ export function VaultLandingV3() {
                   <AccordionItem value="step-1" className="border-none">
                     <AccordionTrigger className="px-6 py-4 text-lg font-semibold text-white hover:no-underline hover:bg-zinc-800/50 group">
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-xl font-bold text-white border-2 border-purple-400/20">
+                        <div className="w-12 h-12 min-w-[48px] bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center text-xl font-bold text-white border-2 border-purple-400/20 flex-shrink-0">
                           1
                         </div>
-                        <div className="text-left">
+                        <div className="text-left min-w-0 flex-1">
                           <h3 className="text-lg font-bold text-white">Mint a Pass</h3>
                           <p className="text-sm text-zinc-400 font-normal">
                             Your Pass is a digital membership card to the Vault.
@@ -458,10 +458,10 @@ export function VaultLandingV3() {
                   <AccordionItem value="step-2" className="border-none">
                     <AccordionTrigger className="px-6 py-4 text-lg font-semibold text-white hover:no-underline hover:bg-zinc-800/50 group">
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-gradient-to-br from-yellow-500 to-orange-500 rounded-full flex items-center justify-center text-xl font-bold text-white border-2 border-yellow-400/20">
+                        <div className="w-12 h-12 min-w-[48px] bg-gradient-to-br from-yellow-500 to-orange-500 rounded-full flex items-center justify-center text-xl font-bold text-white border-2 border-yellow-400/20 flex-shrink-0">
                           2
                         </div>
-                        <div className="text-left">
+                        <div className="text-left min-w-0 flex-1">
                           <h3 className="text-lg font-bold text-white">Choose a Guild</h3>
                           <p className="text-sm text-zinc-400 font-normal">Pick the path that fits your goals.</p>
                         </div>
@@ -488,10 +488,10 @@ export function VaultLandingV3() {
                   <AccordionItem value="step-3" className="border-none">
                     <AccordionTrigger className="px-6 py-4 text-lg font-semibold text-white hover:no-underline hover:bg-zinc-800/50 group">
                       <div className="flex items-center gap-4">
-                        <div className="w-12 h-12 bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center text-xl font-bold text-white border-2 border-green-400/20">
+                        <div className="w-12 h-12 min-w-[48px] bg-gradient-to-br from-green-500 to-emerald-500 rounded-full flex items-center justify-center text-xl font-bold text-white border-2 border-green-400/20 flex-shrink-0">
                           3
                         </div>
-                        <div className="text-left">
+                        <div className="text-left min-w-0 flex-1">
                           <h3 className="text-lg font-bold text-white">Learn, Earn, and Grow</h3>
                           <p className="text-sm text-zinc-400 font-normal">
                             Follow our proven Learn → Check → Do framework.
