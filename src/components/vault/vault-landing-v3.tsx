@@ -556,11 +556,71 @@ export function VaultLandingV3() {
             <span className="text-sm font-semibold text-pink-500">ROADMAP</span>
           </div>
 
-          <div className="relative min-h-[700px]">
+          <div
+            className="relative min-h-[700px]"
+            onMouseDown={(e: React.MouseEvent) => {
+              const slider = e.currentTarget.querySelector('.overflow-x-auto') as HTMLDivElement
+              if (!slider) return
+
+              const startX = e.pageX
+              const scrollLeft = slider.scrollLeft
+              let isDragging = true
+              let lastX = startX
+              let frameId: number
+
+              const smoothScroll = () => {
+                if (!isDragging) return
+                const delta = lastX - startX
+                const targetScroll = scrollLeft - delta
+                const currentScroll = slider.scrollLeft
+                const diff = targetScroll - currentScroll
+
+                // Apply easing to the scroll
+                slider.scrollLeft += diff * 0.15
+                frameId = requestAnimationFrame(smoothScroll)
+              }
+
+              const handleMouseMove = (e: MouseEvent) => {
+                if (!isDragging) return
+                e.preventDefault()
+                lastX = e.pageX
+                if (!frameId) {
+                  frameId = requestAnimationFrame(smoothScroll)
+                }
+              }
+
+              const handleMouseUp = () => {
+                isDragging = false
+                if (frameId) {
+                  cancelAnimationFrame(frameId)
+                  frameId = 0
+                }
+                document.removeEventListener('mousemove', handleMouseMove)
+                document.removeEventListener('mouseup', handleMouseUp)
+              }
+
+              document.addEventListener('mousemove', handleMouseMove)
+              document.addEventListener('mouseup', handleMouseUp)
+            }}
+          >
             <div className="absolute left-0 top-[50%] w-24 h-[2px] bg-gradient-to-r from-zinc-950 to-transparent z-30" />
             <div className="absolute right-0 top-[50%] w-24 h-[2px] bg-gradient-to-l from-zinc-950 to-transparent z-30" />
 
-            <div className="overflow-x-auto pb-4 hide-scrollbar">
+            <div
+              className="overflow-x-auto pb-4 cursor-grab active:cursor-grabbing select-none"
+              style={{
+                scrollbarWidth: 'none', // Firefox
+                msOverflowStyle: 'none', // IE/Edge
+                WebkitOverflowScrolling: 'touch',
+              }}
+            >
+              <style>
+                {`
+                  .overflow-x-auto::-webkit-scrollbar {
+                    display: none;
+                  }
+                `}
+              </style>
               <div className="relative flex gap-6 min-w-max px-4 pt-[300px]">
                 {/* Timeline line */}
                 <div className="absolute top-[50%] left-0 right-0 h-[2px] bg-gradient-to-r from-pink-500/50 via-purple-500/50 to-pink-500/50" />
@@ -568,10 +628,10 @@ export function VaultLandingV3() {
                 {roadmap.map((phase, index) => (
                   <div key={index} className="relative w-[300px]">
                     {/* Timeline dot with pulse effect */}
-                    <div className="absolute left-1/2 top-[50%] -translate-x-1/2 -translate-y-1/2 z-20">
+                    {/* <div className="absolute left-1/2 top-[50%] -translate-x-1/2 -translate-y-1/2 z-20">
                       <div className="w-3 h-3 rounded-full bg-pink-500 ring-2 ring-pink-500/20 ring-offset-2 ring-offset-zinc-950" />
                       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-pink-500/20 animate-ping" />
-                    </div>
+                    </div> */}
 
                     {/* Card */}
                     <div className={`relative ${index % 2 === 0 ? 'mt-14' : '-mt-[280px]'}`}>
