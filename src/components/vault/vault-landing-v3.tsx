@@ -152,45 +152,45 @@ export function VaultLandingV3() {
     {
       title: 'Phase 4: Grow Reach Safely',
       items: [
+        'Pilot Mentorship Programs',
         'Vetted Partner Network',
         'Safe Growth Initiatives',
         'Cross-Guild Collaborations',
         'Regional Community Expansion',
-        'Reputation System Launch',
+        'Launch Advanced Referral Program',
         'Trust & Safety Framework',
       ],
     },
     {
-      title: 'Phase 5: Turn Skills into $',
+      title: 'Phase 5: Turn Skills into $$$',
       items: [
-        'Jobs Board Launch',
+        'Partner Jobs Board Launch',
         'Paid Task Marketplace',
         'Client Network Access',
-        'Income Stream Workshop',
+        'Creator Drop #1',
         'Freelance Success Path',
-        'Industry Partner Projects',
       ],
     },
     {
       title: 'Phase 6: Mid-season',
       items: [
         'Guild Milestone Awards',
-        'Advanced Course Library',
-        'Inter-Guild Championships',
+        'Expert Course Library',
+        'Inter-Guild Cup',
         'Elite Mentorship Tracks',
-        'Community Fund Launch',
+        'Bounty Marathon',
         'Progress Report & Review',
+        'Quarter 2 Report',
       ],
     },
     {
       title: 'Phase 7: Level Up',
       items: [
         'Master Class Series',
-        'Advanced Tools Access',
-        'Expert Status Program',
+        'Specialist Status Program',
         'Specialized Training Paths',
-        'Guild Leadership Roles',
-        'High-Impact Projects',
+        'Legendary Unlock Week',
+        'Pilot P2P Program',
       ],
     },
     {
@@ -201,7 +201,8 @@ export function VaultLandingV3() {
         'Community Workshops',
         'Multi-Language Support',
         'Regional Hub Expansion',
-        'Influencer Collaborations',
+        'Campus and OFW Virtual Tours',
+        'Creator Drop #2',
       ],
     },
     {
@@ -213,6 +214,7 @@ export function VaultLandingV3() {
         'Employer Partnerships',
         'Placement Support',
         'Career Mentorship',
+        'Quarter 3 Report',
       ],
     },
     {
@@ -220,10 +222,10 @@ export function VaultLandingV3() {
       items: [
         'Guild Governance System',
         'Community-Led Projects',
-        'Member-Run Workshops',
-        'Inter-Guild Council',
+        'Partner Demo Day',
         'Local Chapter Program',
-        'Community Grants',
+        'Community Grants Day',
+        'Guild Showcase Week',
       ],
     },
     {
@@ -246,6 +248,7 @@ export function VaultLandingV3() {
         'Community Impact Report',
         'Season 2 Roadmap',
         'Legacy Member Benefits',
+        'Annual Report',
       ],
     },
   ]
@@ -541,9 +544,26 @@ export function VaultLandingV3() {
       {/* Season Roadmap */}
       <div id="roadmap" className="py-4">
         <div className="mx-auto max-w-7xl px-4">
-          <div className="flex items-center gap-2 mb-8">
-            <div className="w-2 h-2 bg-pink-500 rounded-full" />
-            <span className="text-sm font-semibold text-pink-500">ROADMAP</span>
+          <div className="flex items-center justify-between mb-8">
+            <div className="flex items-center gap-2">
+              <div className="w-2 h-2 bg-pink-500 rounded-full" />
+              <span className="text-sm font-semibold text-pink-500">ROADMAP</span>
+            </div>
+            <div className="flex items-center gap-2 text-pink-500/70">
+              <svg
+                className="w-4 h-4"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <path d="M17 8l4 4-4 4M7 8L3 12l4 4" />
+              </svg>
+              <span className="text-xs font-medium">Drag to explore</span>
+            </div>
           </div>
 
           <div
@@ -596,8 +616,44 @@ export function VaultLandingV3() {
             <div className="absolute left-0 top-[50%] w-24 h-[2px] bg-gradient-to-r from-zinc-950 to-transparent z-30" />
             <div className="absolute right-0 top-[50%] w-24 h-[2px] bg-gradient-to-l from-zinc-950 to-transparent z-30" />
 
+            {/* Scroll Indicators */}
+            <div className="absolute left-6 top-1/2 -translate-y-1/2 z-30 flex items-center gap-2 text-pink-500/70">
+              <div className="w-8 h-8 rounded-full bg-pink-500/5 border border-pink-500/20 flex items-center justify-center animate-pulse">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M15 18l-6-6 6-6" />
+                </svg>
+              </div>
+            </div>
+            <div className="absolute right-6 top-1/2 -translate-y-1/2 z-30 flex items-center gap-2 text-pink-500/70">
+              <div className="w-8 h-8 rounded-full bg-pink-500/5 border border-pink-500/20 flex items-center justify-center animate-pulse">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  width="20"
+                  height="20"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                  <path d="M9 18l6-6-6-6" />
+                </svg>
+              </div>
+            </div>
+
             <div
-              className="overflow-x-auto pb-4 cursor-grab active:cursor-grabbing select-none"
+              className="overflow-x-auto pb-4 cursor-grab active:cursor-grabbing select-none group"
               style={{
                 scrollbarWidth: 'none', // Firefox
                 msOverflowStyle: 'none', // IE/Edge
@@ -611,25 +667,19 @@ export function VaultLandingV3() {
                   }
                 `}
               </style>
-              <div className="relative flex gap-6 min-w-max px-4 pt-[300px]">
+              <div className="relative flex gap-6 min-w-max px-4 py-[400px]">
                 {/* Timeline line */}
-                <div className="absolute top-[50%] left-0 right-0 h-[2px] bg-gradient-to-r from-pink-500/50 via-purple-500/50 to-pink-500/50" />
+                <div className="absolute top-1/2 left-0 right-0 h-[2px] bg-gradient-to-r from-pink-500/50 via-purple-500/50 to-pink-500/50" />
 
                 {roadmap.map((phase, index) => (
                   <div key={index} className="relative w-[300px]">
-                    {/* Timeline dot with pulse effect */}
-                    {/* <div className="absolute left-1/2 top-[50%] -translate-x-1/2 -translate-y-1/2 z-20">
-                      <div className="w-3 h-3 rounded-full bg-pink-500 ring-2 ring-pink-500/20 ring-offset-2 ring-offset-zinc-950" />
-                      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-6 h-6 rounded-full bg-pink-500/20 animate-ping" />
-                    </div> */}
-
-                    {/* Card */}
-                    <div className={`relative ${index % 2 === 0 ? 'mt-14' : '-mt-[280px]'}`}>
+                    {/* Card wrapper with margin for spacing */}
+                    <div className={`absolute w-full ${index % 2 === 0 ? 'bottom-[50%] mb-8' : 'top-[50%] mt-8'}`}>
                       {/* Connecting line */}
                       <div
                         className={`absolute left-1/2 -translate-x-1/2 ${
-                          index % 2 === 0 ? 'top-0 translate-y-[-100%]' : 'bottom-0 translate-y-[100%]'
-                        } w-[2px] h-[56px] bg-gradient-to-b ${
+                          index % 2 === 0 ? 'bottom-0 translate-y-full' : 'top-0 -translate-y-full'
+                        } w-[2px] h-8 bg-gradient-to-b ${
                           index % 2 === 0 ? 'from-transparent to-pink-500/50' : 'from-pink-500/50 to-transparent'
                         }`}
                       />
