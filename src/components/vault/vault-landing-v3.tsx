@@ -8,7 +8,6 @@ import { GuildBenefitsPopover } from './guild-benefits-popover'
 import { GuildCard } from './guild-card'
 import { Users, Target, TrendingUp } from 'lucide-react'
 import { ExpertsCarousel } from './experts-carousel-v2'
-import { PartnersCarousel } from './partners-carousel-v2'
 
 const scrollToSection = (sectionId: string) => {
   const element = document.getElementById(sectionId)
@@ -130,34 +129,24 @@ export function VaultLandingV3() {
     {
       title: 'Phase 1: Mint & Kickoff',
       items: [
-        'Limited Guild Pass Mint',
-        'Core Discord Launch',
-        'Guild Selection System',
-        'Basic Academy Setup',
-        'First Expert AMAs',
-        'Early Bird Benefits Distribution',
+        'Core Discord "Features" Launch',
+        'Vault University (Advanced Academy) Pilot',
+        'Guild Quest System Launch',
       ],
     },
     {
       title: 'Phase 2: Build Habits & Early Wins',
-      items: [
-        'Daily Quest System Launch',
-        'Weekly Guild Tasks',
-        'Starter Course Release',
-        'Community Points System',
-        'Basic Mentorship Program',
-        'Quick Win Challenges',
-      ],
+      items: ['Pilot bounties and short-term contracts', 'Community Points System', 'Pilot Website Edu Platform'],
     },
     {
       title: 'Phase 3: Proof & Case Studies',
       items: [
+        'Peer Pods & Buddy System',
         'Member Success Stories',
-        'Portfolio Building Workshop',
         'Case Study Creation',
-        'Expert Verification System',
         'Guild Achievement Tracking',
         'Proof-of-Work Documentation',
+        'Quarter 1 Report',
       ],
     },
     {
@@ -302,7 +291,8 @@ export function VaultLandingV3() {
               </h1>
 
               <p className="text-xl text-zinc-400 mb-8 max-w-2xl">
-                Progress over Hype. Choose a Guild, finish quests, and earn access. Learn → Check → Do.
+                {/* Progress over Hype. Choose a Guild, finish quests, and earn access. Learn → Check → Do. */}A winning
+                community led by experts & professionals. Learn safely, gain skills, unlock opportunities.
               </p>
 
               <div className="flex flex-wrap gap-4 mb-8">
@@ -644,10 +634,14 @@ export function VaultLandingV3() {
                         }`}
                       />
 
-                      <Card className="bg-zinc-950/50 border-zinc-800/50 backdrop-blur-sm">
+                      <Card
+                        className={`${index === 0 ? 'bg-pink-500/10 border-pink-500/30' : 'bg-zinc-950/50 border-zinc-800/50'} backdrop-blur-sm`}
+                      >
                         <CardContent>
                           <div className="mb-4 flex items-center gap-4">
-                            <div className="w-10 h-10 rounded-full border border-pink-500/30 bg-pink-500/10 flex items-center justify-center text-lg font-bold text-pink-400">
+                            <div
+                              className={`w-10 h-10 rounded-full border ${index === 0 ? 'border-pink-500 bg-pink-500/20 text-pink-300' : 'border-pink-500/30 bg-pink-500/10 text-pink-400'} flex items-center justify-center text-lg font-bold`}
+                            >
                               {index + 1}
                             </div>
                             <h3 className="text-lg font-bold text-white">{phase.title}</h3>
@@ -674,7 +668,7 @@ export function VaultLandingV3() {
       </div>
 
       {/* Partners Carousel */}
-      <PartnersCarousel />
+      {/* <PartnersCarousel /> */}
 
       {/* FAQ */}
       <div id="faq" className="py-4">
