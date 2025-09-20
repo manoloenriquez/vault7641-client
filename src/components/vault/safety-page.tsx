@@ -2,8 +2,8 @@
 
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
-import { Badge } from '@/components/ui/badge'
-import { Input } from '@/components/ui/input'
+// import { Badge } from '@/components/ui/badge'
+// import { Input } from '@/components/ui/input'
 import { Shield, ExternalLink, AlertTriangle, CheckCircle, Copy, MessageCircle } from 'lucide-react'
 import { SOCIAL_LINKS } from '@/lib/constants'
 
@@ -22,48 +22,11 @@ const officialLinks = [
   },
   {
     platform: 'Twitter',
-    url: 'https://twitter.com/vault7641',
+    url: 'https://x.com/vault7641',
     verified: true,
     description: 'Official announcements and updates',
   },
-  {
-    platform: 'Medium',
-    url: 'https://medium.com/@vault7641',
-    verified: true,
-    description: 'Official blog and educational content',
-  },
 ]
-
-const recentTakedowns = [
-  {
-    id: 1,
-    title: 'Fake Vault7641 Discord Server',
-    date: '2024-12-26',
-    type: 'Discord Impersonation',
-    description: 'Fake server claiming to be official Vault 7641 with phishing links',
-    action: 'Reported and taken down',
-    reportedBy: 'Community Member',
-  },
-  {
-    id: 2,
-    title: 'Fraudulent Mint Site',
-    date: '2024-12-24',
-    type: 'Website Impersonation',
-    description: 'Fake website vault7641-mint.com attempting to steal wallet credentials',
-    action: 'Domain seized, hosting suspended',
-    reportedBy: 'Security Team',
-  },
-  {
-    id: 3,
-    title: 'Twitter Impersonator Account',
-    date: '2024-12-22',
-    type: 'Social Media Fraud',
-    description: 'Account @vault_7641 (with underscore) posting fake giveaways',
-    action: 'Account suspended by Twitter',
-    reportedBy: 'Community Member',
-  },
-]
-
 const safetyChecklist = [
   {
     category: 'Official Communications',
@@ -202,35 +165,9 @@ export function SafetyPage() {
             </div>
           </div>
 
-          {/* Recent Takedowns */}
-          <section className="mb-16">
-            <h2 className="text-3xl font-bold mb-8 text-center">Recent Scam Takedowns</h2>
-            <div className="space-y-4">
-              {recentTakedowns.map((takedown) => (
-                <div key={takedown.id} className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6">
-                  <div className="flex items-start justify-between mb-4">
-                    <div>
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="text-lg font-bold">{takedown.title}</h3>
-                        <Badge className="bg-red-500/20 text-red-400 border-red-500/30">{takedown.type}</Badge>
-                      </div>
-                      <p className="text-zinc-400 mb-3">{takedown.description}</p>
-                      <div className="flex items-center gap-4 text-sm text-zinc-400">
-                        <span>Reported: {new Date(takedown.date).toLocaleDateString()}</span>
-                        <span>•</span>
-                        <span>By: {takedown.reportedBy}</span>
-                      </div>
-                    </div>
-                    <Badge className="bg-green-500/20 text-green-400 border-green-500/30">{takedown.action}</Badge>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
           {/* Report Form */}
           <section className="mb-16">
-            <div className="bg-gradient-to-r from-red-500/5 via-orange-500/5 to-red-500/5 border border-red-500/20 rounded-2xl p-8">
+            <div className="bg-gradient-to-r from-red-500/5 via-orange-500/5 to-red-500/5 border border-red-500/20 rounded-2xl p-8 flex flex-col">
               <div className="text-center mb-8">
                 <AlertTriangle className="w-12 h-12 text-orange-500 mx-auto mb-4" />
                 <h2 className="text-3xl font-bold mb-4">Report a Scam</h2>
@@ -240,7 +177,7 @@ export function SafetyPage() {
                 </p>
               </div>
 
-              <form onSubmit={handleReportSubmit} className="max-w-2xl mx-auto space-y-6">
+              {/* <form onSubmit={handleReportSubmit} className="max-w-2xl mx-auto space-y-6">
                 <div>
                   <label className="block text-sm font-semibold mb-2">Type of Scam</label>
                   <select
@@ -307,12 +244,18 @@ export function SafetyPage() {
                     </a>
                   </Button>
                 </div>
-              </form>
+              </form> */}
+              <Button type="button" variant="outline" size="lg" asChild className="mx-auto mt-4">
+                <a href={SOCIAL_LINKS.discord} target="_blank" rel="noopener noreferrer">
+                  Report in Discord
+                  <MessageCircle className="ml-2 w-4 h-4" />
+                </a>
+              </Button>
             </div>
           </section>
 
           {/* Emergency Contact */}
-          <div className="text-center">
+          {/* <div className="text-center">
             <div className="bg-card/30 border border-border/50 rounded-xl p-6 max-w-2xl mx-auto">
               <h3 className="text-xl font-bold mb-4">Emergency Security Contact</h3>
               <p className="text-sm text-zinc-400 mb-4">
@@ -325,7 +268,7 @@ export function SafetyPage() {
                 </Button>
               </div>
             </div>
-          </div>
+          </div> */}
         </div>
       </div>
     </div>
