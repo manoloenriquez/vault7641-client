@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Progress } from '@/components/ui/progress'
 import { Trophy, Users, Shield, CheckCircle, Target, MessageCircle, ExternalLink } from 'lucide-react'
+import { SOCIAL_LINKS } from '@/lib/constants'
 
 const wlPaths = [
   {
@@ -248,7 +249,7 @@ export function HowToWLPage() {
                 className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
                 asChild
               >
-                <a href="https://discord.gg/vault7641" target="_blank" rel="noopener noreferrer">
+                <a href={SOCIAL_LINKS.discord} target="_blank" rel="noopener noreferrer">
                   Join Discord Now
                   <ExternalLink className="ml-2 w-4 h-4" />
                 </a>

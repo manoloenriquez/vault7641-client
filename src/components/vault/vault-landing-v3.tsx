@@ -4,10 +4,11 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion'
-import { GuildBenefitsPopover } from './guild-benefits-popover'
 import { GuildCard } from './guild-card'
 import { Users, Target, TrendingUp } from 'lucide-react'
 import { ExpertsCarousel } from './experts-carousel-v2'
+import Image from 'next/image'
+import { SOCIAL_LINKS } from '@/lib/constants'
 
 const scrollToSection = (sectionId: string) => {
   const element = document.getElementById(sectionId)
@@ -303,7 +304,7 @@ export function VaultLandingV3() {
                   className="bg-gradient-to-r from-pink-500 to-purple-600 hover:from-pink-600 hover:to-purple-700 text-white px-8 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl transition-all duration-300 transform hover:scale-105"
                   asChild
                 >
-                  <a href="https://discord.gg/vault7641" target="_blank" rel="noopener noreferrer">
+                  <a href={SOCIAL_LINKS.discord} target="_blank" rel="noopener noreferrer">
                     Join Discord
                   </a>
                 </Button>
@@ -318,20 +319,20 @@ export function VaultLandingV3() {
             </div>
 
             {/* Vault Illustration */}
-            {/* <div className="lg:col-span-1">
+            <div className="lg:col-span-1">
               <div className="sticky top-32">
                 <div className="relative">
                   <Image
-                    src="/Cube_v2.png"
+                    src="/Vault_square_1.png"
                     alt="Vault 7641 - Isometric view of different guild spaces with members collaborating"
                     width={800}
                     height={800}
-                    className="w-full h-auto rounded-2xl shadow-2xl"
+                    className="w-full h-auto"
                     priority
                   />
                 </div>
               </div>
-            </div> */}
+            </div>
           </div>
         </div>
       </div>

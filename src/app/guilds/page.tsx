@@ -3,6 +3,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Code, TrendingUp, Coins, Gamepad2, Briefcase } from 'lucide-react'
 import Link from 'next/link'
+import { SOCIAL_LINKS } from '@/lib/constants'
 
 const guilds = [
   {
@@ -105,7 +106,7 @@ export default function GuildsPage() {
                 <Link href="/how-to-wl">Claim WL</Link>
               </Button>
               <Button variant="outline" className="border-zinc-700 text-zinc-300 hover:bg-zinc-800" asChild>
-                <a href="https://discord.gg/vault7641" target="_blank" rel="noopener noreferrer">
+                <a href={SOCIAL_LINKS.discord} target="_blank" rel="noopener noreferrer">
                   Join Discord
                 </a>
               </Button>

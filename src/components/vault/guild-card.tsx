@@ -3,6 +3,7 @@
 import Image from 'next/image'
 import { Card, CardContent } from '@/components/ui/card'
 import { GuildBenefitsPopover } from './guild-benefits-popover'
+import { SOCIAL_LINKS } from '@/lib/constants'
 
 interface GuildCardProps {
   id: string
@@ -46,7 +47,7 @@ export function GuildCard({ id, name, description, gradient, activities, benefit
         <div className="space-y-3 pt-4 border-t border-zinc-800/50">
           <GuildBenefitsPopover benefits={benefits} />
           <a
-            href="https://discord.gg/vault7641"
+            href={SOCIAL_LINKS.discord}
             target="_blank"
             rel="noopener noreferrer"
             className="block text-left text-sm text-cyan-400 hover:text-cyan-300"

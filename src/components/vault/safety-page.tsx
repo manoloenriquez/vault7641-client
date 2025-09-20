@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Input } from '@/components/ui/input'
 import { Shield, ExternalLink, AlertTriangle, CheckCircle, Copy, MessageCircle } from 'lucide-react'
+import { SOCIAL_LINKS } from '@/lib/constants'
 
 const officialLinks = [
   {
@@ -15,7 +16,7 @@ const officialLinks = [
   },
   {
     platform: 'Discord',
-    url: 'https://discord.gg/vault7641',
+    url: SOCIAL_LINKS.discord,
     verified: true,
     description: 'Official community server',
   },
@@ -300,7 +301,7 @@ export function SafetyPage() {
                     Submit Report
                   </Button>
                   <Button type="button" variant="outline" size="lg" asChild>
-                    <a href="https://discord.gg/vault7641" target="_blank" rel="noopener noreferrer">
+                    <a href={SOCIAL_LINKS.discord} target="_blank" rel="noopener noreferrer">
                       Report in Discord
                       <MessageCircle className="ml-2 w-4 h-4" />
                     </a>

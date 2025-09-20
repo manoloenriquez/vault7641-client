@@ -1,5 +1,6 @@
 import React from 'react'
 import Link from 'next/link'
+import { SOCIAL_LINKS } from '@/lib/constants'
 
 export function AppFooterV2() {
   const currentYear = new Date().getFullYear()
@@ -26,7 +27,7 @@ export function AppFooterV2() {
             <ul className="space-y-3 text-sm">
               <li>
                 <a
-                  href="https://discord.gg/vault7641"
+                  href={SOCIAL_LINKS.discord}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-zinc-400 hover:text-cyan-400 transition-colors block"

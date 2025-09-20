@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import { Shield, Menu, X } from 'lucide-react'
+import { SOCIAL_LINKS } from '@/lib/constants'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useAuth } from '@/components/auth/auth-guard'
@@ -97,7 +98,7 @@ export function VaultNavigation() {
                     className="hidden sm:flex bg-white text-zinc-900 hover:bg-zinc-100 font-semibold"
                     asChild
                   >
-                    <a href="https://discord.gg/vault7641" target="_blank" rel="noopener noreferrer">
+                    <a href={SOCIAL_LINKS.discord} target="_blank" rel="noopener noreferrer">
                       Join Discord
                     </a>
                   </Button>
@@ -181,7 +182,7 @@ export function VaultNavigation() {
                         className="w-full bg-white text-zinc-900 hover:bg-zinc-100 font-semibold text-base py-6"
                         asChild
                       >
-                        <a href="https://discord.gg/vault7641" target="_blank" rel="noopener noreferrer">
+                        <a href={SOCIAL_LINKS.discord} target="_blank" rel="noopener noreferrer">
                           Join Discord
                         </a>
                       </Button>
