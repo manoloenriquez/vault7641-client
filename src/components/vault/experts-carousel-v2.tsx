@@ -8,60 +8,58 @@ import Autoplay from 'embla-carousel-autoplay'
 interface Expert {
   id: string
   name: string
-  role: string
   credentials: string[]
-  specialties: string[]
   image: string
 }
 
-const mockExperts: Expert[] = [
+const experts: Expert[] = [
   {
     id: '1',
     name: 'Estudyante Trader',
-    role: 'Financial Analyst',
     credentials: ['Financial Analyst', 'Founder of TET', 'FMVA®'],
-    specialties: ['Financial Analysis', 'Trading', 'Investment Strategy'],
     image: '/experts/ET.png',
   },
   {
     id: '2',
     name: 'Giu Comia',
-    role: 'Web3 Content Creator',
     credentials: ['Web3 Content Creator', 'Speaker & KOL'],
-    specialties: ['Content Creation', 'Web3 Education', 'Public Speaking'],
     image: '/experts/Giu.PNG',
   },
   {
     id: '3',
     name: 'BitJom',
-    role: 'Crypto & Forex Trader',
     credentials: ['Crypto & Forex Trader'],
-    specialties: ['Cryptocurrency Trading', 'Forex Trading', 'Market Analysis'],
     image: '/experts/BitJom.jpg',
   },
   {
     id: '4',
     name: 'Gasul Gaming',
-    role: 'Web3 Content Creator',
     credentials: ['Web3 Content Creator & Streamer', 'Gamer', 'KOL'],
-    specialties: ['Gaming Content', 'Web3 Gaming', 'Content Creation'],
     image: '/experts/gasul.jpeg',
   },
   {
     id: '5',
     name: 'ChartLizard',
-    role: 'Web3 Content Creator',
     credentials: ['Financial Planner', 'Full-Time Trader', 'KOL'],
-    specialties: ['Gaming Content', 'Web3 Gaming', 'Content Creation'],
     image: '/experts/chartlizard.jpg',
   },
   {
     id: '6',
     name: 'KoroNFT',
-    role: 'Web3 Content Creator',
     credentials: ['Web3 Gamer', 'Play2Earn Games', 'KOL'],
-    specialties: ['Gaming Content', 'Web3 Gaming', 'Content Creation'],
     image: '/experts/koro.png',
+  },
+  {
+    id: '7',
+    name: 'Zeefreaks',
+    credentials: ['Founder of ZFT and Trading Republic'],
+    image: '/experts/zeefreaks.png',
+  },
+  {
+    id: '8',
+    name: 'Jannidepp',
+    credentials: ['Web3 Content Creator', 'KOL'],
+    image: '/experts/jannidepp.png',
   },
 ]
 
@@ -85,7 +83,7 @@ export function ExpertsCarousel() {
           className="w-full"
         >
           <CarouselContent className="-ml-2 md:-ml-4">
-            {mockExperts.map((expert) => (
+            {experts.map((expert) => (
               <CarouselItem key={expert.id} className="pl-2 md:pl-4 basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4">
                 <Card className="bg-zinc-950/50 border-zinc-800 h-full">
                   <div className="p-4 md:p-6 flex flex-col items-center text-center h-full min-h-[200px] md:min-h-[220px]">
