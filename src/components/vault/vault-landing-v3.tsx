@@ -665,6 +665,13 @@ export function VaultLandingV3() {
                   .overflow-x-auto::-webkit-scrollbar {
                     display: none;
                   }
+                  .scrollbar-hide::-webkit-scrollbar {
+                    display: none;
+                  }
+                  .scrollbar-hide {
+                    -ms-overflow-style: none;
+                    scrollbar-width: none;
+                  }
                 `}
               </style>
               <div className="relative flex gap-6 min-w-max px-4 py-[400px]">
@@ -685,18 +692,18 @@ export function VaultLandingV3() {
                       />
 
                       <Card
-                        className={`${index === 0 ? 'bg-pink-500/10 border-pink-500/30' : 'bg-zinc-950/50 border-zinc-800/50'} backdrop-blur-sm`}
+                        className={`${index === 0 ? 'bg-pink-500/10 border-pink-500/30' : 'bg-zinc-950/50 border-zinc-800/50'} backdrop-blur-sm h-[350px] flex flex-col`}
                       >
-                        <CardContent>
+                        <CardContent className="flex flex-col h-full">
                           <div className="mb-4 flex items-center gap-4">
                             <div
-                              className={`w-10 h-10 rounded-full border ${index === 0 ? 'border-pink-500 bg-pink-500/20 text-pink-300' : 'border-pink-500/30 bg-pink-500/10 text-pink-400'} flex items-center justify-center text-lg font-bold`}
+                              className={`w-10 h-10 rounded-full border flex-shrink-0 ${index === 0 ? 'border-pink-500 bg-pink-500/20 text-pink-300' : 'border-pink-500/30 bg-pink-500/10 text-pink-400'} flex items-center justify-center text-lg font-bold`}
                             >
                               {index + 1}
                             </div>
-                            <h3 className="text-lg font-bold text-white">{phase.title}</h3>
+                            <h3 className="text-lg font-bold text-white line-clamp-2">{phase.title}</h3>
                           </div>
-                          <div className="space-y-2">
+                          <div className="space-y-2 overflow-y-auto flex-grow scrollbar-hide">
                             {phase.items.map((item, itemIndex) => (
                               <div key={itemIndex} className="flex items-center text-sm group">
                                 <div className="w-1 h-1 bg-pink-500/50 rounded-full mr-3 flex-shrink-0 group-hover:bg-pink-400 transition-colors" />
