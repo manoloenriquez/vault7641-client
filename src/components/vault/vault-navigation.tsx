@@ -27,7 +27,7 @@ export function VaultNavigation() {
     <>
       {/* Safety Header */}
       <div className="fixed inset-x-0 top-0 z-50 bg-zinc-950/80 backdrop-blur border-b border-zinc-800">
-        <div className="mx-auto max-w-7xl px-4 py-2 text-xs text-zinc-300 flex items-center justify-center gap-3">
+        <div className="mx-auto max-w-7xl sm:px-4 py-2 text-[0.5rem] sm:text-xs text-zinc-300 flex items-center justify-center gap-2 md:gap-3 text-nowrap">
           <Shield className="h-4 w-4 text-emerald-400" />
           <span className="font-medium">Safety-First:</span>
           <span>Team never DMs first</span>
