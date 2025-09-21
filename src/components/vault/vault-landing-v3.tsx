@@ -130,9 +130,13 @@ export function VaultLandingV3() {
     {
       title: 'Phase 1: Mint & Kickoff',
       items: [
+        'Limited Guild Pass Mint',
         'Core Discord "Features" Launch',
+        'Guild Selection System',
+        'Basic Academy Setup',
         'Vault University (Advanced Academy) Pilot',
         'Guild Quest System Launch',
+        'Early Bird Benefits Distribution',
       ],
     },
     {
