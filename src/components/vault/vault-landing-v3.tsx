@@ -447,7 +447,7 @@ export function VaultLandingV3() {
                           resources, quests, and perks. It&apos;s an access collectible, not an investment.
                         </p>
                         <p className="text-xs text-zinc-500">
-                          Need help? Open a help ticket in our Discord or email support@vault7641.com
+                          Need help? Open a help ticket in our Discord or email vault7641help@gmail.com
                         </p>
                       </div>
                     </AccordionContent>
@@ -477,7 +477,7 @@ export function VaultLandingV3() {
                           You can preview each Guild in Discord before you decide. 1 Pass = 1 Guild of choice.
                         </p>
                         <p className="text-xs text-zinc-500">
-                          Need help? Open a help ticket in our Discord or email support@vault7641.com
+                          Need help? Open a help ticket in our Discord or email vault7641help@gmail.com
                         </p>
                       </div>
                     </AccordionContent>
@@ -510,7 +510,7 @@ export function VaultLandingV3() {
                           classes, and join peer pods.
                         </p>
                         <p className="text-xs text-zinc-500">
-                          Need help? Open a help ticket in our Discord or email support@vault7641.com
+                          Need help? Open a help ticket in our Discord or email vault7641help@gmail.com
                         </p>
                       </div>
                     </AccordionContent>

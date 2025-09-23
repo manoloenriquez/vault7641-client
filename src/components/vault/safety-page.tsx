@@ -255,20 +255,20 @@ export function SafetyPage() {
           </section>
 
           {/* Emergency Contact */}
-          {/* <div className="text-center">
+          <div className="text-center">
             <div className="bg-card/30 border border-border/50 rounded-xl p-6 max-w-2xl mx-auto">
               <h3 className="text-xl font-bold mb-4">Emergency Security Contact</h3>
               <p className="text-sm text-zinc-400 mb-4">
                 For urgent security threats or if you&apos;ve been compromised, contact our security team immediately:
               </p>
               <div className="flex items-center justify-center gap-4">
-                <code className="bg-muted px-3 py-2 rounded-lg text-sm">security@vault7641.com</code>
-                <Button variant="outline" size="sm" onClick={() => copyToClipboard('security@vault7641.com')}>
+                <code className="bg-muted px-3 py-2 rounded-lg text-sm">vault7641help@gmail.com</code>
+                <Button variant="outline" size="sm" onClick={() => copyToClipboard('vault7641help@gmail.com')}>
                   <Copy className="w-4 h-4" />
                 </Button>
               </div>
             </div>
-          </div> */}
+          </div>
         </div>
       </div>
     </div>
