@@ -109,36 +109,44 @@ export function SafetyPage() {
               <h2 className="text-3xl font-bold text-white mb-8">Official Links</h2>
               <div className="space-y-4">
                 {officialLinks.map((link, index) => (
-                  <div
-                    key={index}
-                    className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-6 flex items-center justify-between"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className="flex items-center gap-2">
-                        <CheckCircle className="w-5 h-5 text-green-500" />
-                        <span className="font-bold">{link.platform}</span>
-                      </div>
-                      <div>
-                        <div className="flex items-center gap-2">
-                          <code className="text-sm bg-muted px-2 py-1 rounded">{link.url}</code>
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => copyToClipboard(link.url)}
-                            className="h-6 w-6 p-0"
-                          >
-                            <Copy className="w-3 h-3" />
-                          </Button>
+                  <div key={index} className="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-4 sm:p-6">
+                    {/* Mobile: Stack vertically, Desktop: Flex horizontally */}
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                      {/* Platform info and URL section */}
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-2 mb-2 sm:mb-0">
+                          <CheckCircle className="w-5 h-5 text-green-500 flex-shrink-0" />
+                          <span className="font-bold text-white">{link.platform}</span>
                         </div>
-                        <p className="text-xs text-zinc-400 mt-1">{link.description}</p>
+
+                        <div className="sm:mt-2">
+                          <div className="flex items-center gap-2 mb-1">
+                            <code className="text-xs sm:text-sm bg-muted px-2 py-1 rounded break-all flex-1 min-w-0">
+                              {link.url}
+                            </code>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => copyToClipboard(link.url)}
+                              className="h-6 w-6 p-0 flex-shrink-0"
+                            >
+                              <Copy className="w-3 h-3" />
+                            </Button>
+                          </div>
+                          <p className="text-xs text-zinc-400">{link.description}</p>
+                        </div>
+                      </div>
+
+                      {/* Visit button */}
+                      <div className="flex-shrink-0">
+                        <Button size="sm" variant="outline" asChild className="w-full sm:w-auto">
+                          <a href={link.url} target="_blank" rel="noopener noreferrer">
+                            Visit
+                            <ExternalLink className="ml-2 w-3 h-3" />
+                          </a>
+                        </Button>
                       </div>
                     </div>
-                    <Button size="sm" variant="outline" asChild>
-                      <a href={link.url} target="_blank" rel="noopener noreferrer">
-                        Visit
-                        <ExternalLink className="ml-2 w-3 h-3" />
-                      </a>
-                    </Button>
                   </div>
                 ))}
               </div>

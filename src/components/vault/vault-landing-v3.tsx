@@ -323,11 +323,11 @@ export function VaultLandingV3() {
             </div>
 
             {/* Vault Illustration */}
-            <div className="lg:col-span-1">
+            <div className="hidden lg:block lg:col-span-1">
               <div className="sticky top-32">
                 <div className="relative">
                   <Image
-                    src="/Vault_square_1.png"
+                    src="/orbit.png"
                     alt="Vault 7641 - Isometric view of different guild spaces with members collaborating"
                     width={800}
                     height={800}
