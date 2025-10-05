@@ -91,6 +91,36 @@ const experts: Expert[] = [
     credentials: ['Ronin Creator', 'Star Atlas Ambassador', 'YGG Guild Alliance Leader'],
     image: '/experts/master-kamote.png',
   },
+  {
+    id: '14',
+    name: 'John F Dong',
+    credentials: ['KOL', 'Content Strategist at Web3TV', 'Anichess Ambassador'],
+    image: '/experts/john-f-dong.png',
+  },
+  {
+    id: '15',
+    name: 'Aaron Reyes',
+    credentials: ['KOL', 'Full-Time Trader & Investor'],
+    image: '/experts/aaron-reyes.png',
+  },
+  {
+    id: '16',
+    name: 'Cryptita',
+    credentials: ['Educator', 'Community Founder'],
+    image: '/experts/cryptita.png',
+  },
+  {
+    id: '17',
+    name: 'Zygfrid',
+    credentials: ['Web3 Business Development', 'KOL', 'Founder of AI'],
+    image: '/experts/zygfrid.png',
+  },
+  {
+    id: '18',
+    name: '0xmulli',
+    credentials: ['Web3 Developer'],
+    image: '/experts/0xmulli.JPG',
+  },
 ]
 
 export function ExpertsCarousel() {

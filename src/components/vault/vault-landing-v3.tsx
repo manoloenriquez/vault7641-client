@@ -327,7 +327,7 @@ export function VaultLandingV3() {
             </div>
 
             {/* Vault Illustration */}
-            <div className="hidden lg:block lg:col-span-1">
+            {/* <div className="hidden lg:block lg:col-span-1">
               <div className="sticky top-32">
                 <div className="relative">
                   <Image
@@ -340,7 +340,7 @@ export function VaultLandingV3() {
                   />
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>
