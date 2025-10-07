@@ -50,7 +50,7 @@ export function VaultLandingV3() {
       gradient: 'from-orange-400 via-orange-600 to-red-700',
       activities: [],
       benefits: [
-        'Exclusive Market Insights & Signals',
+        'Exclusive Market Insights',
         'Actionable Trade Setups',
         'Market Watch & News',
         'On-Chain Data & Reports',
