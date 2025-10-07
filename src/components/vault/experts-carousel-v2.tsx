@@ -153,7 +153,7 @@ export function ExpertsCarousel() {
                     </div>
 
                     <div className="flex flex-col justify-between flex-grow">
-                      <h3 className="text-base md:text-lg font-bold mb-2 line-clamp-1">{expert.name}</h3>
+                      <h3 className="text-white md:text-lg font-bold mb-2 line-clamp-1">{expert.name}</h3>
 
                       <div className="text-xs md:text-sm font-medium text-zinc-400 line-clamp-3">
                         {expert.credentials.map((credential, index) => (
