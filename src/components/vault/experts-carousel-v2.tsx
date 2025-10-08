@@ -68,12 +68,6 @@ const experts: Expert[] = [
     image: '/experts/master-kamote.png',
   },
   {
-    id: '10',
-    name: 'Papa Bii',
-    credentials: ['Business Development', 'KOL'],
-    image: '/experts/papa-bii.jpg',
-  },
-  {
     id: '11',
     name: 'Aaron Reyes',
     credentials: ['KOL', 'Full-Time Trader & Investor'],
