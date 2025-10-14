@@ -3,6 +3,7 @@ import './globals.css'
 import { AppProviders } from '@/components/app-providers'
 import { AppLayout } from '@/components/app-layout'
 import React from 'react'
+import { Analytics } from '@vercel/analytics/next'
 
 export const metadata: Metadata = {
   title: 'Vault 7641 - Your Crypto Homebase',
@@ -36,6 +37,8 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           <AppLayout links={links}>{children}</AppLayout>
         </AppProviders>
       </body>
+
+      <Analytics />
     </html>
   )
 }

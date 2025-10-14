@@ -7,7 +7,7 @@ export const SITE_CONFIG = {
 
 // Social media and external links
 export const SOCIAL_LINKS = {
-  discord: 'https://discord.gg/MeknM4jSch',
+  discord: 'https://discord.gg/vault7641',
   twitter: 'https://twitter.com/vault7641',
   telegram: 'https://t.me/vault7641',
 } as const

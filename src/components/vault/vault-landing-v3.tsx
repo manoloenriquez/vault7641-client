@@ -50,7 +50,7 @@ export function VaultLandingV3() {
       gradient: 'from-orange-400 via-orange-600 to-red-700',
       activities: [],
       benefits: [
-        'Exclusive Market Insights & Signals',
+        'Exclusive Market Insights',
         'Actionable Trade Setups',
         'Market Watch & News',
         'On-Chain Data & Reports',
@@ -134,14 +134,18 @@ export function VaultLandingV3() {
         'Core Discord "Features" Launch',
         'Guild Selection System',
         'Basic Academy Setup',
-        'Vault University (Advanced Academy) Pilot',
         'Guild Quest System Launch',
-        'Early Bird Benefits Distribution',
       ],
     },
     {
       title: 'Phase 2: Build Habits & Early Wins',
-      items: ['Pilot bounties and short-term contracts', 'Community Points System', 'Pilot Website Edu Platform'],
+      items: [
+        'Pilot bounties and short-term contracts',
+        'Community Points System',
+        'Pilot Website Edu Platform',
+        'Vault University (Advanced Academy) Pilot',
+        'Early Bird Benefits Distribution',
+      ],
     },
     {
       title: 'Phase 3: Proof & Case Studies',
@@ -323,7 +327,7 @@ export function VaultLandingV3() {
             </div>
 
             {/* Vault Illustration */}
-            <div className="hidden lg:block lg:col-span-1">
+            {/* <div className="hidden lg:block lg:col-span-1">
               <div className="sticky top-32">
                 <div className="relative">
                   <Image
@@ -336,7 +340,7 @@ export function VaultLandingV3() {
                   />
                 </div>
               </div>
-            </div>
+            </div> */}
           </div>
         </div>
       </div>

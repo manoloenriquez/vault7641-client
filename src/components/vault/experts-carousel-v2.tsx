@@ -15,9 +15,9 @@ interface Expert {
 const experts: Expert[] = [
   {
     id: '1',
-    name: 'Estudyante Trader',
-    credentials: ['Financial Analyst', 'Founder of TET', 'FMVA®'],
-    image: '/experts/ET.png',
+    name: 'BitMaestro',
+    credentials: ['Founder of PCP', 'Full-Time Trader', 'KOL'],
+    image: '/experts/bitmaestro.png',
   },
   {
     id: '2',
@@ -27,27 +27,27 @@ const experts: Expert[] = [
   },
   {
     id: '3',
-    name: 'BitJom',
-    credentials: ['Crypto & Forex Trader'],
-    image: '/experts/BitJom.jpg',
-  },
-  {
-    id: '4',
-    name: 'Gasul Gaming',
-    credentials: ['Web3 Content Creator & Streamer', 'Gamer', 'KOL'],
-    image: '/experts/gasul.jpeg',
-  },
-  {
-    id: '5',
-    name: 'ChartLizard',
-    credentials: ['Financial Planner', 'Full-Time Trader', 'KOL'],
-    image: '/experts/chartlizard.jpg',
-  },
-  {
-    id: '6',
     name: 'KoroNFT',
     credentials: ['Web3 Gamer', 'Play2Earn Games', 'KOL'],
     image: '/experts/koro.png',
+  },
+  {
+    id: '4',
+    name: 'Zygfrid',
+    credentials: ['Web3 Business Development', 'KOL', 'Founder of AI'],
+    image: '/experts/zygfrid.png',
+  },
+  {
+    id: '5',
+    name: 'John F Dong',
+    credentials: ['KOL', 'Content Strategist at Web3TV', 'Anichess Ambassador'],
+    image: '/experts/john-f-dong.png',
+  },
+  {
+    id: '6',
+    name: 'Panzel Garcia',
+    credentials: ['Web3 & P2E Content Creator'],
+    image: '/experts/panzel-garcia.png',
   },
   {
     id: '7',
@@ -57,9 +57,63 @@ const experts: Expert[] = [
   },
   {
     id: '8',
+    name: 'Estudyante Trader',
+    credentials: ['Financial Analyst', 'Founder of TET', 'FMVA®'],
+    image: '/experts/ET.png',
+  },
+  {
+    id: '9',
+    name: 'Master Kamote',
+    credentials: ['Ronin Creator', 'Star Atlas Ambassador', 'YGG Guild Alliance Leader'],
+    image: '/experts/master-kamote.png',
+  },
+  {
+    id: '11',
+    name: 'Aaron Reyes',
+    credentials: ['KOL', 'Full-Time Trader & Investor'],
+    image: '/experts/aaron-reyes.png',
+  },
+  {
+    id: '12',
+    name: 'Cryptita',
+    credentials: ['Educator', 'Community Founder'],
+    image: '/experts/cryptita.png',
+  },
+  {
+    id: '13',
+    name: 'BitJom',
+    credentials: ['Crypto & Forex Trader'],
+    image: '/experts/BitJom.jpg',
+  },
+  {
+    id: '14',
+    name: 'GasulGaming',
+    credentials: ['Web3 Content Creator & Streamer', 'Gamer', 'KOL'],
+    image: '/experts/gasul.jpeg',
+  },
+  {
+    id: '15',
+    name: 'ChartLizard',
+    credentials: ['Financial Planner', 'Full-Time Trader', 'KOL'],
+    image: '/experts/chartlizard.jpg',
+  },
+  {
+    id: '16',
+    name: 'Hari',
+    credentials: ['Airdrop Hunter', 'Founder of HariDrops Community'],
+    image: '/experts/hari.png',
+  },
+  {
+    id: '17',
     name: 'Jannidepp',
     credentials: ['Web3 Content Creator', 'KOL'],
     image: '/experts/jannidepp.png',
+  },
+  {
+    id: '18',
+    name: '0xmulli',
+    credentials: ['Web3 Developer'],
+    image: '/experts/0xmulli.JPG',
   },
 ]
 
@@ -93,7 +147,7 @@ export function ExpertsCarousel() {
                     </div>
 
                     <div className="flex flex-col justify-between flex-grow">
-                      <h3 className="text-base md:text-lg font-bold mb-2 line-clamp-1">{expert.name}</h3>
+                      <h3 className="text-white md:text-lg font-bold mb-2 line-clamp-1">{expert.name}</h3>
 
                       <div className="text-xs md:text-sm font-medium text-zinc-400 line-clamp-3">
                         {expert.credentials.map((credential, index) => (
