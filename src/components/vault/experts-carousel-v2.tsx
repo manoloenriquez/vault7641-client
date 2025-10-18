@@ -32,12 +32,6 @@ const experts: Expert[] = [
     image: '/experts/koro.png',
   },
   {
-    id: '4',
-    name: 'Zygfrid',
-    credentials: ['Web3 Business Development', 'KOL', 'Founder of AI'],
-    image: '/experts/zygfrid.png',
-  },
-  {
     id: '5',
     name: 'John F Dong',
     credentials: ['KOL', 'Content Strategist at Web3TV', 'Anichess Ambassador'],
@@ -114,6 +108,24 @@ const experts: Expert[] = [
     name: '0xmulli',
     credentials: ['Web3 Developer'],
     image: '/experts/0xmulli.JPG',
+  },
+  {
+    id: '19',
+    name: 'Chartiq',
+    credentials: ['NFT & DAO Contributor', 'Community & Collabs Strategist'],
+    image: '/experts/chartiq.png',
+  },
+  {
+    id: '20',
+    name: 'Bryan Mesia',
+    credentials: ['KOL', 'P2E Content Creator'],
+    image: '/experts/bryan-mesia.png',
+  },
+  {
+    id: '21',
+    name: "Gab's Crypto",
+    credentials: ['Business Analyst Professional', '2017 Crypto Investor and Trader', "Founder of Gab's Crypto PH"],
+    image: '/experts/gabs-crypto.png',
   },
 ]
 
