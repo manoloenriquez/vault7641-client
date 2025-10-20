@@ -122,7 +122,7 @@ export function AuthGuard({ children, requiresNFT = true, allowedGuilds = [], fa
           <p className="text-muted-foreground mb-8">
             Please connect your wallet to access member-only content and features.
           </p>
-          <WalletMultiButton className="!bg-gradient-to-r !from-purple-500 !to-cyan-500 !text-white !font-semibold !text-lg !px-8 !py-4 !rounded-md hover:!from-purple-600 hover:!to-cyan-600 !transition-all" />
+          <WalletMultiButton />
         </div>
       </div>
     )

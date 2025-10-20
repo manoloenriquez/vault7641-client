@@ -127,8 +127,35 @@
   }
 }
 
+/* Solana Wallet Adapter Button - Brand Adjustments */
+.wallet-adapter-button {
+  border-radius: 0.375rem !important; /* rounded-md to match brand */
+  font-family: inherit !important;
+}
+
 .wallet-adapter-button-trigger {
-  height: auto !important;
-  @apply !border !bg-background !shadow-xs hover:!bg-accent !text-accent-foreground hover:!text-accent-foreground dark:!bg-input/30 !border-input/10 dark:!border-input dark:hover:!bg-input/50;
-  @apply !px-2 !py-[6px] !rounded-md !text-sm !font-semibold !shadow-sm !transition-all;
+  border-radius: 0.375rem !important; /* rounded-md to match brand */
+  font-family: inherit !important;
+}
+
+/* Modal styling - Dark theme */
+.wallet-adapter-modal-wrapper {
+  font-family: inherit !important;
+}
+
+.wallet-adapter-modal {
+  border-radius: 0.5rem !important;
+  @apply !bg-zinc-900 !border !border-zinc-800;
+}
+
+.wallet-adapter-modal-title {
+  @apply !text-white;
+}
+
+.wallet-adapter-modal-list {
+  @apply !bg-zinc-900;
+}
+
+.wallet-adapter-modal-list-more {
+  @apply !text-zinc-400 hover:!text-white;
 }

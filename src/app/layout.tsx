@@ -3,7 +3,6 @@ import { AppProviders } from '@/components/app-providers'
 import { AppLayout } from '@/components/app-layout'
 import React from 'react'
 import { Analytics } from '@vercel/analytics/next'
-import '@wallet-ui/tailwind/index.css'
 import './globals.css'
 
 export const metadata: Metadata = {

@@ -214,7 +214,7 @@ export function GuildSelectionFeature() {
             <p className="text-xl text-zinc-400 mb-8">
               Connect your wallet to view and assign guilds to your Vault NFTs
             </p>
-            <WalletMultiButton className="!bg-gradient-to-r !from-purple-500 !to-cyan-500 !text-white !font-semibold !text-lg !px-8 !py-4 !rounded-md hover:!from-purple-600 hover:!to-cyan-600 !transition-all" />
+            <WalletMultiButton />
           </div>
         </div>
       </div>

@@ -88,7 +88,7 @@ export function VaultNavigation() {
             <div className="flex items-center gap-2 sm:gap-3">
               {/* Wallet Connect Button */}
               <div className="hidden sm:block">
-                <WalletMultiButton className="!bg-gradient-to-r !from-purple-500 !to-cyan-500 !text-white !font-semibold !text-sm !px-4 !py-2 !rounded-md hover:!from-purple-600 hover:!to-cyan-600 !transition-all" />
+                <WalletMultiButton />
               </div>
 
               {auth.isAuthenticated ? (
@@ -178,7 +178,7 @@ export function VaultNavigation() {
                 <div className="border-t border-zinc-700/50 pt-4 space-y-3">
                   {/* Wallet Connect Button - Mobile */}
                   <div className="w-full">
-                    <WalletMultiButton className="!w-full !bg-gradient-to-r !from-purple-500 !to-cyan-500 !text-white !font-semibold !text-base !py-6 !rounded-md hover:!from-purple-600 hover:!to-cyan-600 !transition-all" />
+                    <WalletMultiButton className="!w-full" />
                   </div>
 
                   {auth.isAuthenticated ? (
