@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { useWallet, useConnection } from '@solana/wallet-adapter-react'
+import { useWallet } from '@solana/wallet-adapter-react'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
@@ -12,7 +12,6 @@ import { Loader2, Sparkles, ChevronRight, CheckCircle, Coins } from 'lucide-reac
 import Image from 'next/image'
 import { toast } from 'sonner'
 import { useGuildSelection } from '@/hooks/use-guild-selection'
-import { getNFTWithMetadata } from '@/lib/solana/nft-operations'
 
 // Types
 interface NFTData {
@@ -116,7 +115,6 @@ const guilds: Guild[] = [
 export function GuildSelectionFeature() {
   const router = useRouter()
   const { publicKey } = useWallet()
-  const { connection } = useConnection()
   const { isConnected } = useGuildSelection()
 
   const [nfts, setNFTs] = useState<NFTData[]>([])
@@ -129,35 +127,38 @@ export function GuildSelectionFeature() {
     setIsLoading(true)
     setLoadError(null)
     try {
-      console.log('Loading NFTs for wallet:', publicKey.toBase58())
+      const walletAddress = publicKey.toBase58()
+      console.log('📡 [Guild Selection] Fetching NFTs from API for wallet:', walletAddress)
 
-      // Fetch NFTs from Solana blockchain with full metadata
-      const nftsWithMetadata = await getNFTWithMetadata(connection, publicKey)
+      // Fetch NFTs from API endpoint (uses DAS API + caching)
+      const response = await fetch(`/api/nfts/${walletAddress}`)
 
-      console.log('NFTs with metadata loaded:', nftsWithMetadata.length)
+      if (!response.ok) {
+        throw new Error(`API returned ${response.status}: ${response.statusText}`)
+      }
+
+      const data = await response.json()
+      const fetchedNFTs = data.data || []
+
+      console.log('✅ [Guild Selection] NFTs loaded from API:', fetchedNFTs.length)
 
       // Transform to our NFTData format
-      const transformedNFTs: NFTData[] = nftsWithMetadata.map((nft, index) => {
-        const metadata = nft.metadata || {}
-
-        // Convert UMI PublicKey to string (it has a string representation)
-        const mintAddress = String(nft.mint)
-
-        return {
-          id: mintAddress,
-          name: nft.name || `NFT #${index + 1}`,
-          image: metadata.image || metadata.image_uri || '/Logo_Full_nobg.png',
-          metadata: {
-            attributes: metadata.attributes || [],
-          },
-          mintAddress: mintAddress,
-          isRevealed: false, // Check if already assigned to a guild
-        }
-      })
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const transformedNFTs: NFTData[] = fetchedNFTs.map((nft: any) => ({
+        id: nft.id || nft.mintAddress,
+        name: nft.name || 'Unknown NFT',
+        image: nft.image || '/Logo_Full_nobg.png',
+        metadata: {
+          attributes: nft.metadata?.attributes || [],
+        },
+        mintAddress: nft.mintAddress || nft.id,
+        assignedGuild: nft.assignedGuild,
+        isRevealed: nft.isRevealed || false,
+      }))
 
       console.log(
-        'Transformed NFTs:',
-        transformedNFTs.map((n) => ({ name: n.name, image: n.image })),
+        '✅ [Guild Selection] Transformed NFTs:',
+        transformedNFTs.map((n) => ({ name: n.name, revealed: n.isRevealed, guild: n.assignedGuild })),
       )
       setNFTs(transformedNFTs)
 
@@ -167,7 +168,7 @@ export function GuildSelectionFeature() {
         toast.success(`Loaded ${transformedNFTs.length} NFT${transformedNFTs.length > 1 ? 's' : ''}`)
       }
     } catch (error) {
-      console.error('Error loading NFTs:', error)
+      console.error('❌ [Guild Selection] Error loading NFTs:', error)
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
       setLoadError(errorMessage)
       toast.error('Failed to load your NFTs')
@@ -175,7 +176,7 @@ export function GuildSelectionFeature() {
     } finally {
       setIsLoading(false)
     }
-  }, [publicKey, connection])
+  }, [publicKey])
 
   // Load user's NFTs
   useEffect(() => {
@@ -187,10 +188,10 @@ export function GuildSelectionFeature() {
   }, [publicKey, loadUserNFTs])
 
   const handleNFTSelect = (nft: NFTData) => {
-    if (nft.isRevealed) {
-      toast.info('This NFT is already revealed and assigned to a guild')
-      return
-    }
+    // if (nft.isRevealed) {
+    //   toast.info('This NFT is already revealed and assigned to a guild')
+    //   return
+    // }
     // Redirect to reveal page
     router.push(`/reveal/${nft.id}`)
   }

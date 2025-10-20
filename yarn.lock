@@ -527,6 +527,11 @@
   dependencies:
     "@lit-labs/ssr-dom-shim" "^1.4.0"
 
+"@metaplex-foundation/digital-asset-standard-api@^2.0.0":
+  version "2.0.0"
+  resolved "https://registry.yarnpkg.com/@metaplex-foundation/digital-asset-standard-api/-/digital-asset-standard-api-2.0.0.tgz#5402e3887901b0565ce90a52efd236af777b1c24"
+  integrity sha512-CnFN7epCwNcei+OzDvIg7KpTcB+O827YKomdjKEl72LF/DHfDMXqpbnXf2qsIF4iGaBEOviwxkjUwbXIDLpAxQ==
+
 "@metaplex-foundation/mpl-core@^1.1.1":
   version "1.7.0"
   resolved "https://registry.yarnpkg.com/@metaplex-foundation/mpl-core/-/mpl-core-1.7.0.tgz#bbdc18d2c5537381ed202e68407eb8e69085fecf"

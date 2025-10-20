@@ -22,6 +22,7 @@
   "version": "0.0.0",
   "private": true,
   "dependencies": {
+    "@metaplex-foundation/digital-asset-standard-api": "^2.0.0",
     "@metaplex-foundation/mpl-core": "^1.1.1",
     "@metaplex-foundation/mpl-token-metadata": "^3.4.0",
     "@metaplex-foundation/umi": "^1.4.1",

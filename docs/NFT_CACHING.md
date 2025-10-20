@@ -1,6 +1,34 @@
 # NFT Caching System
 
-This document describes the NFT caching implementation for improved performance in the Vault 7641 application.
+## Automatic Prefetching
+
+When a user connects their wallet, the system automatically starts prefetching NFT data in the background using the `useNFTPrefetch` hook. This eliminates the wait time when navigating to NFT pages.
+
+### How It Works
+
+```
+User connects wallet
+       ↓
+useNFTPrefetch hook activates
+       ↓
+Calls API endpoint (/api/nfts/[address]) in background
+       ↓
+API fetches from blockchain using DAS API + collection filtering
+       ↓
+Browser caches API response (HTTP cache)
+       ↓
+User navigates to NFT page
+       ↓
+Instant load from cached API response!
+```
+
+### Benefits of API-Based Prefetching
+
+- **Single source of truth**: All NFT fetching goes through the same API endpoint
+- **No duplicate logic**: Prefetch and page load use the same code path
+- **HTTP caching**: Browser automatically caches API responses
+- **Better performance**: DAS API with collection filtering is optimized
+- **Easier maintenance**: Changes to fetch logic only need to be made in one placeribes the NFT caching implementation for improved performance in the Vault 7641 application.
 
 ## Overview
 

@@ -18,7 +18,7 @@ export const SOLANA_CONNECTION_CONFIG: ConnectionConfig = {
 export function getSolanaRpcUrl(): string {
   return (
     process.env.NEXT_PUBLIC_SOLANA_RPC_URL ||
-    'https://spring-fragrant-violet.solana-mainnet.quiknode.pro/79d544575c48d9b2a6a8f91ecabf7f981a9ee730'
+    'https://mainnet.helius-rpc.com/?api-key=ae5a7e40-416d-443e-b2f4-efe2e4cd8ba3'
   )
 }
 
@@ -29,4 +29,13 @@ export function getSolanaRpcUrl(): string {
  */
 export const UMI_CONFIG = {
   commitment: 'confirmed' as const,
+}
+
+/**
+ * Get the NFT Collection Address
+ *
+ * This is the collection address for Vault 7641 NFTs
+ */
+export function getCollectionAddress(): string | undefined {
+  return process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS
 }

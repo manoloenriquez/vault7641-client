@@ -235,17 +235,18 @@ NEXT_PUBLIC_SOLANA_RPC_URL="https://api.mainnet-beta.solana.com"
 # NFT Update Authority (64-byte array from keypair file)
 NFT_UPDATE_AUTHORITY_PRIVATE_KEY="[123,45,67,89,12,34,56,78,90,12,34,56,78,90,12,34,56,78,90,12,34,56,78,90,12,34,56,78,90,12,34,56,78,90,12,34,56,78,90,12,34,56,78,90,12,34,56,78,90,12,34,56,78,90,12,34,56,78,90,12,34,56]"
 
-# NFT Collection Address (optional - only if your NFTs are part of a collection)
-NFT_COLLECTION_ADDRESS="<your-collection-public-key>"
+# NFT Collection Address (optional - enables faster fetching by filtering to specific collection)
+NEXT_PUBLIC_NFT_COLLECTION_ADDRESS="<your-collection-public-key>"
 
 # Metadata Base URL
 NEXT_PUBLIC_METADATA_BASE_URL="https://vault7641.com"
 ```
 
-**Note about NFT_COLLECTION_ADDRESS:**
+**Note about NEXT_PUBLIC_NFT_COLLECTION_ADDRESS:**
 
-- This is **optional** - only needed if your NFTs are part of a Metaplex Core Collection
-- If not set, the system will try to detect the collection from the NFT's updateAuthority
+- This is **optional but highly recommended** - enables faster NFT fetching using DAS API collection filtering
+- Without this, the app will fetch ALL NFTs from the wallet (slower)
+- With this, the app only fetches NFTs from your specific Vault 7641 collection (much faster)
 - If your NFTs are not in a collection, you can omit this variable
 
 Remember: Keep this file secret and never commit it to version control! 🔒

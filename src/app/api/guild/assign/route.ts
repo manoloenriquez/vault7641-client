@@ -52,7 +52,7 @@ export async function POST(request: NextRequest) {
     // Get RPC URL from global config
     const rpcUrl = getSolanaRpcUrl()
     const updateAuthorityPrivateKey = process.env.NFT_UPDATE_AUTHORITY_PRIVATE_KEY
-    const collectionAddress = process.env.NFT_COLLECTION_ADDRESS // Optional: only needed if NFTs are in a collection
+    const collectionAddress = process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS // Optional: only needed if NFTs are in a collection
 
     if (!updateAuthorityPrivateKey) {
       console.error('NFT_UPDATE_AUTHORITY_PRIVATE_KEY is not set in environment variables')

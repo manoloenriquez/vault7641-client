@@ -1,10 +1,11 @@
 import { Connection, PublicKey } from '@solana/web3.js'
 import { createUmi } from '@metaplex-foundation/umi-bundle-defaults'
 import { publicKey } from '@metaplex-foundation/umi'
-import { fetchAssetsByOwner, updateV1, fetchAsset, type AssetV1 } from '@metaplex-foundation/mpl-core'
+import { dasApi } from '@metaplex-foundation/digital-asset-standard-api'
+import { updateV1, fetchAsset } from '@metaplex-foundation/mpl-core'
 import { walletAdapterIdentity } from '@metaplex-foundation/umi-signer-wallet-adapters'
 import type { WalletAdapter } from '@solana/wallet-adapter-base'
-import { UMI_CONFIG } from './connection-config'
+import { UMI_CONFIG, getCollectionAddress } from './connection-config'
 import { nftCache } from './nft-cache'
 
 type GuildType = 'builder' | 'trader' | 'farmer' | 'gamer' | 'pathfinder'
@@ -31,8 +32,11 @@ interface NFTWithMetadata extends NFTData {
 }
 
 /**
- * Get all Core NFTs owned by a wallet address using Metaplex Core
+ * Get all NFTs from the Vault 7641 collection owned by a wallet address using DAS API
  * Results are cached for 5 minutes to improve performance
+ *
+ * Uses the Digital Asset Standard (DAS) API which is much faster than fetching all assets
+ * and allows filtering by collection.
  */
 export async function getUserNFTs(
   connection: Connection,
@@ -44,45 +48,78 @@ export async function getUserNFTs(
     if (useCache) {
       const cached = nftCache.get<NFTData[]>(walletAddress)
       if (cached) {
-        console.log('✅ Using cached NFT data')
+        console.log('✅ [getUserNFTs] Using cached NFT data for:', walletAddress.toBase58())
         return cached
       }
+      console.log('⏳ [getUserNFTs] Cache MISS, fetching from blockchain...')
     }
 
-    console.log('Fetching Core NFTs for wallet:', walletAddress.toBase58())
+    console.log('🔍 [getUserNFTs] Fetching Vault NFTs for wallet:', walletAddress.toBase58())
 
     // Get the RPC endpoint from the connection
     const rpcEndpoint = connection.rpcEndpoint
 
-    // Create UMI instance with global config
-    const umi = createUmi(rpcEndpoint, UMI_CONFIG)
+    // Create UMI instance with DAS API plugin
+    const umi = createUmi(rpcEndpoint, UMI_CONFIG).use(dasApi())
 
     // Convert wallet address to UMI format
     const owner = publicKey(walletAddress.toBase58())
 
-    // Fetch all Core assets (NFTs) owned by the wallet
-    console.log('Calling fetchAssetsByOwner from mpl-core...')
-    const assets = await fetchAssetsByOwner(umi, owner)
+    // Get collection address from env
+    const collectionAddress = getCollectionAddress()
 
-    console.log('Total Core NFTs found:', assets.length)
+    let assets
+
+    if (collectionAddress) {
+      // Fetch NFTs from specific collection (faster and more accurate)
+      console.log('Fetching NFTs from collection:', collectionAddress)
+      // @ts-expect-error - DAS API searchAssets method is added by dasApi() plugin
+      const searchResult = await umi.rpc.searchAssets({
+        owner,
+        grouping: ['collection', collectionAddress],
+        limit: 1000,
+        displayOptions: {
+          showCollectionMetadata: true,
+          showFungible: false,
+        },
+      })
+      assets = searchResult.items
+      console.log(`Found ${assets.length} NFTs from Vault 7641 collection`)
+    } else {
+      // Fallback: Fetch all NFTs owned by wallet (slower, includes all collections)
+      console.warn('⚠️ No collection address configured. Fetching all NFTs...')
+      // @ts-expect-error - DAS API searchAssets method is added by dasApi() plugin
+      const searchResult = await umi.rpc.searchAssets({
+        owner,
+        limit: 1000,
+        displayOptions: {
+          showCollectionMetadata: true,
+          showFungible: false,
+        },
+      })
+      assets = searchResult.items
+      console.log(`Found ${assets.length} total NFTs`)
+    }
 
     // Transform to our format
-    const nfts = assets.map((asset: AssetV1) => ({
-      mint: asset.publicKey,
-      tokenAccount: asset.publicKey,
-      name: asset.name || 'Unknown',
-      symbol: '', // Core assets don't have symbol in the same way
-      uri: asset.uri || '',
-      updateAuthority: asset.updateAuthority.address,
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const nfts = assets.map((asset: any) => ({
+      mint: asset.id,
+      tokenAccount: asset.id,
+      name: asset.content?.metadata?.name || 'Unknown',
+      symbol: asset.content?.metadata?.symbol || '',
+      uri: asset.content?.json_uri || '',
+      updateAuthority: asset.authorities?.[0]?.address || asset.id,
     }))
 
-    console.log('Core NFTs transformed:', nfts.length)
+    console.log('NFTs transformed:', nfts.length)
 
     if (nfts.length > 0) {
       console.log(
-        'First few Core NFTs:',
-        nfts.slice(0, 3).map((n: { mint: string; name: string; uri: string }) => ({
-          mint: n.mint,
+        'First few NFTs:',
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        nfts.slice(0, 3).map((n: { mint: any; name: string; uri: string }) => ({
+          mint: String(n.mint),
           name: n.name,
           uri: n.uri,
         })),
@@ -96,7 +133,7 @@ export async function getUserNFTs(
 
     return nfts
   } catch (error) {
-    console.error('Error fetching Core NFTs with Metaplex:', error)
+    console.error('Error fetching NFTs with DAS API:', error)
     throw error
   }
 }
@@ -116,9 +153,11 @@ export async function getNFTWithMetadata(
     if (useCache) {
       const cached = nftCache.get<NFTWithMetadata[]>(cacheKey)
       if (cached) {
-        console.log('✅ Using cached NFT metadata')
+        console.log('✅ [getNFTWithMetadata] Using cached NFT metadata for:', walletAddress.toBase58())
+        console.log('✅ [getNFTWithMetadata] Cached NFTs:', cached.length)
         return cached
       }
+      console.log('⏳ [getNFTWithMetadata] Cache MISS, fetching metadata...')
     }
 
     const nfts = await getUserNFTs(connection, walletAddress, useCache)

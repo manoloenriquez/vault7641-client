@@ -99,17 +99,18 @@ NEXT_PUBLIC_SOLANA_RPC_URL="https://api.mainnet-beta.solana.com"
 # Your Phantom wallet private key (base58 format)
 NFT_UPDATE_AUTHORITY_PRIVATE_KEY="5Kb8iW7QNmVmH3LqKxYz9fV3J2pXH8dK7CqWx5pL4mN6oP7qR8sT9uV0wX1yZ2"
 
-# NFT Collection Address (optional - only if your NFTs are in a collection)
-NFT_COLLECTION_ADDRESS="<your-collection-public-key>"
+# NFT Collection Address (optional - enables faster fetching by filtering to specific collection)
+NEXT_PUBLIC_NFT_COLLECTION_ADDRESS="<your-collection-public-key>"
 
 # Metadata base URL
 NEXT_PUBLIC_METADATA_BASE_URL="https://vault7641.com"
 ```
 
-**Note about NFT_COLLECTION_ADDRESS:**
+**Note about NEXT_PUBLIC_NFT_COLLECTION_ADDRESS:**
 
-- This is **optional** - only needed if your NFTs are part of a Metaplex Core Collection
-- The system will automatically try to detect the collection from your NFTs
+- This is **optional but recommended** - enables faster NFT fetching using DAS API collection filtering
+- Without this, the app will fetch ALL NFTs from the wallet (slower)
+- With this, only your Vault 7641 collection NFTs are fetched (much faster)
 - If your NFTs are not in a collection, you can skip this variable
 
 Remember to replace the example key with your actual private key! 🔑
