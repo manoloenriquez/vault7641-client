@@ -29,6 +29,9 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
       console.log('Asset fetched:', asset.name)
 
+      // Check if asset is part of vault collection
+      // if (asset.updateAuthority.type !== 'Collection' || asset.updateAuthority) {
+
       // Fetch metadata JSON if URI exists
       let metadata = null
       if (asset.uri) {
@@ -52,9 +55,14 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       let isRevealed = false
 
       for (const guild of guilds) {
-        if (asset.uri && asset.uri.includes(`/art/${guild}/`)) {
+        // Check for guild name in URI - supports multiple patterns:
+        // - /art/builder/0.json
+        // - /builder/0.json
+        // - builder/0.json
+        if (asset.uri && (asset.uri.includes(`/${guild}/`) || asset.uri.includes(`${guild}/`))) {
           assignedGuild = guild
           isRevealed = true
+          console.log(`Guild detected: ${guild} from URI pattern`)
           break
         }
       }

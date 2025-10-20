@@ -152,10 +152,10 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
       setNft(result.data)
 
       // If NFT is already revealed, redirect to guild selection
-      if (result.data.isRevealed) {
-        router.push('/guild-selection')
-        return
-      }
+      // if (result.data.isRevealed) {
+      //   router.push('/guild-selection')
+      //   return
+      // }
     } catch (error) {
       console.error('Error loading NFT:', error)
       toast.error('Failed to load NFT details')

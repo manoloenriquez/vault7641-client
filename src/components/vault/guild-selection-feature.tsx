@@ -113,50 +113,6 @@ const guilds: Guild[] = [
   },
 ]
 
-// Mock NFT data - Replace with actual API call
-const mockNFTs: NFTData[] = [
-  {
-    id: '1',
-    name: 'Vault Pass #1234',
-    image: '/Logo_Full_nobg.png',
-    metadata: {
-      attributes: [
-        { trait_type: 'Rarity', value: 'Common' },
-        { trait_type: 'Background', value: 'Dark' },
-      ],
-    },
-    mintAddress: 'mint1234567890',
-    isRevealed: false,
-  },
-  {
-    id: '2',
-    name: 'Vault Pass #5678',
-    image: '/Logo_Full_nobg.png',
-    metadata: {
-      attributes: [
-        { trait_type: 'Rarity', value: 'Rare' },
-        { trait_type: 'Background', value: 'Blue' },
-      ],
-    },
-    mintAddress: 'mint0987654321',
-    assignedGuild: 'trader',
-    isRevealed: true,
-  },
-  {
-    id: '3',
-    name: 'Vault Pass #9012',
-    image: '/Logo_Full_nobg.png',
-    metadata: {
-      attributes: [
-        { trait_type: 'Rarity', value: 'Epic' },
-        { trait_type: 'Background', value: 'Gold' },
-      ],
-    },
-    mintAddress: 'mint1122334455',
-    isRevealed: false,
-  },
-]
-
 export function GuildSelectionFeature() {
   const router = useRouter()
   const { publicKey } = useWallet()
@@ -165,11 +121,13 @@ export function GuildSelectionFeature() {
 
   const [nfts, setNFTs] = useState<NFTData[]>([])
   const [isLoading, setIsLoading] = useState(false)
+  const [loadError, setLoadError] = useState<string | null>(null)
 
   const loadUserNFTs = useCallback(async () => {
     if (!publicKey) return
 
     setIsLoading(true)
+    setLoadError(null)
     try {
       console.log('Loading NFTs for wallet:', publicKey.toBase58())
 
@@ -210,9 +168,10 @@ export function GuildSelectionFeature() {
       }
     } catch (error) {
       console.error('Error loading NFTs:', error)
+      const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
+      setLoadError(errorMessage)
       toast.error('Failed to load your NFTs')
-      // Fallback to mock data for demo purposes
-      setNFTs(mockNFTs)
+      setNFTs([])
     } finally {
       setIsLoading(false)
     }
@@ -392,8 +351,37 @@ export function GuildSelectionFeature() {
             </div>
           )}
 
+          {/* Error State */}
+          {!isLoading && loadError && (
+            <div className="text-center py-12">
+              <div className="w-16 h-16 bg-red-500/10 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-red-500/20">
+                <svg className="w-8 h-8 text-red-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                  />
+                </svg>
+              </div>
+              <h3 className="text-xl font-bold text-white mb-2">Failed to Load NFTs</h3>
+              <p className="text-zinc-400 mb-6">{loadError || 'An error occurred while loading your NFTs'}</p>
+              <Button onClick={() => loadUserNFTs()} variant="outline" className="gap-2">
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                  />
+                </svg>
+                Try Again
+              </Button>
+            </div>
+          )}
+
           {/* Empty State */}
-          {!isLoading && nfts.length === 0 && (
+          {!isLoading && !loadError && nfts.length === 0 && (
             <div className="text-center py-12">
               <div className="w-16 h-16 bg-zinc-800/50 rounded-2xl flex items-center justify-center mx-auto mb-4">
                 <Coins className="w-8 h-8 text-zinc-500" />

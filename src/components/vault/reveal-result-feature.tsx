@@ -144,19 +144,60 @@ export function RevealResultFeature({ nftId }: RevealResultFeatureProps) {
   const loadNFT = useCallback(async () => {
     setIsLoading(true)
     try {
-      const response = await fetch(`/api/nft/${nftId}`)
+      // Poll for updated NFT data (metadata update may take a moment to propagate)
+      // Reduced polling since the update is usually immediate
+      let attempts = 0
+      const maxAttempts = 3 // Reduced from 10 to 3
+      let nftData = null
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch NFT')
+      while (attempts < maxAttempts) {
+        const response = await fetch(`/api/nft/${nftId}`)
+
+        if (!response.ok) {
+          throw new Error('Failed to fetch NFT')
+        }
+
+        const result = await response.json()
+        nftData = result.data
+
+        console.log(`Polling attempt ${attempts + 1}/${maxAttempts}:`, {
+          assignedGuild: nftData.assignedGuild,
+          expectedGuild: guildId,
+          isRevealed: nftData.isRevealed,
+        })
+
+        // Check if NFT has been assigned to the correct guild
+        if (nftData.assignedGuild === guildId && nftData.isRevealed) {
+          console.log('✅ Guild assignment confirmed!')
+          break
+        }
+
+        // Wait 1 second before retrying (only if not on last attempt)
+        attempts++
+        if (attempts < maxAttempts) {
+          console.log('Waiting 1 second before next poll...')
+          await new Promise((resolve) => setTimeout(resolve, 1000))
+        }
       }
 
-      const result = await response.json()
-      setNft(result.data)
+      if (!nftData) {
+        throw new Error('Failed to fetch NFT data')
+      }
+
+      setNft(nftData)
 
       // Find the assigned guild
       if (guildId) {
         const assignedGuild = guilds.find((g) => g.id === guildId)
         setGuild(assignedGuild || null)
+      }
+
+      // Show success message with updated metadata info
+      if (nftData.assignedGuild === guildId && nftData.isRevealed) {
+        toast.success('NFT metadata updated successfully!')
+      } else if (attempts >= maxAttempts) {
+        console.warn('Max polling attempts reached. Showing NFT data as-is.')
+        toast.info('NFT revealed! Metadata may take a moment to fully update.')
       }
     } catch (error) {
       console.error('Error loading NFT:', error)
@@ -203,8 +244,17 @@ export function RevealResultFeature({ nftId }: RevealResultFeatureProps) {
       <div className="py-12">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-purple-500" />
-            <p className="text-zinc-400">Loading your revealed NFT...</p>
+            <div className="w-20 h-20 bg-purple-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-purple-500/20">
+              <Loader2 className="w-10 h-10 animate-spin text-purple-500" />
+            </div>
+            <h2 className="text-2xl font-bold text-white mb-2">Updating Your NFT...</h2>
+            <p className="text-zinc-400 mb-4">
+              We&apos;re fetching your updated NFT metadata with the new guild artwork and attributes.
+            </p>
+            <div className="flex items-center justify-center gap-2 text-sm text-zinc-500">
+              <div className="w-2 h-2 bg-purple-500 rounded-full animate-pulse" />
+              <span>This may take a few moments</span>
+            </div>
           </div>
         </div>
       </div>
@@ -271,7 +321,7 @@ export function RevealResultFeature({ nftId }: RevealResultFeatureProps) {
                 <Sparkles className="w-6 h-6 text-purple-500" />
                 Your Revealed NFT
               </h2>
-              <Card className="bg-zinc-950/50 border-zinc-800 relative overflow-hidden">
+              <Card className="bg-zinc-950/50 border-zinc-800 relative overflow-hidden animate-in fade-in duration-500">
                 <div className={`absolute inset-x-0 top-0 h-2 bg-gradient-to-r ${guild.gradient}`} />
                 <CardContent className="p-0">
                   <div className="relative">
@@ -280,14 +330,21 @@ export function RevealResultFeature({ nftId }: RevealResultFeatureProps) {
                       alt={nft.name}
                       width={400}
                       height={400}
-                      className="w-full h-80 object-cover"
+                      className="w-full h-80 object-cover animate-in zoom-in duration-700"
+                      key={nft.image}
                     />
 
-                    <div className="absolute top-3 right-3">
+                    <div className="absolute top-3 right-3 flex flex-col gap-2">
                       <Badge className="bg-green-500/20 text-green-400 border-green-500/30">
                         <CheckCircle className="w-3 h-3 mr-1" />
                         Revealed
                       </Badge>
+                      {nft.assignedGuild && (
+                        <Badge className="bg-purple-500/20 text-purple-400 border-purple-500/30">
+                          <Sparkles className="w-3 h-3 mr-1" />
+                          Metadata Updated
+                        </Badge>
+                      )}
                     </div>
 
                     {/* Guild Assignment Overlay */}
@@ -308,11 +365,30 @@ export function RevealResultFeature({ nftId }: RevealResultFeatureProps) {
 
                   <div className="p-6">
                     <h3 className="text-xl font-bold text-white mb-4">{nft.name}</h3>
+
+                    {/* Metadata Update Confirmation */}
+                    {nft.assignedGuild && (
+                      <div className="mb-4 p-3 bg-green-500/10 border border-green-500/20 rounded-lg">
+                        <div className="flex items-center gap-2 text-green-400 text-sm font-medium mb-1">
+                          <CheckCircle className="w-4 h-4" />
+                          NFT Metadata Updated On-Chain
+                        </div>
+                        <p className="text-xs text-zinc-400">
+                          Your NFT now displays the exclusive {guild.name} artwork and updated attributes.
+                        </p>
+                      </div>
+                    )}
+
                     <div className="space-y-2">
                       <h4 className="text-sm font-semibold text-white">Attributes:</h4>
                       <div className="flex flex-wrap gap-2">
                         {nft.metadata.attributes.map((attr, index) => (
-                          <Badge key={index} variant="secondary" className="text-xs">
+                          <Badge
+                            key={index}
+                            variant="secondary"
+                            className="text-xs animate-in fade-in duration-300"
+                            style={{ animationDelay: `${index * 50}ms` }}
+                          >
                             {attr.trait_type}: {attr.value}
                           </Badge>
                         ))}

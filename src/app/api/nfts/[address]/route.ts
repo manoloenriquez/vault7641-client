@@ -31,9 +31,15 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       // Convert wallet address to UMI format
       const owner = publicKey(walletAddress)
 
+      const collectionAddress = process.env.NFT_COLLECTION_ADDRESS // Optional: only needed if NFTs are in a collection
+
       // Fetch all Core assets (NFTs) owned by the wallet
       console.log('Calling fetchAssetsByOwner...')
-      const assets = await fetchAssetsByOwner(umi, owner)
+      const assets = (await fetchAssetsByOwner(umi, owner)).filter(
+        (asset) =>
+          asset.updateAuthority.type === 'Collection' &&
+          asset.updateAuthority.address?.toString() === collectionAddress,
+      )
 
       console.log(`Found ${assets.length} Core NFTs`)
 
@@ -46,7 +52,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
           let isRevealed = false
 
           for (const guild of guilds) {
-            if (asset.uri && asset.uri.includes(`/art/${guild}/`)) {
+            if (asset.uri && (asset.uri.includes(`/${guild}/`) || asset.uri.includes(`${guild}/`))) {
               assignedGuild = guild
               isRevealed = true
               break
