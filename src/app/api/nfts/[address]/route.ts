@@ -3,6 +3,7 @@ import { PublicKey } from '@solana/web3.js'
 import { createUmi } from '@metaplex-foundation/umi-bundle-defaults'
 import { publicKey } from '@metaplex-foundation/umi'
 import { fetchAssetsByOwner } from '@metaplex-foundation/mpl-core'
+import { getSolanaRpcUrl, UMI_CONFIG } from '@/lib/solana/connection-config'
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ address: string }> }) {
   try {
@@ -21,11 +22,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       return NextResponse.json({ error: 'Invalid wallet address' }, { status: 400 })
     }
 
-    // Get RPC endpoint from environment
-    const rpcEndpoint = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com'
+    // Get RPC endpoint from global config
+    const rpcEndpoint = getSolanaRpcUrl()
 
-    // Create UMI instance
-    const umi = createUmi(rpcEndpoint)
+    // Create UMI instance with global config
+    const umi = createUmi(rpcEndpoint, UMI_CONFIG)
 
     try {
       // Convert wallet address to UMI format

@@ -4,6 +4,7 @@ import { publicKey } from '@metaplex-foundation/umi'
 import { fetchAssetsByOwner, updateV1, fetchAsset, type AssetV1 } from '@metaplex-foundation/mpl-core'
 import { walletAdapterIdentity } from '@metaplex-foundation/umi-signer-wallet-adapters'
 import type { WalletAdapter } from '@solana/wallet-adapter-base'
+import { UMI_CONFIG } from './connection-config'
 
 type GuildType = 'builder' | 'trader' | 'farmer' | 'gamer' | 'pathfinder'
 
@@ -17,8 +18,8 @@ export async function getUserNFTs(connection: Connection, walletAddress: PublicK
     // Get the RPC endpoint from the connection
     const rpcEndpoint = connection.rpcEndpoint
 
-    // Create UMI instance
-    const umi = createUmi(rpcEndpoint)
+    // Create UMI instance with global config
+    const umi = createUmi(rpcEndpoint, UMI_CONFIG)
 
     // Convert wallet address to UMI format
     const owner = publicKey(walletAddress.toBase58())
@@ -112,8 +113,8 @@ export async function updateCoreNFTMetadata(
     // Get the RPC endpoint from the connection
     const rpcEndpoint = connection.rpcEndpoint
 
-    // Create UMI instance with wallet adapter
-    const umi = createUmi(rpcEndpoint).use(walletAdapterIdentity(wallet))
+    // Create UMI instance with wallet adapter and global config
+    const umi = createUmi(rpcEndpoint, UMI_CONFIG).use(walletAdapterIdentity(wallet))
 
     // Convert mint address to UMI format
     const assetAddress = publicKey(nftMintAddress)

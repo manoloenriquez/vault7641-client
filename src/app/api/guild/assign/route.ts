@@ -4,6 +4,7 @@ import { createUmi } from '@metaplex-foundation/umi-bundle-defaults'
 import { updateV1, fetchAsset, fetchCollection } from '@metaplex-foundation/mpl-core'
 import { publicKey as umiPublicKey, createSignerFromKeypair, keypairIdentity } from '@metaplex-foundation/umi'
 import bs58 from 'bs58'
+import { getSolanaRpcUrl, SOLANA_CONNECTION_CONFIG, UMI_CONFIG } from '@/lib/solana/connection-config'
 
 // Guild types
 type GuildType = 'builder' | 'trader' | 'farmer' | 'gamer' | 'pathfinder'
@@ -48,10 +49,8 @@ export async function POST(request: NextRequest) {
 
     console.log('Processing guild assignment:', { nftMint, guildId, tokenNumber, walletAddress })
 
-    // Get environment variables
-    const rpcUrl =
-      process.env.NEXT_PUBLIC_SOLANA_RPC_URL ||
-      'https://spring-fragrant-violet.solana-mainnet.quiknode.pro/79d544575c48d9b2a6a8f91ecabf7f981a9ee730'
+    // Get RPC URL from global config
+    const rpcUrl = getSolanaRpcUrl()
     const updateAuthorityPrivateKey = process.env.NFT_UPDATE_AUTHORITY_PRIVATE_KEY
     const collectionAddress = process.env.NFT_COLLECTION_ADDRESS // Optional: only needed if NFTs are in a collection
 
@@ -67,11 +66,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create Solana connection with finalized commitment for better reliability
-    const connection = new Connection(rpcUrl, {
-      commitment: 'confirmed',
-      confirmTransactionInitialTimeout: 60000, // 60 seconds
-    })
+    // Create Solana connection with global configuration
+    const connection = new Connection(rpcUrl, SOLANA_CONNECTION_CONFIG)
 
     // Verify the NFT mint exists
     try {
@@ -158,11 +154,9 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Initialize Umi with the signer and better RPC settings
+    // Initialize Umi with the signer and global configuration
     console.log('Initializing UMI with signer...')
-    const umi = createUmi(rpcUrl, {
-      commitment: 'confirmed',
-    })
+    const umi = createUmi(rpcUrl, UMI_CONFIG)
 
     const umiKeypair = umi.eddsa.createKeypairFromSecretKey(updateAuthorityKeypair.secretKey)
     const updateAuthoritySigner = createSignerFromKeypair(umi, umiKeypair)
