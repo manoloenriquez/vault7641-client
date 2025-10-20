@@ -67,8 +67,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Create Solana connection
-    const connection = new Connection(rpcUrl, 'confirmed')
+    // Create Solana connection with finalized commitment for better reliability
+    const connection = new Connection(rpcUrl, {
+      commitment: 'confirmed',
+      confirmTransactionInitialTimeout: 60000, // 60 seconds
+    })
 
     // Verify the NFT mint exists
     try {
@@ -155,9 +158,11 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Initialize Umi with the signer
+    // Initialize Umi with the signer and better RPC settings
     console.log('Initializing UMI with signer...')
-    const umi = createUmi(rpcUrl)
+    const umi = createUmi(rpcUrl, {
+      commitment: 'confirmed',
+    })
 
     const umiKeypair = umi.eddsa.createKeypairFromSecretKey(updateAuthorityKeypair.secretKey)
     const updateAuthoritySigner = createSignerFromKeypair(umi, umiKeypair)
@@ -246,7 +251,54 @@ export async function POST(request: NextRequest) {
       collectionAddress: collectionPublicKey?.toString() || 'none',
     })
 
-    const result = await updateV1(umi, updateParams).sendAndConfirm(umi)
+    // Build the transaction
+    console.log('Building transaction...')
+    const updateInstruction = updateV1(umi, updateParams)
+
+    // Send and confirm with retry logic
+    let result
+    let lastError: Error | null = null
+    const maxRetries = 3
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log(`Attempt ${attempt}/${maxRetries}: Sending transaction...`)
+
+        // Use sendAndConfirm with skipPreflight for better reliability
+        result = await updateInstruction.sendAndConfirm(umi, {
+          send: {
+            skipPreflight: false, // Check for errors before sending
+            preflightCommitment: 'confirmed',
+            maxRetries: 3,
+          },
+          confirm: {
+            strategy: {
+              type: 'blockhash',
+              ...(await umi.rpc.getLatestBlockhash()), // Get fresh blockhash
+            },
+          },
+        })
+
+        console.log('✅ Transaction confirmed!')
+        console.log('Signature:', result.signature)
+        break // Success, exit retry loop
+      } catch (error) {
+        lastError = error as Error
+        console.error(`Attempt ${attempt} failed:`, error)
+
+        if (attempt < maxRetries) {
+          const waitTime = attempt * 1000 // Progressive backoff: 1s, 2s
+          console.log(`Waiting ${waitTime}ms before retry...`)
+          await new Promise((resolve) => setTimeout(resolve, waitTime))
+        }
+      }
+    }
+
+    if (!result) {
+      throw new Error(
+        `Transaction failed after ${maxRetries} attempts. Last error: ${lastError?.message || 'Unknown error'}`,
+      )
+    }
 
     console.log('Successfully updated Core NFT metadata')
     console.log('Transaction signature:', result.signature)
