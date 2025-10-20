@@ -3,7 +3,6 @@
 import Image from 'next/image'
 import { Card } from '@/components/ui/card'
 import { Carousel, CarouselContent, CarouselItem, CarouselNext, CarouselPrevious } from '@/components/ui/carousel'
-import Autoplay from 'embla-carousel-autoplay'
 
 interface Expert {
   id: string
@@ -130,8 +129,6 @@ const experts: Expert[] = [
 ]
 
 export function ExpertsCarousel() {
-  const plugin = Autoplay({ delay: 5000 })
-
   return (
     <div className="py-8 md:py-12">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">

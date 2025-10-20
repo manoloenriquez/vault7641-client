@@ -1,7 +1,9 @@
 'use client'
 
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { useWallet, useConnection } from '@solana/wallet-adapter-react'
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
@@ -9,6 +11,8 @@ import { Progress } from '@/components/ui/progress'
 import { Loader2, Sparkles, ChevronRight, CheckCircle, Coins } from 'lucide-react'
 import Image from 'next/image'
 import { toast } from 'sonner'
+import { useGuildSelection } from '@/hooks/use-guild-selection'
+import { getNFTWithMetadata } from '@/lib/solana/nft-operations'
 
 // Types
 interface NFTData {
@@ -155,29 +159,55 @@ const mockNFTs: NFTData[] = [
 
 export function GuildSelectionFeature() {
   const router = useRouter()
-  // Mock wallet connection for now - replace with actual wallet integration
-  const connected = true
-  const publicKey = useMemo(
-    () => ({
-      toString: () => 'mock-wallet-address',
-    }),
-    [],
-  )
+  const { publicKey } = useWallet()
+  const { connection } = useConnection()
+  const { isConnected } = useGuildSelection()
 
   const [nfts, setNFTs] = useState<NFTData[]>([])
   const [isLoading, setIsLoading] = useState(false)
 
   const loadUserNFTs = useCallback(async () => {
+    if (!publicKey) return
+
     setIsLoading(true)
     try {
-      const response = await fetch(`/api/nfts/${publicKey?.toString()}`)
+      console.log('Loading NFTs for wallet:', publicKey.toBase58())
 
-      if (!response.ok) {
-        throw new Error('Failed to fetch NFTs')
+      // Fetch NFTs from Solana blockchain with full metadata
+      const nftsWithMetadata = await getNFTWithMetadata(connection, publicKey)
+
+      console.log('NFTs with metadata loaded:', nftsWithMetadata.length)
+
+      // Transform to our NFTData format
+      const transformedNFTs: NFTData[] = nftsWithMetadata.map((nft, index) => {
+        const metadata = nft.metadata || {}
+
+        // Convert UMI PublicKey to string (it has a string representation)
+        const mintAddress = String(nft.mint)
+
+        return {
+          id: mintAddress,
+          name: nft.name || `NFT #${index + 1}`,
+          image: metadata.image || metadata.image_uri || '/Logo_Full_nobg.png',
+          metadata: {
+            attributes: metadata.attributes || [],
+          },
+          mintAddress: mintAddress,
+          isRevealed: false, // Check if already assigned to a guild
+        }
+      })
+
+      console.log(
+        'Transformed NFTs:',
+        transformedNFTs.map((n) => ({ name: n.name, image: n.image })),
+      )
+      setNFTs(transformedNFTs)
+
+      if (transformedNFTs.length === 0) {
+        toast.info('No NFTs found in your wallet')
+      } else {
+        toast.success(`Loaded ${transformedNFTs.length} NFT${transformedNFTs.length > 1 ? 's' : ''}`)
       }
-
-      const result = await response.json()
-      setNFTs(result.data)
     } catch (error) {
       console.error('Error loading NFTs:', error)
       toast.error('Failed to load your NFTs')
@@ -186,14 +216,16 @@ export function GuildSelectionFeature() {
     } finally {
       setIsLoading(false)
     }
-  }, [publicKey])
+  }, [publicKey, connection])
 
   // Load user's NFTs
   useEffect(() => {
-    if (connected && publicKey) {
+    if (publicKey) {
       loadUserNFTs()
+    } else {
+      setNFTs([])
     }
-  }, [connected, publicKey, loadUserNFTs])
+  }, [publicKey, loadUserNFTs])
 
   const handleNFTSelect = (nft: NFTData) => {
     if (nft.isRevealed) {
@@ -211,7 +243,7 @@ export function GuildSelectionFeature() {
   const unrevealedCount = nfts.filter((nft) => !nft.isRevealed).length
   const revealedCount = nfts.filter((nft) => nft.isRevealed).length
 
-  if (!connected) {
+  if (!isConnected) {
     return (
       <div className="py-12">
         <div className="container mx-auto px-4">
@@ -223,12 +255,7 @@ export function GuildSelectionFeature() {
             <p className="text-xl text-zinc-400 mb-8">
               Connect your wallet to view and assign guilds to your Vault NFTs
             </p>
-            <Button
-              size="lg"
-              className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700"
-            >
-              Connect Wallet
-            </Button>
+            <WalletMultiButton className="!bg-gradient-to-r !from-purple-500 !to-cyan-500 !text-white !font-semibold !text-lg !px-8 !py-4 !rounded-md hover:!from-purple-600 hover:!to-cyan-600 !transition-all" />
           </div>
         </div>
       </div>

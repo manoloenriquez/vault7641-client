@@ -1,11 +1,12 @@
 import { RevealResultFeature } from '@/components/vault/reveal-result-feature'
 
 interface PageProps {
-  params: {
+  params: Promise<{
     nftId: string
-  }
+  }>
 }
 
-export default function RevealResultPage({ params }: PageProps) {
-  return <RevealResultFeature nftId={params.nftId} />
+export default async function RevealResultPage({ params }: PageProps) {
+  const { nftId } = await params
+  return <RevealResultFeature nftId={nftId} />
 }

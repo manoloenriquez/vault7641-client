@@ -7,6 +7,7 @@ import { SOCIAL_LINKS } from '@/lib/constants'
 import Link from 'next/link'
 import Image from 'next/image'
 import { useAuth } from '@/components/auth/auth-guard'
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 
 const scrollToSection = (sectionId: string) => {
   const element = document.getElementById(sectionId)
@@ -85,10 +86,15 @@ export function VaultNavigation() {
             </nav>
 
             <div className="flex items-center gap-2 sm:gap-3">
-              {auth.hasNFT ? (
-                <Link href="/dashboard" className="hidden sm:block">
+              {/* Wallet Connect Button */}
+              <div className="hidden sm:block">
+                <WalletMultiButton className="!bg-gradient-to-r !from-purple-500 !to-cyan-500 !text-white !font-semibold !text-sm !px-4 !py-2 !rounded-md hover:!from-purple-600 hover:!to-cyan-600 !transition-all" />
+              </div>
+
+              {auth.isAuthenticated ? (
+                <Link href="/guild-selection" className="hidden sm:block">
                   <Button variant="ghost" size="sm" className="text-zinc-300 hover:text-white">
-                    Dashboard
+                    Guild Selection
                   </Button>
                 </Link>
               ) : (
@@ -170,10 +176,15 @@ export function VaultNavigation() {
                 </div>
 
                 <div className="border-t border-zinc-700/50 pt-4 space-y-3">
-                  {auth.hasNFT ? (
-                    <Link href="/dashboard" onClick={() => setShowMobileMenu(false)}>
+                  {/* Wallet Connect Button - Mobile */}
+                  <div className="w-full">
+                    <WalletMultiButton className="!w-full !bg-gradient-to-r !from-purple-500 !to-cyan-500 !text-white !font-semibold !text-base !py-6 !rounded-md hover:!from-purple-600 hover:!to-cyan-600 !transition-all" />
+                  </div>
+
+                  {auth.isAuthenticated ? (
+                    <Link href="/guild-selection" onClick={() => setShowMobileMenu(false)}>
                       <Button className="w-full bg-gradient-to-r from-purple-500 to-cyan-500 text-base py-6">
-                        Dashboard
+                        Guild Selection
                       </Button>
                     </Link>
                   ) : (

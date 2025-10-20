@@ -1,7 +1,8 @@
 'use client'
 
-import { useState, useEffect, useMemo, useCallback } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
+import { useWallet } from '@solana/wallet-adapter-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
@@ -132,18 +133,11 @@ interface NFTRevealFeatureProps {
 
 export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
   const router = useRouter()
+  const { publicKey } = useWallet()
   const [nft, setNft] = useState<NFTData | null>(null)
   const [selectedGuild, setSelectedGuild] = useState<Guild | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isRevealing, setIsRevealing] = useState(false)
-
-  // Mock wallet connection
-  const publicKey = useMemo(
-    () => ({
-      toString: () => 'mock-wallet-address',
-    }),
-    [],
-  )
 
   const loadNFT = useCallback(async () => {
     setIsLoading(true)
@@ -178,34 +172,44 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
   const handleReveal = async () => {
     if (!selectedGuild || !nft || !publicKey) return
 
+    // Extract token number from NFT name (e.g., "Vault Pass #1234" -> 1234)
+    const tokenNumberMatch = nft.name.match(/#(\d+)/)
+    const tokenNumber = tokenNumberMatch ? parseInt(tokenNumberMatch[1], 10) : 0
+
+    if (!tokenNumber) {
+      toast.error('Could not determine token number from NFT name')
+      return
+    }
+
     setIsRevealing(true)
     try {
-      const response = await fetch('/api/nft/assign-guild', {
+      const response = await fetch('/api/guild/assign', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          walletAddress: publicKey.toString(),
-          nftId: nft.id,
-          mintAddress: nft.mintAddress,
+          nftMint: nft.mintAddress,
+          tokenNumber,
           guildId: selectedGuild.id,
+          walletAddress: publicKey.toString(),
         }),
       })
 
       if (!response.ok) {
-        throw new Error('Failed to assign guild')
+        const errorData = await response.json()
+        throw new Error(errorData.error || 'Failed to assign guild')
       }
 
       const result = await response.json()
 
       toast.success(`Successfully revealed ${nft.name} and assigned to ${selectedGuild.name}!`)
 
-      // Redirect to result page
-      router.push(`/reveal/${nftId}/result?guild=${selectedGuild.id}&tx=${result.data.transactionId}`)
+      // Redirect to result page with transaction signature
+      router.push(`/reveal/${nftId}/result?guild=${selectedGuild.id}&tx=${result.data.transactionSignature}`)
     } catch (error) {
       console.error('Error revealing NFT:', error)
-      toast.error('Failed to reveal NFT. Please try again.')
+      toast.error(error instanceof Error ? error.message : 'Failed to reveal NFT. Please try again.')
     } finally {
       setIsRevealing(false)
     }

@@ -7,7 +7,6 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { GuildCard } from './guild-card'
 import { Users, Target, TrendingUp } from 'lucide-react'
 import { ExpertsCarousel } from './experts-carousel-v2'
-import Image from 'next/image'
 import { SOCIAL_LINKS } from '@/lib/constants'
 
 const scrollToSection = (sectionId: string) => {

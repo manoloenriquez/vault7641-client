@@ -1,6 +1,5 @@
 'use client'
 
-import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 // import { Badge } from '@/components/ui/badge'
 // import { Input } from '@/components/ui/input'
@@ -67,24 +66,9 @@ const safetyChecklist = [
 ]
 
 export function SafetyPage() {
-  const [reportForm, setReportForm] = useState({
-    type: '',
-    description: '',
-    url: '',
-    evidence: '',
-  })
-
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text)
     // You could add a toast notification here
-  }
-
-  const handleReportSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
-    // Handle report submission
-    console.log('Report submitted:', reportForm)
-    alert('Thank you for your report! Our security team will investigate.')
-    setReportForm({ type: '', description: '', url: '', evidence: '' })
   }
 
   return (

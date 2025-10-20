@@ -1,99 +1,104 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createUmi } from '@metaplex-foundation/umi-bundle-defaults'
+import { publicKey } from '@metaplex-foundation/umi'
+import { fetchAsset } from '@metaplex-foundation/mpl-core'
 
-export async function GET(request: NextRequest, { params }: { params: { nftId: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ nftId: string }> }) {
   try {
-    const nftId = params.nftId
+    const { nftId } = await params
 
     if (!nftId) {
       return NextResponse.json({ error: 'NFT ID is required' }, { status: 400 })
     }
 
-    // Mock NFT data - In a real implementation, this would:
-    // 1. Query the database for the specific NFT
-    // 2. Verify ownership if needed
-    // 3. Return current metadata and guild assignment
+    console.log('Fetching NFT data for:', nftId)
 
-    interface MockNFT {
-      id: string
-      name: string
-      image: string
-      metadata: {
-        attributes: Array<{
-          trait_type: string
-          value: string
-        }>
+    // Get RPC endpoint from environment
+    const rpcEndpoint = process.env.NEXT_PUBLIC_SOLANA_RPC_URL || 'https://api.mainnet-beta.solana.com'
+
+    // Create UMI instance
+    const umi = createUmi(rpcEndpoint)
+
+    try {
+      // Convert NFT ID to UMI PublicKey format
+      const assetAddress = publicKey(nftId)
+
+      // Fetch the Core NFT asset
+      console.log('Fetching asset from blockchain...')
+      const asset = await fetchAsset(umi, assetAddress)
+
+      console.log('Asset fetched:', asset.name)
+
+      // Fetch metadata JSON if URI exists
+      let metadata = null
+      if (asset.uri) {
+        try {
+          console.log('Fetching metadata from URI:', asset.uri)
+          const metadataResponse = await fetch(asset.uri)
+          if (metadataResponse.ok) {
+            metadata = await metadataResponse.json()
+            console.log('Metadata fetched successfully')
+          }
+        } catch (metadataError) {
+          console.error('Error fetching metadata JSON:', metadataError)
+          // Continue without metadata - not critical
+        }
       }
-      mintAddress: string
-      isRevealed: boolean
-      assignedGuild: string | null
-    }
 
-    const mockNFTs: Record<string, MockNFT> = {
-      '1': {
-        id: '1',
-        name: 'Vault Pass #1234',
-        image: '/Logo_Full_nobg.png',
+      // Check if NFT has been assigned to a guild
+      // Guild assignment is indicated by the URI containing a guild name
+      const guilds = ['builder', 'trader', 'farmer', 'gamer', 'pathfinder']
+      let assignedGuild = null
+      let isRevealed = false
+
+      for (const guild of guilds) {
+        if (asset.uri && asset.uri.includes(`/art/${guild}/`)) {
+          assignedGuild = guild
+          isRevealed = true
+          break
+        }
+      }
+
+      // Construct response
+      const nftData = {
+        id: nftId,
+        name: asset.name || 'Unknown NFT',
+        image: metadata?.image || metadata?.image_uri || '/Logo_Full_nobg.png',
         metadata: {
-          attributes: [
-            { trait_type: 'Rarity', value: 'Common' },
-            { trait_type: 'Background', value: 'Dark' },
-            { trait_type: 'Element', value: 'Fire' },
-          ],
+          attributes: metadata?.attributes || [],
+          description: metadata?.description || '',
+          external_url: metadata?.external_url || '',
         },
-        mintAddress: 'mint1234567890abcdef',
-        isRevealed: false,
-        assignedGuild: null,
-      },
-      '2': {
-        id: '2',
-        name: 'Vault Pass #5678',
-        image: '/Logo_Full_nobg.png',
-        metadata: {
-          attributes: [
-            { trait_type: 'Rarity', value: 'Rare' },
-            { trait_type: 'Background', value: 'Blue' },
-            { trait_type: 'Element', value: 'Water' },
-          ],
-        },
-        mintAddress: 'mint0987654321fedcba',
-        assignedGuild: 'trader',
-        isRevealed: true,
-      },
-      '3': {
-        id: '3',
-        name: 'Vault Pass #9012',
-        image: '/Logo_Full_nobg.png',
-        metadata: {
-          attributes: [
-            { trait_type: 'Rarity', value: 'Epic' },
-            { trait_type: 'Background', value: 'Gold' },
-            { trait_type: 'Element', value: 'Earth' },
-          ],
-        },
-        mintAddress: 'mint1122334455667788',
-        isRevealed: false,
-        assignedGuild: null,
-      },
+        mintAddress: nftId,
+        uri: asset.uri || '',
+        updateAuthority: asset.updateAuthority.address?.toString() || '',
+        isRevealed,
+        assignedGuild,
+      }
+
+      console.log('NFT data prepared:', { name: nftData.name, isRevealed, assignedGuild })
+
+      return NextResponse.json({
+        success: true,
+        data: nftData,
+        timestamp: new Date().toISOString(),
+      })
+    } catch (fetchError) {
+      console.error('Error fetching NFT from blockchain:', fetchError)
+
+      // Check if it's an invalid public key
+      if (fetchError instanceof Error && fetchError.message.includes('Invalid public key')) {
+        return NextResponse.json({ error: 'Invalid NFT address' }, { status: 400 })
+      }
+
+      // NFT not found on chain
+      return NextResponse.json({ error: 'NFT not found on blockchain' }, { status: 404 })
     }
-
-    const nft = mockNFTs[nftId]
-
-    if (!nft) {
-      return NextResponse.json({ error: 'NFT not found' }, { status: 404 })
-    }
-
-    // Simulate API processing time
-    await new Promise((resolve) => setTimeout(resolve, 300))
-
-    console.log(`Fetched NFT: ${nftId}`)
-
-    return NextResponse.json({
-      success: true,
-      data: nft,
-      timestamp: new Date().toISOString(),
-    })
   } catch (error) {
-    console.error('Error fetching NFT:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
+    console.error('Error in NFT API route:', error)
+    return NextResponse.json(
+      { error: 'Internal server error', details: error instanceof Error ? error.message : 'Unknown error' },
+      { status: 500 },
+    )
   }
 }

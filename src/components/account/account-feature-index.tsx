@@ -1,18 +1,18 @@
 import { ReactNode } from 'react'
-import { useWalletUi } from '@wallet-ui/react'
-import { WalletButton } from '@/components/solana/solana-provider'
+import { useWallet } from '@solana/wallet-adapter-react'
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 
 export default function AccountFeatureIndex({ redirect }: { redirect: (path: string) => ReactNode }) {
-  const { account } = useWalletUi()
+  const { publicKey } = useWallet()
 
-  if (account) {
-    return redirect(`/account/${account.address.toString()}`)
+  if (publicKey) {
+    return redirect(`/account/${publicKey.toString()}`)
   }
 
   return (
     <div className="hero py-[64px]">
       <div className="hero-content text-center">
-        <WalletButton />
+        <WalletMultiButton />
       </div>
     </div>
   )

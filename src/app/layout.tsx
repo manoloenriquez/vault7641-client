@@ -1,15 +1,16 @@
 import type { Metadata } from 'next'
-import './globals.css'
 import { AppProviders } from '@/components/app-providers'
 import { AppLayout } from '@/components/app-layout'
 import React from 'react'
 import { Analytics } from '@vercel/analytics/next'
+import '@wallet-ui/tailwind/index.css'
+import './globals.css'
 
 export const metadata: Metadata = {
   title: 'Vault 7641 - Your Crypto Homebase',
   description:
     'A curated Web3 community with unlimited education, opportunities, and fun perks. Join 5 specialized guilds and unlock your potential.',
-  keywords: ['Web3', 'Solana', 'NFT', 'Community', 'Education', 'DeFi', 'Trading', 'Gaming'],
+  keywords: ['Web3', 'Sui', 'NFT', 'Community', 'Education', 'DeFi', 'Trading', 'Gaming'],
   openGraph: {
     title: 'Vault 7641 - Your Crypto Homebase',
     description: 'A curated Web3 community with unlimited education, opportunities, and fun perks.',

@@ -1,7 +1,8 @@
 'use client'
 
 import { useEffect, useState } from 'react'
-import { useWalletUi } from '@wallet-ui/react'
+import { useWallet } from '@solana/wallet-adapter-react'
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Shield, Wallet, XCircle, Loader2 } from 'lucide-react'
@@ -40,7 +41,7 @@ async function checkNFTOwnership(walletAddress: string): Promise<{
 }
 
 export function AuthGuard({ children, requiresNFT = true, allowedGuilds = [], fallback }: AuthGuardProps) {
-  const { connected, account } = useWalletUi()
+  const { publicKey, connected } = useWallet()
   const [authStatus, setAuthStatus] = useState<AuthStatus>('checking')
   const [userGuild, setUserGuild] = useState<string | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -49,7 +50,7 @@ export function AuthGuard({ children, requiresNFT = true, allowedGuilds = [], fa
     async function checkAuth() {
       setIsLoading(true)
 
-      if (!connected || !account?.address) {
+      if (!connected || !publicKey) {
         setAuthStatus('not-connected')
         setIsLoading(false)
         return
@@ -59,7 +60,7 @@ export function AuthGuard({ children, requiresNFT = true, allowedGuilds = [], fa
 
       if (requiresNFT) {
         try {
-          const nftData = await checkNFTOwnership(account.address)
+          const nftData = await checkNFTOwnership(publicKey.toBase58())
 
           if (!nftData.hasNFT) {
             setAuthStatus('no-nft')
@@ -88,7 +89,7 @@ export function AuthGuard({ children, requiresNFT = true, allowedGuilds = [], fa
     }
 
     checkAuth()
-  }, [connected, account, requiresNFT, allowedGuilds])
+  }, [connected, publicKey, requiresNFT, allowedGuilds])
 
   if (fallback && authStatus !== 'authorized') {
     return <>{fallback}</>
@@ -121,12 +122,7 @@ export function AuthGuard({ children, requiresNFT = true, allowedGuilds = [], fa
           <p className="text-muted-foreground mb-8">
             Please connect your wallet to access member-only content and features.
           </p>
-          <Button
-            size="lg"
-            className="bg-gradient-to-r from-primary to-accent hover:from-primary/90 hover:to-accent/90"
-          >
-            Connect Wallet
-          </Button>
+          <WalletMultiButton className="!bg-gradient-to-r !from-purple-500 !to-cyan-500 !text-white !font-semibold !text-lg !px-8 !py-4 !rounded-md hover:!from-purple-600 hover:!to-cyan-600 !transition-all" />
         </div>
       </div>
     )
@@ -198,7 +194,7 @@ export function AuthGuard({ children, requiresNFT = true, allowedGuilds = [], fa
 
 // Utility hook for getting current user's auth status
 export function useAuth() {
-  const { connected, account } = useWalletUi()
+  const { publicKey, connected } = useWallet()
   const [authData, setAuthData] = useState<{
     isAuthenticated: boolean
     hasNFT: boolean
@@ -213,7 +209,7 @@ export function useAuth() {
 
   useEffect(() => {
     async function checkAuth() {
-      if (!connected || !account?.address) {
+      if (!connected || !publicKey) {
         setAuthData({
           isAuthenticated: false,
           hasNFT: false,
@@ -224,7 +220,7 @@ export function useAuth() {
       }
 
       try {
-        const nftData = await checkNFTOwnership(account.address)
+        const nftData = await checkNFTOwnership(publicKey.toBase58())
         setAuthData({
           isAuthenticated: connected,
           hasNFT: nftData.hasNFT,
@@ -243,7 +239,7 @@ export function useAuth() {
     }
 
     checkAuth()
-  }, [connected, account])
+  }, [connected, publicKey])
 
   return authData
 }

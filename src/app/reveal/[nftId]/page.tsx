@@ -1,11 +1,12 @@
 import { NFTRevealFeature } from '@/components/vault/nft-reveal-feature'
 
 interface PageProps {
-  params: {
+  params: Promise<{
     nftId: string
-  }
+  }>
 }
 
-export default function NFTRevealPage({ params }: PageProps) {
-  return <NFTRevealFeature nftId={params.nftId} />
+export default async function NFTRevealPage({ params }: PageProps) {
+  const { nftId } = await params
+  return <NFTRevealFeature nftId={nftId} />
 }
