@@ -188,10 +188,10 @@ export async function POST(request: NextRequest) {
     // Construct new metadata URI based on guild and token number
     const baseUrl =
       process.env.NEXT_PUBLIC_METADATA_BASE_URL ||
-      'https://gateway.lighthouse.storage/ipfs/bafybeidqvgwmkzsmabgiv7wjnla4lqobmhfzpi5oxb52xta6h7rayowara'
+      'https://gateway.lighthouse.storage/ipfs/bafybeihdmgi6lwnepy6e7sa4sg6ekby6dnmpw4ufu36rcrswqgjn57btku'
     // const newUri = `${baseUrl}/${guildId}/${tokenNumber}.json`
     const newUri = `${baseUrl}/${guildId}/0.json`
-    const newName = `Vault #${tokenNumber}`
+    const newName = `Trying #${tokenNumber}`
 
     console.log('Updating Core NFT metadata:', { newUri, newName })
 

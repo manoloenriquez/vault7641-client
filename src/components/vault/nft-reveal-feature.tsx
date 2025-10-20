@@ -309,7 +309,7 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
             {/* Guild Selection */}
             <div>
               <h2 className="text-2xl font-bold text-white mb-6">Choose Your Guild</h2>
-              <div className="space-y-4 max-h-96 overflow-y-auto">
+              <div className="space-y-4 max-h-[640px] overflow-y-auto">
                 {guilds.map((guild) => (
                   <Card
                     key={guild.id}
@@ -331,7 +331,7 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
 
                       <p className="text-sm text-zinc-400 mb-4">{guild.description}</p>
 
-                      <div className="space-y-1">
+                      {/* <div className="space-y-1">
                         <h4 className="text-sm font-semibold text-white">Key Benefits:</h4>
                         {guild.benefits.slice(0, 3).map((benefit, index) => (
                           <div key={index} className="flex items-center text-xs text-zinc-300">
@@ -342,7 +342,7 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
                         {guild.benefits.length > 3 && (
                           <div className="text-xs text-purple-400">+{guild.benefits.length - 3} more benefits</div>
                         )}
-                      </div>
+                      </div> */}
                     </CardContent>
                   </Card>
                 ))}
