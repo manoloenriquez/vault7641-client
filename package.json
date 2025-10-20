@@ -45,6 +45,7 @@
     "@vercel/analytics": "^1.5.0",
     "@wallet-ui/react": "1.1.1",
     "@wallet-ui/tailwind": "1.1.1",
+    "bs58": "^6.0.0",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "embla-carousel-autoplay": "^8.6.0",
