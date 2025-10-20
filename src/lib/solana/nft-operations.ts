@@ -5,14 +5,50 @@ import { fetchAssetsByOwner, updateV1, fetchAsset, type AssetV1 } from '@metaple
 import { walletAdapterIdentity } from '@metaplex-foundation/umi-signer-wallet-adapters'
 import type { WalletAdapter } from '@solana/wallet-adapter-base'
 import { UMI_CONFIG } from './connection-config'
+import { nftCache } from './nft-cache'
 
 type GuildType = 'builder' | 'trader' | 'farmer' | 'gamer' | 'pathfinder'
 
+// Type for basic NFT data
+interface NFTData {
+  mint: unknown
+  tokenAccount: unknown
+  name: string
+  symbol: string
+  uri: string
+  updateAuthority: unknown
+}
+
+// Type for NFT with metadata
+interface NFTWithMetadata extends NFTData {
+  metadata: {
+    name?: string
+    description?: string
+    image?: string
+    image_uri?: string
+    attributes?: Array<{ trait_type: string; value: string }>
+  } | null
+}
+
 /**
  * Get all Core NFTs owned by a wallet address using Metaplex Core
+ * Results are cached for 5 minutes to improve performance
  */
-export async function getUserNFTs(connection: Connection, walletAddress: PublicKey) {
+export async function getUserNFTs(
+  connection: Connection,
+  walletAddress: PublicKey,
+  useCache = true,
+): Promise<NFTData[]> {
   try {
+    // Check cache first
+    if (useCache) {
+      const cached = nftCache.get<NFTData[]>(walletAddress)
+      if (cached) {
+        console.log('✅ Using cached NFT data')
+        return cached
+      }
+    }
+
     console.log('Fetching Core NFTs for wallet:', walletAddress.toBase58())
 
     // Get the RPC endpoint from the connection
@@ -53,6 +89,11 @@ export async function getUserNFTs(connection: Connection, walletAddress: PublicK
       )
     }
 
+    // Cache the results
+    if (useCache) {
+      nftCache.set(walletAddress, nfts)
+    }
+
     return nfts
   } catch (error) {
     console.error('Error fetching Core NFTs with Metaplex:', error)
@@ -62,10 +103,25 @@ export async function getUserNFTs(connection: Connection, walletAddress: PublicK
 
 /**
  * Get NFT with full metadata (including image and attributes from JSON)
+ * Results are cached for 5 minutes to improve performance
  */
-export async function getNFTWithMetadata(connection: Connection, walletAddress: PublicKey) {
+export async function getNFTWithMetadata(
+  connection: Connection,
+  walletAddress: PublicKey,
+  useCache = true,
+): Promise<NFTWithMetadata[]> {
   try {
-    const nfts = await getUserNFTs(connection, walletAddress)
+    // Check cache first (using a different cache key for metadata)
+    const cacheKey = `${walletAddress.toBase58()}_metadata`
+    if (useCache) {
+      const cached = nftCache.get<NFTWithMetadata[]>(cacheKey)
+      if (cached) {
+        console.log('✅ Using cached NFT metadata')
+        return cached
+      }
+    }
+
+    const nfts = await getUserNFTs(connection, walletAddress, useCache)
 
     // Fetch metadata for each NFT
     const nftsWithMetadata = await Promise.all(
@@ -86,6 +142,11 @@ export async function getNFTWithMetadata(connection: Connection, walletAddress: 
         }
       }),
     )
+
+    // Cache the results with metadata
+    if (useCache) {
+      nftCache.set(cacheKey, nftsWithMetadata)
+    }
 
     return nftsWithMetadata
   } catch (error) {
@@ -140,6 +201,14 @@ export async function updateCoreNFTMetadata(
 
     console.log('NFT metadata updated successfully!')
     console.log('Transaction signature:', result.signature)
+
+    // Invalidate cache for the wallet that owns this NFT
+    // This ensures fresh data is fetched next time
+    if (wallet.publicKey) {
+      nftCache.invalidate(wallet.publicKey.toString())
+      nftCache.invalidate(`${wallet.publicKey.toString()}_metadata`)
+      console.log('🔄 Cache invalidated for wallet:', wallet.publicKey.toString())
+    }
 
     return {
       signature: result.signature,
@@ -276,3 +345,6 @@ export async function getAssignedGuild(connection: Connection, mintAddress: Publ
     return null
   }
 }
+
+// Re-export cache utilities for manual cache management
+export { invalidateNFTCache, clearNFTCache, getNFTCacheStats } from './nft-cache'
