@@ -31,6 +31,10 @@ export const FEATURES = {
   enableMarketplace: process.env.NEXT_PUBLIC_ENABLE_MARKETPLACE === 'true',
 } as const
 
+// 🎨 MOCK MODE - Set to true to prevent actual transaction requests (but still shows real NFTs)
+// When true, transaction requests will be blocked to prevent on-chain operations
+export const USE_MOCK_TRANSACTIONS = true
+
 // Guild configuration
 export const GUILD_CONFIG = {
   totalSupply: 7641,

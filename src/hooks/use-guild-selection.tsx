@@ -1,15 +1,15 @@
 'use client'
 
-import { useState } from 'react'
 import { useWallet } from '@solana/wallet-adapter-react'
 import { toast } from 'sonner'
+import { useGuildAssignmentUserPaid } from './use-guild-assignment-user-paid'
 
 export type GuildType = 'builder' | 'trader' | 'farmer' | 'gamer' | 'pathfinder'
 
 export function useGuildSelection() {
   const wallet = useWallet()
   const { publicKey } = wallet
-  const [isSelecting, setIsSelecting] = useState(false)
+  const { assignGuild, isAssigning } = useGuildAssignmentUserPaid()
 
   const selectGuild = async (nftMint: string, guildId: GuildType, tokenNumber: number) => {
     if (!publicKey || !wallet.wallet) {
@@ -22,39 +22,25 @@ export function useGuildSelection() {
       return { success: false, error: 'Token number missing' }
     }
 
-    setIsSelecting(true)
-
     try {
-      // Call server-side API to update NFT metadata
-      // Server has the update authority and will perform the on-chain update
+      // Use the new user-paid transaction system
+      // User's wallet will be prompted to sign and pay for the transaction
       toast.loading('Assigning guild to NFT...', { id: 'guild-selection' })
 
-      const response = await fetch('/api/guild/assign', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          nftMint,
-          tokenNumber,
-          guildId,
-          walletAddress: publicKey.toBase58(),
-        }),
-      })
+      const transactionSignature = await assignGuild(nftMint, tokenNumber, guildId)
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Failed to assign guild')
+      if (!transactionSignature) {
+        // User cancelled or error occurred (already handled by hook)
+        toast.dismiss('guild-selection')
+        return { success: false, error: 'Transaction cancelled or failed' }
       }
-
-      const data = await response.json()
 
       toast.success(`Successfully joined ${guildId} guild!`, { id: 'guild-selection' })
 
       return {
         success: true,
-        data: data.data,
-        transactionSignature: data.data.transactionSignature,
+        data: { transactionSignature },
+        transactionSignature,
       }
     } catch (error) {
       console.error('Guild selection error:', error)
@@ -65,14 +51,12 @@ export function useGuildSelection() {
         success: false,
         error: errorMessage,
       }
-    } finally {
-      setIsSelecting(false)
     }
   }
 
   return {
     selectGuild,
-    isSelecting,
+    isSelecting: isAssigning,
     isConnected: !!publicKey,
     walletAddress: publicKey?.toBase58(),
   }

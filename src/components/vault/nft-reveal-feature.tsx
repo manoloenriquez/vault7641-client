@@ -9,6 +9,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Loader2, Sparkles, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react'
 import Image from 'next/image'
 import { toast } from 'sonner'
+import { useGuildAssignmentUserPaid } from '@/hooks/use-guild-assignment-user-paid'
 
 // Types
 interface NFTData {
@@ -134,10 +135,10 @@ interface NFTRevealFeatureProps {
 export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
   const router = useRouter()
   const { publicKey } = useWallet()
+  const { assignGuild, isAssigning } = useGuildAssignmentUserPaid()
   const [nft, setNft] = useState<NFTData | null>(null)
   const [selectedGuild, setSelectedGuild] = useState<Guild | null>(null)
   const [isLoading, setIsLoading] = useState(true)
-  const [isRevealing, setIsRevealing] = useState(false)
 
   const loadNFT = useCallback(async () => {
     setIsLoading(true)
@@ -181,37 +182,26 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
       return
     }
 
-    setIsRevealing(true)
     try {
-      const response = await fetch('/api/guild/assign', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          nftMint: nft.mintAddress,
-          tokenNumber,
-          guildId: selectedGuild.id,
-          walletAddress: publicKey.toString(),
-        }),
-      })
+      // Use the new user-paid transaction hook
+      const signature = await assignGuild(
+        nft.mintAddress,
+        tokenNumber,
+        selectedGuild.id as 'builder' | 'trader' | 'farmer' | 'gamer' | 'pathfinder',
+      )
 
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.error || 'Failed to assign guild')
+      if (!signature) {
+        // User cancelled or error occurred (already handled by hook)
+        return
       }
-
-      const result = await response.json()
 
       toast.success(`Successfully revealed ${nft.name} and assigned to ${selectedGuild.name}!`)
 
       // Redirect to result page with transaction signature
-      router.push(`/reveal/${nftId}/result?guild=${selectedGuild.id}&tx=${result.data.transactionSignature}`)
+      router.push(`/reveal/${nftId}/result?guild=${selectedGuild.id}&tx=${signature}`)
     } catch (error) {
       console.error('Error revealing NFT:', error)
       toast.error(error instanceof Error ? error.message : 'Failed to reveal NFT. Please try again.')
-    } finally {
-      setIsRevealing(false)
     }
   }
 
@@ -365,11 +355,11 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
                   </p>
                   <Button
                     onClick={handleReveal}
-                    disabled={isRevealing}
+                    disabled={isAssigning}
                     size="lg"
                     className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 px-12"
                   >
-                    {isRevealing ? (
+                    {isAssigning ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                         Revealing...
