@@ -32,10 +32,43 @@ export const UMI_CONFIG = {
 }
 
 /**
+ * Get the Irys/Arweave uploader address based on network
+ * Optional - can be used to explicitly set the Irys endpoint
+ * 
+ * NOTE: The Irys uploader auto-detects the network from your RPC endpoint,
+ * so you typically don't need to specify the address manually.
+ */
+export function getIrysAddress(): string {
+  const network = process.env.NEXT_PUBLIC_SOLANA_NETWORK
+  
+  // Use mainnet Irys node for mainnet-beta, devnet for everything else
+  if (network === 'mainnet-beta') {
+    return 'https://node1.irys.xyz'
+  }
+  
+  return 'https://devnet.irys.xyz'
+}
+
+/**
  * Get the NFT Collection Address
  *
  * This is the collection address for Vault 7641 NFTs
  */
 export function getCollectionAddress(): string | undefined {
   return process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS
+}
+
+/**
+ * Get the Irys uploader address based on the network
+ *
+ * Determines whether to use devnet or mainnet Irys based on the RPC endpoint
+ */
+export function getIrysUploaderAddress(): string {
+  const rpcUrl = getSolanaRpcUrl().toLowerCase()
+  // Check if we're on devnet
+  if (rpcUrl.includes('devnet') || rpcUrl.includes('testnet')) {
+    return 'https://devnet.irys.xyz'
+  }
+  // Default to mainnet
+  return 'https://node1.irys.xyz'
 }

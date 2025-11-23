@@ -2,10 +2,7 @@
 
 import { useCallback, useState } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
-import { createUmi } from '@metaplex-foundation/umi-bundle-defaults'
-import { createGenericFile } from '@metaplex-foundation/umi'
-import { walletAdapterIdentity } from '@metaplex-foundation/umi-signer-wallet-adapters'
-import { UMI_CONFIG } from '@/lib/solana/connection-config'
+// Removed direct Irys imports - using API route instead
 import { Button } from '@/components/ui/button'
 
 type Props = {
@@ -32,8 +29,9 @@ export function RegenerateGuildArtButton({ nftMint, tokenId, guildName, gender }
 
   const handleRegenerate = useCallback(async () => {
     try {
+      // Validate wallet connection and public key
       if (!wallet.connected || !wallet.publicKey) {
-        throw new Error('Connect your wallet to continue')
+        throw new Error('Please connect your wallet first')
       }
 
       setIsProcessing(true)
@@ -50,18 +48,46 @@ export function RegenerateGuildArtButton({ nftMint, tokenId, guildName, gender }
 
       const pngBytes = await fetchPngAsUint8Array(`/api/generate-image/${tokenId}?${params.toString()}`)
 
+      setStatus('Initializing Irys Web Uploader...')
+
+      // Use Irys Web Upload SDK (browser-compatible)
+      // Reference: https://docs.irys.xyz/build/d/irys-in-the-browser
+      const { WebUploader } = await import('@irys/web-upload')
+      const { WebSolana } = await import('@irys/web-upload-solana')
+
+      // Debug: Log wallet structure to understand what Irys receives
+      console.log('Wallet object:', {
+        connected: wallet.connected,
+        publicKey: wallet.publicKey?.toBase58(),
+        hasSignTransaction: !!wallet.signTransaction,
+        hasSignAllTransactions: !!wallet.signAllTransactions,
+        walletKeys: Object.keys(wallet),
+      })
+
+      // Validate required wallet methods
+      if (!wallet.signTransaction || !wallet.signAllTransactions) {
+        throw new Error('Wallet does not support transaction signing. Please ensure your wallet is properly connected.')
+      }
+
+      setStatus('Connecting to Irys...')
+
+      console.log('Using RPC endpoint:', connection.rpcEndpoint)
+
+      // Initialize Irys Web Uploader with Solana wallet and explicit RPC endpoint
+      // Pass the entire wallet object from useWallet() as per Irys docs
+      const irysUploader = await WebUploader(WebSolana)
+        .withProvider(wallet)
+        .withRpc(connection.rpcEndpoint)
+
       setStatus('Uploading image & metadata to Arweave...')
 
-      // Initialize Umi with wallet adapter identity
-      const umi = createUmi(connection.rpcEndpoint, UMI_CONFIG)
-      umi.use(walletAdapterIdentity(wallet))
-
-      // Upload image to Arweave
-      const fileName = `vault-guild-${tokenId}.png`
-      const imageFile = createGenericFile(pngBytes, fileName, {
+      // Upload image (convert Uint8Array to Buffer)
+      const imageBuffer = Buffer.from(pngBytes)
+      const imageReceipt = await irysUploader.upload(imageBuffer, {
         tags: [{ name: 'Content-Type', value: 'image/png' }],
       })
-      const [imageUri] = await umi.uploader.upload([imageFile])
+      
+      const imageUri = `https://gateway.irys.xyz/${imageReceipt.id}`
 
       // Create and upload metadata JSON
       const metadata = {
@@ -87,7 +113,13 @@ export function RegenerateGuildArtButton({ nftMint, tokenId, guildName, gender }
         },
       }
 
-      const metadataUri = await umi.uploader.uploadJson(metadata)
+      const metadataString = JSON.stringify(metadata)
+      const metadataBuffer = Buffer.from(metadataString, 'utf-8')
+      const metadataReceipt = await irysUploader.upload(metadataBuffer, {
+        tags: [{ name: 'Content-Type', value: 'application/json' }],
+      })
+      
+      const metadataUri = `https://gateway.irys.xyz/${metadataReceipt.id}`
 
       setStatus('Requesting admin metadata update...')
 

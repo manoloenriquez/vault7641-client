@@ -13,6 +13,20 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  webpack: (config, { isServer }) => {
+    // Exclude Node.js modules from client bundle
+    if (!isServer) {
+      config.resolve.fallback = {
+        ...config.resolve.fallback,
+        fs: false,
+        stream: false,
+        'stream/promises': false,
+        path: false,
+        crypto: false,
+      }
+    }
+    return config
+  },
 }
 
 export default nextConfig

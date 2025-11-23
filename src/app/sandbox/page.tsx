@@ -3,10 +3,7 @@
 import { useState } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { WalletMultiButton } from '@solana/wallet-adapter-react-ui'
-import { createUmi } from '@metaplex-foundation/umi-bundle-defaults'
-import { createGenericFile } from '@metaplex-foundation/umi'
-import { walletAdapterIdentity } from '@metaplex-foundation/umi-signer-wallet-adapters'
-import { UMI_CONFIG } from '@/lib/solana/connection-config'
+// Removed direct Irys imports - using API route instead
 import { Button } from '@/components/ui/button'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
@@ -48,6 +45,7 @@ export default function SandboxPage() {
   const [arweaveImageUri, setArweaveImageUri] = useState<string | null>(null)
   const [arweaveMetadataUri, setArweaveMetadataUri] = useState<string | null>(null)
   const [uploadStatus, setUploadStatus] = useState<string | null>(null)
+  const [irysBalance, setIrysBalance] = useState<string | null>(null)
 
   const handleGenerate = async () => {
     setIsGenerating(true)
@@ -121,9 +119,77 @@ export default function SandboxPage() {
     setSeed(Date.now().toString())
   }
 
-  const handleUploadToArweave = async () => {
+  const handleCheckIrysBalance = async () => {
     if (!wallet.connected || !wallet.publicKey) {
-      setError('Please connect your wallet to upload to Arweave')
+      setError('Please connect your wallet first')
+      return
+    }
+
+    try {
+      const { WebUploader } = await import('@irys/web-upload')
+      const { WebSolana } = await import('@irys/web-upload-solana')
+
+      const irysUploader = await WebUploader(WebSolana)
+        .withProvider(wallet)
+        .withRpc(connection.rpcEndpoint)
+      
+      // Get balance in atomic units
+      const balance = await irysUploader.getLoadedBalance()
+      
+      // Convert to SOL (1 SOL = 1,000,000,000 lamports)
+      const balanceInSol = balance / 1_000_000_000
+      
+      setIrysBalance(`${balanceInSol.toFixed(6)} SOL`)
+      console.log('Irys Balance:', balanceInSol, 'SOL')
+    } catch (err) {
+      console.error('Error checking Irys balance:', err)
+      setError(err instanceof Error ? err.message : 'Failed to check Irys balance')
+    }
+  }
+
+  const handleFundIrys = async () => {
+    if (!wallet.connected || !wallet.publicKey) {
+      setError('Please connect your wallet first')
+      return
+    }
+
+    try {
+      const { WebUploader } = await import('@irys/web-upload')
+      const { WebSolana } = await import('@irys/web-upload-solana')
+
+      setUploadStatus('Connecting to Irys...')
+      const irysUploader = await WebUploader(WebSolana)
+        .withProvider(wallet)
+        .withRpc(connection.rpcEndpoint)
+      
+      // Fund with 0.01 SOL (10,000,000 lamports) - enough for ~5-10 uploads
+      const fundAmount = 10_000_000 // 0.01 SOL in lamports
+      
+      setUploadStatus('Funding Irys account with 0.01 SOL...')
+      const fundTx = await irysUploader.fund(fundAmount)
+      
+      console.log('Funded Irys account:', fundTx)
+      setUploadStatus(`✅ Successfully funded Irys with 0.01 SOL`)
+      
+      // Check new balance
+      await handleCheckIrysBalance()
+    } catch (err) {
+      console.error('Error funding Irys:', err)
+      setError(err instanceof Error ? err.message : 'Failed to fund Irys')
+      setUploadStatus(null)
+    }
+  }
+
+  const handleUploadToArweave = async () => {
+    // Validate wallet connection and public key
+    if (!wallet.connected || !wallet.publicKey) {
+      setError('Please connect your wallet first')
+      return
+    }
+
+    // Validate required wallet methods for Irys
+    if (!wallet.signTransaction || !wallet.signAllTransactions) {
+      setError('Wallet does not support transaction signing. Please ensure your wallet is properly connected.')
       return
     }
 
@@ -134,34 +200,68 @@ export default function SandboxPage() {
 
     setIsUploading(true)
     setError(null)
-    setUploadStatus('Initializing Umi...')
+    setUploadStatus('Initializing Irys Web Uploader...')
 
     try {
-      // Initialize Umi with wallet adapter identity
-      const umi = createUmi(connection.rpcEndpoint, UMI_CONFIG)
-      umi.use(walletAdapterIdentity(wallet))
+      // Use Irys Web Upload SDK (browser-compatible)
+      // Reference: https://docs.irys.xyz/build/d/irys-in-the-browser
+      const { WebUploader } = await import('@irys/web-upload')
+      const { WebSolana } = await import('@irys/web-upload-solana')
 
-      setUploadStatus('Converting image to Uint8Array...')
+      setUploadStatus('Connecting to Irys...')
+
+      console.log('Using RPC endpoint:', connection.rpcEndpoint)
+
+      // Initialize Irys Web Uploader with Solana wallet and explicit RPC endpoint
+      // Pass the entire wallet object from useWallet() as per Irys docs
+      const irysUploader = await WebUploader(WebSolana)
+        .withProvider(wallet)
+        .withRpc(connection.rpcEndpoint)
+
+      // Check balance and fund if needed
+      setUploadStatus('Checking Irys balance...')
+      const balance = await irysUploader.getLoadedBalance()
+      const balanceInSol = balance / 1_000_000_000
+      setIrysBalance(`${balanceInSol.toFixed(6)} SOL`)
       
-      // Convert blob to Uint8Array
+      console.log('Current Irys balance:', balanceInSol, 'SOL')
+      
+      // If balance is very low (less than 0.005 SOL), fund automatically
+      if (balance < 5_000_000) { // 0.005 SOL in lamports
+        setUploadStatus('Insufficient balance. Funding Irys with 0.01 SOL...')
+        const fundAmount = 10_000_000 // 0.01 SOL
+        await irysUploader.fund(fundAmount)
+        
+        // Update balance display
+        const newBalance = await irysUploader.getLoadedBalance()
+        const newBalanceInSol = newBalance / 1_000_000_000
+        setIrysBalance(`${newBalanceInSol.toFixed(6)} SOL`)
+        
+        console.log('Funded Irys account. New balance:', newBalanceInSol, 'SOL')
+        setUploadStatus('Irys funded successfully. Proceeding with upload...')
+      }
+
+      setUploadStatus('Converting image to Buffer...')
+      
+      // Convert blob to Buffer (Irys requires Buffer, not Uint8Array)
       const arrayBuffer = await imageBlob.arrayBuffer()
-      const imageBytes = new Uint8Array(arrayBuffer)
+      const imageBuffer = Buffer.from(arrayBuffer)
 
       setUploadStatus('Uploading image to Arweave...')
-
-      // Upload image to Arweave
-      const fileName = `vault-${tokenId}-${guild.toLowerCase().replace(' ', '-')}-${gender.toLowerCase()}.png`
-      const imageFile = createGenericFile(imageBytes, fileName, {
+      
+      // Upload image
+      const imageReceipt = await irysUploader.upload(imageBuffer, {
         tags: [{ name: 'Content-Type', value: 'image/png' }],
       })
-      const [imageUri] = await umi.uploader.upload([imageFile])
+      
+      const imageUri = `https://gateway.irys.xyz/${imageReceipt.id}`
       
       setArweaveImageUri(imageUri)
       console.log('✅ Image uploaded to Arweave:', imageUri)
 
       setUploadStatus('Creating metadata JSON...')
 
-      // Create and upload metadata JSON
+      // Create metadata JSON
       const metadataJson = {
         name: metadata.name,
         symbol: metadata.symbol,
@@ -181,8 +281,15 @@ export default function SandboxPage() {
       }
 
       setUploadStatus('Uploading metadata to Arweave...')
-
-      const metadataUri = await umi.uploader.uploadJson(metadataJson)
+      
+      // Upload metadata (convert to Buffer)
+      const metadataString = JSON.stringify(metadataJson)
+      const metadataBuffer = Buffer.from(metadataString, 'utf-8')
+      const metadataReceipt = await irysUploader.upload(metadataBuffer, {
+        tags: [{ name: 'Content-Type', value: 'application/json' }],
+      })
+      
+      const metadataUri = `https://gateway.irys.xyz/${metadataReceipt.id}`
       
       setArweaveMetadataUri(metadataUri)
       console.log('✅ Metadata uploaded to Arweave:', metadataUri)
@@ -332,6 +439,38 @@ export default function SandboxPage() {
                   </Button>
                 </div>
                 
+                {/* Irys Balance Management */}
+                {wallet.connected && (
+                  <div className="space-y-2 p-3 bg-zinc-900/50 border border-zinc-800 rounded-lg">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-zinc-400">Irys Balance:</span>
+                      <span className="text-sm text-white font-mono">
+                        {irysBalance || 'Not checked'}
+                      </span>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        onClick={handleCheckIrysBalance}
+                        disabled={isUploading}
+                        size="sm"
+                        variant="outline"
+                        className="flex-1 border-zinc-700 text-zinc-300 text-xs"
+                      >
+                        Check Balance
+                      </Button>
+                      <Button
+                        onClick={handleFundIrys}
+                        disabled={isUploading}
+                        size="sm"
+                        variant="outline"
+                        className="flex-1 border-blue-500/30 text-blue-300 hover:bg-blue-500/10 text-xs"
+                      >
+                        Fund 0.01 SOL
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
                 {/* Arweave Upload Button */}
                 <Button
                   onClick={handleUploadToArweave}
