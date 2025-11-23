@@ -1,4 +1,5 @@
 'use client'
+/* eslint-disable @next/next/no-img-element */
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
@@ -12,6 +13,7 @@ import { Loader2, Sparkles, ChevronRight, CheckCircle, Coins, RefreshCcw, Wallet
 import Image from 'next/image'
 import { toast } from 'sonner'
 import { useGuildSelection } from '@/hooks/use-guild-selection'
+import { RegenerateGuildArtButton } from '@/components/vault/regenerate-guild-art-button'
 
 // Helper function to convert IPFS URLs to gateway URLs
 const convertIPFSUrl = (url: string): string => {
@@ -140,6 +142,36 @@ const guilds: Guild[] = [
     ],
   },
 ]
+
+const TOKEN_ID_KEYS = ['token id', 'token_id', 'token', 'id']
+
+const deriveTokenId = (nft: NFTData, index: number): number => {
+  const candidateFromAttr = nft.metadata.attributes.find((attr) =>
+    TOKEN_ID_KEYS.includes(attr.trait_type?.toLowerCase() ?? ''),
+  )
+
+  const rawCandidates = [
+    candidateFromAttr?.value,
+    nft.id?.match(/\d+/)?.[0],
+    nft.mintAddress?.match(/\d+/)?.[0],
+    `${index + 1}`,
+  ]
+
+  for (const raw of rawCandidates) {
+    if (!raw) continue
+    const parsed = Number.parseInt(String(raw), 10)
+    if (Number.isFinite(parsed)) {
+      return parsed
+    }
+  }
+
+  return index + 1
+}
+
+const extractGender = (attributes: NFTData['metadata']['attributes']): string | null => {
+  const match = attributes.find((attr) => attr.trait_type?.toLowerCase() === 'gender')
+  return typeof match?.value === 'string' ? match.value : null
+}
 
 export function GuildSelectionFeature() {
   const router = useRouter()
@@ -411,9 +443,11 @@ export function GuildSelectionFeature() {
           {/* NFTs Grid */}
           {hasNFTs && (
             <div className={`${gridClasses} mb-12 ${isLoading ? 'opacity-60 pointer-events-none' : ''}`}>
-              {nfts.map((nft) => {
+              {nfts.map((nft, index) => {
                 const assignedGuild = nft.assignedGuild ? getGuildById(nft.assignedGuild) : null
                 const imageSrc = convertIPFSUrl(nft.image)
+                const tokenId = deriveTokenId(nft, index)
+                const gender = extractGender(nft.metadata.attributes)
 
                 return (
                   <Card
@@ -510,6 +544,15 @@ export function GuildSelectionFeature() {
                             <span>{nft.isRevealed ? 'View assignment' : 'Reveal now'}</span>
                             <ChevronRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
                           </div>
+                        </div>
+
+                        <div className="pt-3 border-t border-zinc-900">
+                          <RegenerateGuildArtButton
+                            nftMint={nft.mintAddress}
+                            tokenId={tokenId}
+                            guildName={assignedGuild?.name}
+                            gender={gender}
+                          />
                         </div>
                       </div>
                     </CardContent>
