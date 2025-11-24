@@ -329,19 +329,6 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
                       </div>
 
                       <p className="text-sm text-zinc-400 mb-4">{guild.description}</p>
-
-                      <div className="space-y-1">
-                        <h4 className="text-sm font-semibold text-white">Key Benefits:</h4>
-                        {guild.benefits.slice(0, 3).map((benefit, index) => (
-                          <div key={index} className="flex items-center text-xs text-zinc-300">
-                            <div className="w-1 h-1 bg-purple-400 rounded-full mr-2 flex-shrink-0" />
-                            {benefit}
-                          </div>
-                        ))}
-                        {guild.benefits.length > 3 && (
-                          <div className="text-xs text-purple-400">+{guild.benefits.length - 3} more benefits</div>
-                        )}
-                      </div>
                     </CardContent>
                   </Card>
                 ))}
@@ -434,15 +421,11 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
               </p>
               <p className="flex items-start gap-2">
                 <AlertTriangle className="w-4 h-4 mt-0.5 text-orange-500 flex-shrink-0" />
-                <span>
-                  You&apos;ll need to approve a transaction to update the NFT metadata
-                </span>
+                <span>You&apos;ll need to approve a transaction to update the NFT metadata</span>
               </p>
               <p className="flex items-start gap-2">
                 <AlertTriangle className="w-4 h-4 mt-0.5 text-orange-500 flex-shrink-0" />
-                <span>
-                  Small fees will apply for Arweave storage (~0.003 SOL) and transaction fee (~0.00005 SOL)
-                </span>
+                <span>Small fees will apply for Arweave storage (~0.003 SOL) and transaction fee (~0.00005 SOL)</span>
               </p>
               <div className="mt-4 pt-4 border-t border-zinc-800">
                 <div className="flex justify-between text-sm">
