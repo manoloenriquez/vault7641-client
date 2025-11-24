@@ -101,21 +101,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       const nftsWithMetadata = await Promise.all(
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         assets.map(async (asset: any) => {
-          // Check if NFT has been assigned to a guild
-          const guilds = ['builder', 'trader', 'farmer', 'gamer', 'pathfinder']
-          let assignedGuild = null
-          let isRevealed = false
-
           // Get URI (handle both mpl-core and DAS API formats)
           const assetUri = asset.uri || ''
-
-          for (const guild of guilds) {
-            if (assetUri && (assetUri.includes(`/${guild}/`) || assetUri.includes(`${guild}/`))) {
-              assignedGuild = guild
-              isRevealed = true
-              break
-            }
-          }
 
           // Fetch metadata from URI
           let fetchedMetadata = null
@@ -127,6 +114,25 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
               }
             } catch (error) {
               console.error(`❌ [API] Error fetching metadata for ${asset.publicKey}:`, error)
+            }
+          }
+
+          // Check if NFT has been assigned to a guild by looking for "Guild" trait in attributes
+          let assignedGuild = null
+          let isRevealed = false
+
+          if (fetchedMetadata?.attributes && Array.isArray(fetchedMetadata.attributes)) {
+            const guildTrait = fetchedMetadata.attributes.find(
+              (attr: { trait_type: string; value: string }) => 
+                attr.trait_type?.toLowerCase() === 'guild'
+            )
+
+            if (guildTrait && guildTrait.value) {
+              isRevealed = true
+              // Extract guild ID from the guild name (e.g., "Builder Guild" -> "builder")
+              const guildValue = guildTrait.value.toLowerCase()
+              const guilds = ['builder', 'trader', 'farmer', 'gamer', 'pathfinder']
+              assignedGuild = guilds.find(guild => guildValue.includes(guild)) || null
             }
           }
 

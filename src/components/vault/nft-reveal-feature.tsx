@@ -245,6 +245,9 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
         throw new Error('Failed to generate metadata traits')
       }
       const traitsJson = (await traitsResponse.json()) as { attributes?: TraitAttribute[] }
+
+      traitsJson!.attributes![0].trait_type = 'Guild'
+
       const metadataAttributes = traitsJson.attributes ?? []
 
       // Create and upload metadata JSON

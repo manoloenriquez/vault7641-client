@@ -74,6 +74,9 @@ export default function SandboxPage() {
         throw new Error('Failed to generate metadata traits')
       }
       const traitsJson = (await traitsResponse.json()) as { attributes?: TraitAttribute[] }
+
+      traitsJson!.attributes![0].trait_type = 'Guild'
+
       const metadataAttributes = traitsJson.attributes ?? []
 
       const tokenNumber = parseInt(tokenId, 10)
