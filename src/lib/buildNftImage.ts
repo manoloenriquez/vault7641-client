@@ -81,7 +81,7 @@ type Gender = (typeof GENDERS)[number]
 export type NftImageGenerationOptions = {
   guild?: Guild | string
   gender?: Gender | string
-  seed?: number
+  seed?: number | string
 }
 
 const traitListCache = new Map<string, string[]>()
@@ -349,8 +349,10 @@ function recordTraitSelection(traitMap: Map<string, string>, traitDir: TraitDire
 async function buildLayerPlan(tokenId: number, options: NftImageGenerationOptions): Promise<LayerPlan> {
   const guild = normalizeGuild(options.guild)
   const gender = normalizeGender(options.gender)
-  const seed = options.seed ?? Date.now()
-  const random = createSeededRandom((tokenId + seed) & 0xffffffff)
+  const seedValue = options.seed ?? Date.now()
+  // Convert hex string to number if needed
+  const seedNum = typeof seedValue === 'string' ? parseInt(seedValue.slice(0, 8), 16) : seedValue
+  const random = createSeededRandom((tokenId + seedNum) & 0xffffffff)
 
   const layerPaths: string[] = []
   const traitMap = new Map<string, string>([['Guild Backgrounds', guild]])

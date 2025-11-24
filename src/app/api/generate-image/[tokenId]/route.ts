@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { buildImageBufferFromTraits } from '@/lib/buildNftImage'
+import { randomBytes } from 'crypto'
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ tokenId: string }> }) {
   try {
@@ -13,7 +14,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     const searchParams = request.nextUrl.searchParams
     const guild = searchParams.get('guild') ?? undefined
     const gender = searchParams.get('gender') ?? undefined
-    const seed = searchParams.get('seed') ? parseInt(searchParams.get('seed')!, 10) : undefined
+    // Generate cryptographically secure random seed (32-byte hex string)
+    const seed = randomBytes(32).toString('hex')
 
     console.log(`[generate-image] Generating image for token ${tokenId}`, { guild, gender, seed })
 
