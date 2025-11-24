@@ -1,9 +1,10 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { buildImageBufferFromTraits } from '@/lib/buildNftImage'
 
-export async function GET(request: NextRequest, { params }: { params: { tokenId: string } }) {
+export async function GET(request: NextRequest, { params }: { params: Promise<{ tokenId: string }> }) {
   try {
-    const tokenId = parseInt(params.tokenId, 10)
+    const { tokenId: tokenIdStr } = await params
+    const tokenId = parseInt(tokenIdStr, 10)
 
     if (!Number.isFinite(tokenId) || tokenId < 0) {
       return NextResponse.json({ error: 'Invalid token ID' }, { status: 400 })
@@ -22,7 +23,7 @@ export async function GET(request: NextRequest, { params }: { params: { tokenId:
       seed,
     })
 
-    return new NextResponse(imageBuffer, {
+    return new NextResponse(new Uint8Array(imageBuffer), {
       status: 200,
       headers: {
         'Content-Type': 'image/png',

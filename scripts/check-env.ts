@@ -85,7 +85,7 @@ function checkEnvVar(name: string, config: typeof REQUIRED_VARS[keyof typeof REQ
         message: `❌ MISSING (required): ${config.description}`,
       }
     } else {
-      const defaultMsg = config.default ? ` (defaults to: ${config.default})` : ''
+      const defaultMsg = 'default' in config && config.default ? ` (defaults to: ${config.default})` : ''
       return {
         name,
         status: 'warning',
@@ -149,10 +149,10 @@ function main() {
     if (result.value) {
       console.log(`   Value: ${result.value}`)
     }
-    if (config.example) {
+    if ('example' in config && config.example) {
       console.log(`   Example: ${config.example}`)
     }
-    if (config.note) {
+    if ('note' in config && config.note) {
       console.log(`   Note: ${config.note}`)
     }
   }

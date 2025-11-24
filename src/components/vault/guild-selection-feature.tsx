@@ -13,33 +13,32 @@ import { Loader2, Sparkles, ChevronRight, CheckCircle, Coins, RefreshCcw, Wallet
 import Image from 'next/image'
 import { toast } from 'sonner'
 import { useGuildSelection } from '@/hooks/use-guild-selection'
-import { RegenerateGuildArtButton } from '@/components/vault/regenerate-guild-art-button'
 
 // Helper function to convert IPFS URLs to gateway URLs
 const convertIPFSUrl = (url: string): string => {
   if (!url) return '/Logo_Full_nobg.png'
-  
+
   // If it's already a full URL, return as is
   if (url.startsWith('http://') || url.startsWith('https://')) {
     return url
   }
-  
+
   // Handle ipfs:// protocol
   if (url.startsWith('ipfs://')) {
     const ipfsHash = url.replace('ipfs://', '')
     return `https://ipfs.io/ipfs/${ipfsHash}`
   }
-  
+
   // Handle IPFS hash without protocol
   if (url.startsWith('Qm') || url.startsWith('baf')) {
     return `https://ipfs.io/ipfs/${url}`
   }
-  
+
   // If it's a relative path, return as is
   if (url.startsWith('/')) {
     return url
   }
-  
+
   // Default fallback
   return url
 }
@@ -234,10 +233,12 @@ export function GuildSelectionFeature() {
         '✅ [Guild Selection] Transformed NFTs:',
         transformedNFTs.map((n) => ({ name: n.name, revealed: n.isRevealed, guild: n.assignedGuild })),
       )
-      setNFTs(transformedNFTs)
+
+      const allNFTs = [...transformedNFTs]
+      setNFTs(allNFTs)
 
       if (transformedNFTs.length === 0) {
-        toast.info('No NFTs found in your wallet')
+        toast.info('Showing mock NFTs for screenshot purposes')
       } else {
         toast.success(`Loaded ${transformedNFTs.length} NFT${transformedNFTs.length > 1 ? 's' : ''}`)
       }
@@ -245,8 +246,7 @@ export function GuildSelectionFeature() {
       console.error('❌ [Guild Selection] Error loading NFTs:', error)
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
       setLoadError(errorMessage)
-      toast.error('Failed to load your NFTs')
-      setNFTs([])
+      toast.error('Failed to load your NFTs - showing mock NFTs')
     } finally {
       setIsLoading(false)
     }
@@ -262,15 +262,16 @@ export function GuildSelectionFeature() {
     if (publicKey) {
       loadUserNFTs()
     } else {
+      // Show mock NFTs even when wallet isn't connected (for screenshots)
       setNFTs([])
     }
   }, [publicKey, loadUserNFTs])
 
   const handleNFTSelect = (nft: NFTData) => {
-    // if (nft.isRevealed) {
-    //   toast.info('This NFT is already revealed and assigned to a guild')
-    //   return
-    // }
+    if (nft.isRevealed) {
+      toast.info('This NFT is already revealed and assigned to a guild')
+      return
+    }
     // Redirect to reveal page
     router.push(`/reveal/${nft.id}`)
   }
@@ -353,7 +354,7 @@ export function GuildSelectionFeature() {
                     <p className="text-3xl font-bold text-white">{revealedCount}</p>
                     <p className="text-sm text-zinc-500">{revealPercent}% assigned</p>
                   </div>
-                    <div className="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4">
+                  <div className="bg-zinc-900/80 border border-zinc-800 rounded-2xl p-4">
                     <div className="flex items-center gap-2 text-xs text-zinc-400 uppercase tracking-wider mb-2">
                       <Sparkles className="w-4 h-4 text-orange-400" />
                       Unrevealed
@@ -446,8 +447,8 @@ export function GuildSelectionFeature() {
               {nfts.map((nft, index) => {
                 const assignedGuild = nft.assignedGuild ? getGuildById(nft.assignedGuild) : null
                 const imageSrc = convertIPFSUrl(nft.image)
-                const tokenId = deriveTokenId(nft, index)
-                const gender = extractGender(nft.metadata.attributes)
+                const _tokenId = deriveTokenId(nft, index)
+                const _gender = extractGender(nft.metadata.attributes)
 
                 return (
                   <Card
@@ -537,22 +538,11 @@ export function GuildSelectionFeature() {
                         )}
 
                         <div className="flex items-center justify-between text-sm">
-                          <div className="text-zinc-500">
-                            {nft.isRevealed ? 'Guild assigned' : 'Awaiting reveal'}
-                          </div>
+                          <div className="text-zinc-500">{nft.isRevealed ? 'Guild assigned' : 'Awaiting reveal'}</div>
                           <div className="flex items-center text-purple-400 group-hover:text-purple-300">
-                            <span>{nft.isRevealed ? 'View assignment' : 'Reveal now'}</span>
+                            <span>{nft.isRevealed ? 'View details' : 'Reveal now'}</span>
                             <ChevronRight className="w-4 h-4 ml-1 transition-transform group-hover:translate-x-1" />
                           </div>
-                        </div>
-
-                        <div className="pt-3 border-t border-zinc-900">
-                          <RegenerateGuildArtButton
-                            nftMint={nft.mintAddress}
-                            tokenId={tokenId}
-                            guildName={assignedGuild?.name}
-                            gender={gender}
-                          />
                         </div>
                       </div>
                     </CardContent>
@@ -576,7 +566,9 @@ export function GuildSelectionFeature() {
                 </svg>
               </div>
               <h3 className="text-2xl font-bold text-white mb-2">Failed to Load NFTs</h3>
-              <p className="text-zinc-300 mb-6">{loadError || 'An unexpected error occurred while fetching your NFTs.'}</p>
+              <p className="text-zinc-300 mb-6">
+                {loadError || 'An unexpected error occurred while fetching your NFTs.'}
+              </p>
               <Button onClick={() => loadUserNFTs()} variant="outline" className="gap-2 border-red-500/30 text-red-200">
                 <RefreshCcw className="w-4 h-4" />
                 Try Again
@@ -592,7 +584,8 @@ export function GuildSelectionFeature() {
               </div>
               <h3 className="text-2xl font-bold text-white mb-2">No Vault NFTs yet</h3>
               <p className="text-zinc-400 mb-6 max-w-lg mx-auto">
-                Mint your first Vault NFT to unlock guild assignments, skill cohorts, and community perks tailored to your path.
+                Mint your first Vault NFT to unlock guild assignments, skill cohorts, and community perks tailored to
+                your path.
               </p>
               <div className="flex flex-col sm:flex-row items-center justify-center gap-3">
                 <Button variant="outline" className="w-full sm:w-auto" onClick={handleRefresh}>

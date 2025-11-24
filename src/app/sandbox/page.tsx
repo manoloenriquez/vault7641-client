@@ -9,27 +9,18 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Label } from '@/components/ui/label'
 import { Badge } from '@/components/ui/badge'
 import { Loader2, Sparkles, RefreshCcw, Upload, ExternalLink, Wallet } from 'lucide-react'
-import Image from 'next/image'
+import { buildVaultMetadata } from '@/lib/vaultMetadata'
+import { TraitAttribute } from '@/types/traits'
 
 const GUILDS = ['Builder Guild', 'Farmer Guild', 'Gamer Guild', 'Pathfinder Guild', 'Trader Guild']
 const GENDERS = ['Male', 'Female']
 
-interface GeneratedMetadata {
-  name: string
-  symbol: string
-  description: string
-  image: string
-  attributes: Array<{
-    trait_type: string
-    value: string
-  }>
-  edition: number
-}
+type GeneratedMetadata = ReturnType<typeof buildVaultMetadata>
 
 export default function SandboxPage() {
   const wallet = useWallet()
   const { connection } = useConnection()
-  
+
   const [tokenId, setTokenId] = useState('1')
   const [guild, setGuild] = useState('Builder Guild')
   const [gender, setGender] = useState('Male')
@@ -39,7 +30,7 @@ export default function SandboxPage() {
   const [imageBlob, setImageBlob] = useState<Blob | null>(null)
   const [metadata, setMetadata] = useState<GeneratedMetadata | null>(null)
   const [error, setError] = useState<string | null>(null)
-  
+
   // Arweave upload state
   const [isUploading, setIsUploading] = useState(false)
   const [arweaveImageUri, setArweaveImageUri] = useState<string | null>(null)
@@ -64,9 +55,10 @@ export default function SandboxPage() {
         gender,
         seed,
       })
-      
-      const response = await fetch(`/api/generate-image/${tokenId}?${params.toString()}`)
-      
+
+      const queryString = params.toString()
+      const response = await fetch(`/api/generate-image/${tokenId}?${queryString}`)
+
       if (!response.ok) {
         throw new Error(`Failed to generate image: ${response.statusText}`)
       }
@@ -77,33 +69,21 @@ export default function SandboxPage() {
       setImageUrl(url)
       setImageBlob(blob)
 
-      // Generate metadata (simulated based on the Python logic)
-      const generatedMetadata: GeneratedMetadata = {
-        name: `Vault #${parseInt(tokenId) + 1}`,
-        symbol: 'V7641',
-        description: 'Lorem ipsum',
-        image: `${tokenId}.png`,
-        edition: parseInt(tokenId),
-        attributes: [
-          {
-            trait_type: 'Guild',
-            value: guild,
-          },
-          {
-            trait_type: 'Gender',
-            value: gender,
-          },
-          {
-            trait_type: 'Generation Seed',
-            value: seed,
-          },
-          {
-            trait_type: 'Token ID',
-            value: tokenId,
-          },
-        ],
+      const traitsResponse = await fetch(`/api/generate-traits/${tokenId}?${queryString}`)
+      if (!traitsResponse.ok) {
+        throw new Error('Failed to generate metadata traits')
       }
-      
+      const traitsJson = (await traitsResponse.json()) as { attributes?: TraitAttribute[] }
+      const metadataAttributes = traitsJson.attributes ?? []
+
+      const tokenNumber = parseInt(tokenId, 10)
+      const generatedMetadata = buildVaultMetadata({
+        tokenNumber,
+        imageUri: url,
+        attributes: metadataAttributes,
+        edition: tokenNumber,
+      }) as GeneratedMetadata
+
       setMetadata(generatedMetadata)
     } catch (err) {
       console.error('Generation error:', err)
@@ -129,16 +109,17 @@ export default function SandboxPage() {
       const { WebUploader } = await import('@irys/web-upload')
       const { WebSolana } = await import('@irys/web-upload-solana')
 
-      const irysUploader = await WebUploader(WebSolana)
+      // Type assertion needed due to transitive dependency version mismatch
+      const irysUploader = await WebUploader(WebSolana as unknown as Parameters<typeof WebUploader>[0])
         .withProvider(wallet)
         .withRpc(connection.rpcEndpoint)
-      
+
       // Get balance in atomic units
       const balance = await irysUploader.getLoadedBalance()
-      
+
       // Convert to SOL (1 SOL = 1,000,000,000 lamports)
-      const balanceInSol = balance / 1_000_000_000
-      
+      const balanceInSol = Number(balance) / 1_000_000_000
+
       setIrysBalance(`${balanceInSol.toFixed(6)} SOL`)
       console.log('Irys Balance:', balanceInSol, 'SOL')
     } catch (err) {
@@ -158,24 +139,83 @@ export default function SandboxPage() {
       const { WebSolana } = await import('@irys/web-upload-solana')
 
       setUploadStatus('Connecting to Irys...')
-      const irysUploader = await WebUploader(WebSolana)
+      setUploadStatus('Connecting to Irys...')
+      // Type assertion needed due to transitive dependency version mismatch
+      const irysUploader = await WebUploader(WebSolana as unknown as Parameters<typeof WebUploader>[0])
         .withProvider(wallet)
         .withRpc(connection.rpcEndpoint)
-      
-      // Fund with 0.01 SOL (10,000,000 lamports) - enough for ~5-10 uploads
-      const fundAmount = 10_000_000 // 0.01 SOL in lamports
-      
-      setUploadStatus('Funding Irys account with 0.01 SOL...')
+      // Fund with 0.003 SOL (3,000,000 lamports) - enough for ~3-5 uploads
+      const fundAmount = 3_000_000 // 0.003 SOL in lamports
+
+      setUploadStatus('Funding Irys account with 0.003 SOL...')
       const fundTx = await irysUploader.fund(fundAmount)
-      
+
       console.log('Funded Irys account:', fundTx)
-      setUploadStatus(`✅ Successfully funded Irys with 0.01 SOL`)
-      
+      setUploadStatus(`✅ Successfully funded Irys with 0.003 SOL`)
+
       // Check new balance
       await handleCheckIrysBalance()
     } catch (err) {
       console.error('Error funding Irys:', err)
       setError(err instanceof Error ? err.message : 'Failed to fund Irys')
+      setUploadStatus(null)
+    }
+  }
+
+  const handleWithdrawIrys = async () => {
+    if (!wallet.connected || !wallet.publicKey) {
+      setError('Please connect your wallet first')
+      return
+    }
+
+    try {
+      const { WebUploader } = await import('@irys/web-upload')
+      const { WebSolana } = await import('@irys/web-upload-solana')
+
+      setUploadStatus('Connecting to Irys...')
+      setUploadStatus('Connecting to Irys...')
+      // Type assertion needed due to transitive dependency version mismatch
+      const irysUploader = await WebUploader(WebSolana as unknown as Parameters<typeof WebUploader>[0])
+        .withProvider(wallet)
+        .withRpc(connection.rpcEndpoint)
+      // Check current balance first
+      const balance = await irysUploader.getLoadedBalance()
+      const balanceNum = Number(balance)
+
+      if (balanceNum === 0) {
+        setError('No balance to withdraw from Irys')
+        setUploadStatus(null)
+        return
+      }
+
+      // Leave 1,000,000 lamports (0.001 SOL) for gas fees
+      const gasBuffer = 1_000_000 // 0.001 SOL
+
+      if (balanceNum <= gasBuffer) {
+        setError('Balance too low to withdraw (need to leave gas for withdrawal transaction)')
+        setUploadStatus(null)
+        return
+      }
+
+      const withdrawAmount = balanceNum - gasBuffer
+      const withdrawInSol = withdrawAmount / 1_000_000_000
+
+      setUploadStatus(`Withdrawing ${withdrawInSol.toFixed(6)} SOL from Irys (leaving 0.001 SOL for gas)...`)
+
+      // Withdraw balance minus gas buffer
+      const withdrawTx = await irysUploader.withdrawBalance(withdrawAmount)
+
+      console.log('Withdrew from Irys:', withdrawTx)
+      setUploadStatus(`✅ Successfully withdrew ${withdrawInSol.toFixed(6)} SOL from Irys`)
+
+      // Update balance display (showing remaining gas buffer)
+      setIrysBalance('~0.001000 SOL')
+
+      // Check new balance to confirm
+      setTimeout(() => handleCheckIrysBalance(), 2000)
+    } catch (err) {
+      console.error('Error withdrawing from Irys:', err)
+      setError(err instanceof Error ? err.message : 'Failed to withdraw from Irys')
       setUploadStatus(null)
     }
   }
@@ -214,84 +254,77 @@ export default function SandboxPage() {
 
       // Initialize Irys Web Uploader with Solana wallet and explicit RPC endpoint
       // Pass the entire wallet object from useWallet() as per Irys docs
-      const irysUploader = await WebUploader(WebSolana)
+      // Initialize Irys Web Uploader with Solana wallet and explicit RPC endpoint
+      // Pass the entire wallet object from useWallet() as per Irys docs
+      // Type assertion needed due to transitive dependency version mismatch
+      const irysUploader = await WebUploader(WebSolana as unknown as Parameters<typeof WebUploader>[0])
         .withProvider(wallet)
         .withRpc(connection.rpcEndpoint)
-
-      // Check balance and fund if needed
       setUploadStatus('Checking Irys balance...')
       const balance = await irysUploader.getLoadedBalance()
-      const balanceInSol = balance / 1_000_000_000
+      const balanceNum = Number(balance)
+      const balanceInSol = balanceNum / 1_000_000_000
       setIrysBalance(`${balanceInSol.toFixed(6)} SOL`)
-      
+
       console.log('Current Irys balance:', balanceInSol, 'SOL')
-      
-      // If balance is very low (less than 0.005 SOL), fund automatically
-      if (balance < 5_000_000) { // 0.005 SOL in lamports
-        setUploadStatus('Insufficient balance. Funding Irys with 0.01 SOL...')
-        const fundAmount = 10_000_000 // 0.01 SOL
+
+      // If balance is very low (less than 0.002 SOL), fund automatically
+      if (balanceNum < 2_000_000) {
+        // 0.002 SOL in lamports
+        setUploadStatus('Insufficient balance. Funding Irys with 0.003 SOL...')
+        const fundAmount = 3_000_000 // 0.003 SOL
         await irysUploader.fund(fundAmount)
-        
+
         // Update balance display
         const newBalance = await irysUploader.getLoadedBalance()
-        const newBalanceInSol = newBalance / 1_000_000_000
+        const newBalanceInSol = Number(newBalance) / 1_000_000_000
         setIrysBalance(`${newBalanceInSol.toFixed(6)} SOL`)
-        
+
         console.log('Funded Irys account. New balance:', newBalanceInSol, 'SOL')
         setUploadStatus('Irys funded successfully. Proceeding with upload...')
       }
 
       setUploadStatus('Converting image to Buffer...')
-      
+
       // Convert blob to Buffer (Irys requires Buffer, not Uint8Array)
       const arrayBuffer = await imageBlob.arrayBuffer()
       const imageBuffer = Buffer.from(arrayBuffer)
 
       setUploadStatus('Uploading image to Arweave...')
-      
+
       // Upload image
       const imageReceipt = await irysUploader.upload(imageBuffer, {
         tags: [{ name: 'Content-Type', value: 'image/png' }],
       })
-      
+
       const imageUri = `https://gateway.irys.xyz/${imageReceipt.id}`
-      
+
       setArweaveImageUri(imageUri)
       console.log('✅ Image uploaded to Arweave:', imageUri)
 
       setUploadStatus('Creating metadata JSON...')
 
       // Create metadata JSON
-      const metadataJson = {
-        name: metadata.name,
-        symbol: metadata.symbol,
-        description: metadata.description,
-        image: imageUri,
+      const metadataJson = buildVaultMetadata({
+        tokenNumber: metadata.edition,
+        imageUri,
         attributes: metadata.attributes,
-        properties: {
-          files: [{ uri: imageUri, type: 'image/png' }],
-          category: 'image',
-          creators: [
-            {
-              address: wallet.publicKey.toBase58(),
-              share: 100,
-            },
-          ],
-        },
-      }
+        edition: metadata.edition,
+      })
 
       setUploadStatus('Uploading metadata to Arweave...')
-      
+
       // Upload metadata (convert to Buffer)
       const metadataString = JSON.stringify(metadataJson)
       const metadataBuffer = Buffer.from(metadataString, 'utf-8')
       const metadataReceipt = await irysUploader.upload(metadataBuffer, {
         tags: [{ name: 'Content-Type', value: 'application/json' }],
       })
-      
+
       const metadataUri = `https://gateway.irys.xyz/${metadataReceipt.id}`
-      
+
       setArweaveMetadataUri(metadataUri)
+      setMetadata(metadataJson)
       console.log('✅ Metadata uploaded to Arweave:', metadataUri)
 
       setUploadStatus('✅ Upload complete!')
@@ -320,7 +353,9 @@ export default function SandboxPage() {
           <div className="flex items-center gap-3">
             <Badge variant="outline" className="border-zinc-700 text-zinc-300">
               <Wallet className="w-3 h-3 mr-1" />
-              {wallet.connected ? `${wallet.publicKey?.toBase58().slice(0, 4)}...${wallet.publicKey?.toBase58().slice(-4)}` : 'Not connected'}
+              {wallet.connected
+                ? `${wallet.publicKey?.toBase58().slice(0, 4)}...${wallet.publicKey?.toBase58().slice(-4)}`
+                : 'Not connected'}
             </Badge>
             <WalletMultiButton />
           </div>
@@ -361,9 +396,7 @@ export default function SandboxPage() {
                       key={g}
                       onClick={() => setGuild(g)}
                       className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                        guild === g
-                          ? 'bg-purple-600 text-white'
-                          : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800'
+                        guild === g ? 'bg-purple-600 text-white' : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800'
                       }`}
                     >
                       {g.replace(' Guild', '')}
@@ -383,9 +416,7 @@ export default function SandboxPage() {
                       key={g}
                       onClick={() => setGender(g)}
                       className={`px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                        gender === g
-                          ? 'bg-purple-600 text-white'
-                          : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800'
+                        gender === g ? 'bg-purple-600 text-white' : 'bg-zinc-900 text-zinc-400 hover:bg-zinc-800'
                       }`}
                     >
                       {g}
@@ -438,34 +469,41 @@ export default function SandboxPage() {
                     Randomize
                   </Button>
                 </div>
-                
+
                 {/* Irys Balance Management */}
                 {wallet.connected && (
                   <div className="space-y-2 p-3 bg-zinc-900/50 border border-zinc-800 rounded-lg">
                     <div className="flex items-center justify-between">
                       <span className="text-xs text-zinc-400">Irys Balance:</span>
-                      <span className="text-sm text-white font-mono">
-                        {irysBalance || 'Not checked'}
-                      </span>
+                      <span className="text-sm text-white font-mono">{irysBalance || 'Not checked'}</span>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="grid grid-cols-3 gap-2">
                       <Button
                         onClick={handleCheckIrysBalance}
                         disabled={isUploading}
                         size="sm"
                         variant="outline"
-                        className="flex-1 border-zinc-700 text-zinc-300 text-xs"
+                        className="border-zinc-700 text-zinc-300 text-xs"
                       >
-                        Check Balance
+                        Check
                       </Button>
                       <Button
                         onClick={handleFundIrys}
                         disabled={isUploading}
                         size="sm"
                         variant="outline"
-                        className="flex-1 border-blue-500/30 text-blue-300 hover:bg-blue-500/10 text-xs"
+                        className="border-blue-500/30 text-blue-300 hover:bg-blue-500/10 text-xs"
                       >
-                        Fund 0.01 SOL
+                        Fund 0.003
+                      </Button>
+                      <Button
+                        onClick={handleWithdrawIrys}
+                        disabled={isUploading}
+                        size="sm"
+                        variant="outline"
+                        className="border-green-500/30 text-green-300 hover:bg-green-500/10 text-xs"
+                      >
+                        Withdraw
                       </Button>
                     </div>
                   </div>
@@ -495,13 +533,9 @@ export default function SandboxPage() {
                     </>
                   )}
                 </Button>
-                
+
                 {/* Upload Status */}
-                {uploadStatus && (
-                  <div className="text-xs text-center text-zinc-400 animate-pulse">
-                    {uploadStatus}
-                  </div>
-                )}
+                {uploadStatus && <div className="text-xs text-center text-zinc-400 animate-pulse">{uploadStatus}</div>}
               </div>
 
               {/* Error Display */}
@@ -544,13 +578,8 @@ export default function SandboxPage() {
                     <h4 className="text-sm font-medium text-zinc-300 mb-3">Attributes</h4>
                     <div className="space-y-2">
                       {metadata.attributes.map((attr, index) => (
-                        <div
-                          key={index}
-                          className="flex items-center justify-between p-2 bg-zinc-900/50 rounded-lg"
-                        >
-                          <span className="text-xs text-zinc-400 uppercase tracking-wider">
-                            {attr.trait_type}
-                          </span>
+                        <div key={index} className="flex items-center justify-between p-2 bg-zinc-900/50 rounded-lg">
+                          <span className="text-xs text-zinc-400 uppercase tracking-wider">{attr.trait_type}</span>
                           <span className="text-sm text-white font-medium">{attr.value}</span>
                         </div>
                       ))}
@@ -585,9 +614,7 @@ export default function SandboxPage() {
                       <h4 className="text-sm font-medium text-green-300">Image URI</h4>
                       <div className="p-3 bg-zinc-900/50 rounded-lg border border-green-500/20">
                         <div className="flex items-center justify-between gap-2">
-                          <code className="text-xs text-green-200 break-all flex-1">
-                            {arweaveImageUri}
-                          </code>
+                          <code className="text-xs text-green-200 break-all flex-1">{arweaveImageUri}</code>
                           <a
                             href={arweaveImageUri}
                             target="_blank"
@@ -616,9 +643,7 @@ export default function SandboxPage() {
                       <h4 className="text-sm font-medium text-green-300">Metadata URI</h4>
                       <div className="p-3 bg-zinc-900/50 rounded-lg border border-green-500/20">
                         <div className="flex items-center justify-between gap-2">
-                          <code className="text-xs text-green-200 break-all flex-1">
-                            {arweaveMetadataUri}
-                          </code>
+                          <code className="text-xs text-green-200 break-all flex-1">{arweaveMetadataUri}</code>
                           <a
                             href={arweaveMetadataUri}
                             target="_blank"
@@ -667,11 +692,7 @@ export default function SandboxPage() {
                     <p className="text-sm text-zinc-400">Generating image...</p>
                   </div>
                 ) : imageUrl ? (
-                  <img
-                    src={imageUrl}
-                    alt="Generated NFT"
-                    className="w-full h-full object-contain"
-                  />
+                  <img src={imageUrl} alt="Generated NFT" className="w-full h-full object-contain" />
                 ) : (
                   <div className="flex flex-col items-center gap-3 text-zinc-600">
                     <Sparkles className="w-12 h-12" />
@@ -713,9 +734,7 @@ export default function SandboxPage() {
               </CardHeader>
               <CardContent>
                 <div className="space-y-2 text-sm">
-                  <p className="text-zinc-400 mb-3">
-                    This image was generated using the following layering order:
-                  </p>
+                  <p className="text-zinc-400 mb-3">This image was generated using the following layering order:</p>
                   <ol className="space-y-1 text-zinc-300">
                     <li className="pl-3">1. Background (Guild-specific)</li>
                     <li className="pl-3">2. Body (Gender-specific)</li>
@@ -740,4 +759,3 @@ export default function SandboxPage() {
     </div>
   )
 }
-

@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
-import { useWallet } from '@solana/wallet-adapter-react'
+import { useWallet, useConnection } from '@solana/wallet-adapter-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
@@ -10,6 +10,8 @@ import { Loader2, Sparkles, ChevronLeft, ChevronRight, CheckCircle } from 'lucid
 import Image from 'next/image'
 import { toast } from 'sonner'
 import { useGuildAssignmentUserPaid } from '@/hooks/use-guild-assignment-user-paid'
+import { buildVaultMetadata } from '@/lib/vaultMetadata'
+import { TraitAttribute } from '@/types/traits'
 
 // Types
 interface NFTData {
@@ -134,11 +136,14 @@ interface NFTRevealFeatureProps {
 
 export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
   const router = useRouter()
-  const { publicKey } = useWallet()
+  const wallet = useWallet()
+  const { publicKey } = wallet
+  const { connection } = useConnection()
   const { assignGuild, isAssigning } = useGuildAssignmentUserPaid()
   const [nft, setNft] = useState<NFTData | null>(null)
   const [selectedGuild, setSelectedGuild] = useState<Guild | null>(null)
   const [isLoading, setIsLoading] = useState(true)
+  const [isProcessing, setIsProcessing] = useState(false)
 
   const loadNFT = useCallback(async () => {
     setIsLoading(true)
@@ -153,10 +158,10 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
       setNft(result.data)
 
       // If NFT is already revealed, redirect to guild selection
-      // if (result.data.isRevealed) {
-      //   router.push('/guild-selection')
-      //   return
-      // }
+      if (result.data.isRevealed) {
+        router.push('/guild-selection')
+        return
+      }
     } catch (error) {
       console.error('Error loading NFT:', error)
       toast.error('Failed to load NFT details')
@@ -182,26 +187,150 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
       return
     }
 
+    // Extract gender from attributes
+    const genderAttr = nft.metadata.attributes.find((attr) => attr.trait_type?.toLowerCase() === 'gender')
+    const gender = genderAttr?.value || 'Male'
+
     try {
-      // Use the new user-paid transaction hook
-      const signature = await assignGuild(
+      setIsProcessing(true)
+
+      // Step 1: Generate new art on server
+      toast.loading('Generating guild art...', { id: 'reveal-process' })
+      const generationSeed = Date.now()
+      const params = new URLSearchParams()
+      params.set('guild', selectedGuild.name)
+      params.set('gender', gender)
+      params.set('seed', generationSeed.toString())
+
+      const queryString = params.toString()
+
+      const imageResponse = await fetch(`/api/generate-image/${tokenNumber}?${queryString}`)
+      if (!imageResponse.ok) {
+        throw new Error(`Failed to generate image (${imageResponse.status})`)
+      }
+      const imageBlob = await imageResponse.blob()
+      const arrayBuffer = await imageBlob.arrayBuffer()
+      const imageBuffer = Buffer.from(arrayBuffer)
+
+      toast.loading('Uploading to Arweave...', { id: 'reveal-process' })
+
+      // Step 2: Initialize Irys and upload to Arweave
+      const { WebUploader } = await import('@irys/web-upload')
+      const { WebSolana } = await import('@irys/web-upload-solana')
+
+      console.log('Using RPC endpoint:', connection.rpcEndpoint)
+
+      const irysUploader = await WebUploader(WebSolana as unknown as Parameters<typeof WebUploader>[0])
+        .withProvider(wallet)
+        .withRpc(connection.rpcEndpoint)
+
+      // Check balance and fund if needed
+      const balance = await irysUploader.getLoadedBalance()
+      if (balance.toNumber() < 2_000_000) {
+        // 0.002 SOL threshold
+        toast.loading('Funding Irys account with 0.003 SOL...', { id: 'reveal-process' })
+        const fundAmount = 3_000_000 // 0.003 SOL
+        await irysUploader.fund(fundAmount)
+      }
+
+      // Upload image
+      const imageReceipt = await irysUploader.upload(imageBuffer, {
+        tags: [{ name: 'Content-Type', value: 'image/png' }],
+      })
+      const imageUri = `https://gateway.irys.xyz/${imageReceipt.id}`
+      console.log('✅ Image uploaded:', imageUri)
+
+      const traitsResponse = await fetch(`/api/generate-traits/${tokenNumber}?${queryString}`)
+      if (!traitsResponse.ok) {
+        throw new Error('Failed to generate metadata traits')
+      }
+      const traitsJson = (await traitsResponse.json()) as { attributes?: TraitAttribute[] }
+      const metadataAttributes = traitsJson.attributes ?? []
+
+      // Create and upload metadata JSON
+      const metadata = buildVaultMetadata({
+        tokenNumber,
+        imageUri,
+        attributes: metadataAttributes,
+        edition: tokenNumber,
+      })
+
+      const metadataString = JSON.stringify(metadata)
+      const metadataBuffer = Buffer.from(metadataString, 'utf-8')
+      const metadataReceipt = await irysUploader.upload(metadataBuffer, {
+        tags: [{ name: 'Content-Type', value: 'application/json' }],
+      })
+      const metadataUri = `https://gateway.irys.xyz/${metadataReceipt.id}`
+      console.log('✅ Metadata uploaded:', metadataUri)
+
+      // Step 3: Update onchain metadata
+      toast.loading('Updating onchain metadata...', { id: 'reveal-process' })
+      const updateResponse = await fetch('/api/nft/update-metadata', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          mint: nft.mintAddress,
+          metadataUri,
+        }),
+      })
+
+      if (!updateResponse.ok) {
+        const body = await updateResponse.json().catch(() => ({}))
+        throw new Error(body.error ?? 'Metadata update failed')
+      }
+
+      const { signature: metadataSignature } = await updateResponse.json()
+      console.log('✅ Metadata updated onchain:', metadataSignature)
+
+      // Step 4: Assign guild
+      toast.loading('Assigning guild...', { id: 'reveal-process' })
+      const guildSignature = await assignGuild(
         nft.mintAddress,
         tokenNumber,
         selectedGuild.id as 'builder' | 'trader' | 'farmer' | 'gamer' | 'pathfinder',
       )
 
-      if (!signature) {
+      if (!guildSignature) {
         // User cancelled or error occurred (already handled by hook)
+        toast.dismiss('reveal-process')
         return
       }
 
-      toast.success(`Successfully revealed ${nft.name} and assigned to ${selectedGuild.name}!`)
+      // Log regeneration event (non-blocking)
+      fetch('/api/nft/regenerate-log', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tokenId: tokenNumber,
+          nftMint: nft.mintAddress,
+          guild: selectedGuild.name,
+          gender,
+          seed: generationSeed,
+          metadataUri,
+          imageUri,
+          transactionSignature: guildSignature,
+          walletAddress: publicKey.toBase58(),
+          timestamp: new Date().toISOString(),
+        }),
+      }).catch((err) => {
+        console.warn('Failed to log regeneration event:', err)
+      })
+
+      toast.success(`Successfully revealed ${nft.name} and assigned to ${selectedGuild.name}!`, {
+        id: 'reveal-process',
+      })
 
       // Redirect to result page with transaction signature
-      router.push(`/reveal/${nftId}/result?guild=${selectedGuild.id}&tx=${signature}`)
+      router.push(`/reveal/${nftId}/result?guild=${selectedGuild.id}&tx=${guildSignature}`)
     } catch (error) {
       console.error('Error revealing NFT:', error)
-      toast.error(error instanceof Error ? error.message : 'Failed to reveal NFT. Please try again.')
+      toast.error(error instanceof Error ? error.message : 'Failed to reveal NFT. Please try again.', {
+        id: 'reveal-process',
+      })
+    } finally {
+      setIsProcessing(false)
     }
   }
 
@@ -355,14 +484,14 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
                   </p>
                   <Button
                     onClick={handleReveal}
-                    disabled={isAssigning}
+                    disabled={isAssigning || isProcessing}
                     size="lg"
                     className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 px-12"
                   >
-                    {isAssigning ? (
+                    {isProcessing || isAssigning ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Revealing...
+                        {isProcessing ? 'Generating & uploading...' : 'Revealing...'}
                       </>
                     ) : (
                       <>

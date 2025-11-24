@@ -1,9 +1,11 @@
-"use client"
+'use client'
 
 import { useCallback, useState } from 'react'
 import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 // Removed direct Irys imports - using API route instead
 import { Button } from '@/components/ui/button'
+import { buildVaultMetadata } from '@/lib/vaultMetadata'
+import { TraitAttribute } from '@/types/traits'
 
 type Props = {
   nftMint: string
@@ -46,7 +48,8 @@ export function RegenerateGuildArtButton({ nftMint, tokenId, guildName, gender }
       params.set('gender', resolvedGender)
       params.set('seed', generationSeed.toString())
 
-      const pngBytes = await fetchPngAsUint8Array(`/api/generate-image/${tokenId}?${params.toString()}`)
+      const queryString = params.toString()
+      const pngBytes = await fetchPngAsUint8Array(`/api/generate-image/${tokenId}?${queryString}`)
 
       setStatus('Initializing Irys Web Uploader...')
 
@@ -75,7 +78,7 @@ export function RegenerateGuildArtButton({ nftMint, tokenId, guildName, gender }
 
       // Initialize Irys Web Uploader with Solana wallet and explicit RPC endpoint
       // Pass the entire wallet object from useWallet() as per Irys docs
-      const irysUploader = await WebUploader(WebSolana)
+      const irysUploader = await WebUploader(WebSolana as unknown as Parameters<typeof WebUploader>[0])
         .withProvider(wallet)
         .withRpc(connection.rpcEndpoint)
 
@@ -86,39 +89,30 @@ export function RegenerateGuildArtButton({ nftMint, tokenId, guildName, gender }
       const imageReceipt = await irysUploader.upload(imageBuffer, {
         tags: [{ name: 'Content-Type', value: 'image/png' }],
       })
-      
+
       const imageUri = `https://gateway.irys.xyz/${imageReceipt.id}`
 
-      // Create and upload metadata JSON
-      const metadata = {
-        name: `Vault Guild NFT #${tokenId}`,
-        symbol: 'V7641',
-        description: 'Guild art generated on the server and refreshed via Vault 7641.',
-        image: imageUri,
-        attributes: [
-          { trait_type: 'Token ID', value: tokenId.toString() },
-          { trait_type: 'Guild', value: resolvedGuild },
-          { trait_type: 'Gender', value: resolvedGender },
-          { trait_type: 'Regeneration Seed', value: generationSeed.toString() },
-        ],
-        properties: {
-          files: [{ uri: imageUri, type: 'image/png' }],
-          category: 'image',
-          creators: [
-            {
-              address: wallet.publicKey.toBase58(),
-              share: 100,
-            },
-          ],
-        },
+      const traitsResponse = await fetch(`/api/generate-traits/${tokenId}?${queryString}`)
+      if (!traitsResponse.ok) {
+        throw new Error('Failed to generate metadata traits')
       }
+      const traitsJson = (await traitsResponse.json()) as { attributes?: TraitAttribute[] }
+      const metadataAttributes = traitsJson.attributes ?? []
+
+      // Create and upload metadata JSON
+      const metadata = buildVaultMetadata({
+        tokenNumber: tokenId,
+        imageUri,
+        attributes: metadataAttributes,
+        edition: tokenId,
+      })
 
       const metadataString = JSON.stringify(metadata)
       const metadataBuffer = Buffer.from(metadataString, 'utf-8')
       const metadataReceipt = await irysUploader.upload(metadataBuffer, {
         tags: [{ name: 'Content-Type', value: 'application/json' }],
       })
-      
+
       const metadataUri = `https://gateway.irys.xyz/${metadataReceipt.id}`
 
       setStatus('Requesting admin metadata update...')
@@ -140,7 +134,7 @@ export function RegenerateGuildArtButton({ nftMint, tokenId, guildName, gender }
       }
 
       const { signature } = await res.json()
-      
+
       // Log regeneration event (non-blocking)
       fetch('/api/nft/regenerate-log', {
         method: 'POST',
@@ -161,7 +155,7 @@ export function RegenerateGuildArtButton({ nftMint, tokenId, guildName, gender }
         console.warn('Failed to log regeneration event:', err)
         // Non-critical, don't throw
       })
-      
+
       setStatus(`Success! Tx: ${signature}`)
     } catch (error) {
       console.error('Regenerate art failed:', error)

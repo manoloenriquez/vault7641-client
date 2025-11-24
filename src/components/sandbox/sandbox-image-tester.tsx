@@ -7,6 +7,8 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
+import { buildVaultMetadata } from '@/lib/vaultMetadata'
+import { TraitAttribute } from '@/types/traits'
 
 const GUILD_OPTIONS = ['Builder Guild', 'Farmer Guild', 'Gamer Guild', 'Pathfinder Guild', 'Trader Guild'] as const
 const GENDER_OPTIONS = ['Male', 'Female'] as const
@@ -34,7 +36,7 @@ export function SandboxImageTester() {
   const [uploadResult, setUploadResult] = useState<{ imageUri: string; metadataUri: string } | null>(null)
 
   const updatePreview = useCallback((bytes: Uint8Array) => {
-    const blob = new Blob([bytes], { type: 'image/png' })
+    const blob = new Blob([new Uint8Array(bytes)], { type: 'image/png' })
     const url = URL.createObjectURL(blob)
     setPreviewSrc((prev) => {
       if (prev) URL.revokeObjectURL(prev)
@@ -111,7 +113,13 @@ export function SandboxImageTester() {
       setStatus('Generating image before upload...')
       const tokenId = parseTokenIdInput()
       const overrideSeed = parseSeedInput() ?? Date.now()
-      const pngBytes = await fetchPngAsUint8Array(buildImageUrl(tokenId, overrideSeed))
+      const params = new URLSearchParams()
+      params.set('guild', selectedGuild)
+      params.set('gender', selectedGender)
+      params.set('seed', overrideSeed.toString())
+      const queryString = params.toString()
+
+      const pngBytes = await fetchPngAsUint8Array(`/api/generate-image/${tokenId}?${queryString}`)
       updatePreview(pngBytes)
 
       setStatus('Initializing Irys Web Uploader...')
@@ -141,7 +149,7 @@ export function SandboxImageTester() {
 
       // Initialize Irys Web Uploader with Solana wallet and explicit RPC endpoint
       // Pass the entire wallet object from useWallet() as per Irys docs
-      const irysUploader = await WebUploader(WebSolana)
+      const irysUploader = await WebUploader(WebSolana as unknown as Parameters<typeof WebUploader>[0])
         .withProvider(wallet)
         .withRpc(connection.rpcEndpoint)
 
@@ -152,41 +160,33 @@ export function SandboxImageTester() {
       const imageReceipt = await irysUploader.upload(imageBuffer, {
         tags: [{ name: 'Content-Type', value: 'image/png' }],
       })
-      
+
       const imageUri = `https://gateway.irys.xyz/${imageReceipt.id}`
 
-      setStatus('Uploading metadata JSON...')
-      const metadata = {
-        name: `Sandbox NFT #${tokenId}`,
-        symbol: 'SANDBOX',
-        description: 'Test metadata uploaded from the sandbox page.',
-        image: imageUri,
-        attributes: [
-          { trait_type: 'Token ID', value: tokenId.toString() },
-          { trait_type: 'Guild', value: selectedGuild },
-          { trait_type: 'Gender', value: selectedGender },
-          { trait_type: 'Regeneration Seed', value: overrideSeed.toString() },
-        ],
-        properties: {
-          files: [{ uri: imageUri, type: 'image/png' }],
-          category: 'image',
-          creators: [
-            {
-              address: wallet.publicKey.toBase58(),
-              share: 100,
-            },
-          ],
-        },
+      setStatus('Retrieving metadata traits...')
+      const traitsResponse = await fetch(`/api/generate-traits/${tokenId}?${queryString}`)
+      if (!traitsResponse.ok) {
+        throw new Error('Failed to generate metadata traits')
       }
+      const traitsJson = (await traitsResponse.json()) as { attributes?: TraitAttribute[] }
+      const metadataAttributes = traitsJson.attributes ?? []
+
+      setStatus('Uploading metadata JSON...')
+      const metadata = buildVaultMetadata({
+        tokenNumber: tokenId,
+        imageUri,
+        attributes: metadataAttributes,
+        edition: tokenId,
+      })
 
       const metadataString = JSON.stringify(metadata)
       const metadataBuffer = Buffer.from(metadataString, 'utf-8')
       const metadataReceipt = await irysUploader.upload(metadataBuffer, {
         tags: [{ name: 'Content-Type', value: 'application/json' }],
       })
-      
+
       const metadataUri = `https://gateway.irys.xyz/${metadataReceipt.id}`
-      
+
       setUploadResult({ imageUri, metadataUri })
       setStatus('Image + metadata uploaded successfully')
     } catch (error) {
@@ -195,16 +195,7 @@ export function SandboxImageTester() {
     } finally {
       setIsUploading(false)
     }
-  }, [
-    buildImageUrl,
-    connection,
-    parseSeedInput,
-    parseTokenIdInput,
-    selectedGender,
-    selectedGuild,
-    updatePreview,
-    wallet,
-  ])
+  }, [connection, parseSeedInput, parseTokenIdInput, selectedGender, selectedGuild, updatePreview, wallet])
 
   return (
     <div className="container mx-auto max-w-4xl py-10 space-y-6">
@@ -340,4 +331,3 @@ export function SandboxImageTester() {
     </div>
   )
 }
-

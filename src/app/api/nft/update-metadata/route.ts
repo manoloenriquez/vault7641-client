@@ -1,134 +1,239 @@
 import { NextResponse } from 'next/server'
-import { Connection, Keypair, PublicKey, Transaction } from '@solana/web3.js'
+import { Connection, Keypair, PublicKey } from '@solana/web3.js'
 import bs58 from 'bs58'
-import {
-  DataV2,
-  Metadata,
-  PROGRAM_ID as TOKEN_METADATA_PROGRAM_ID,
-  createUpdateMetadataAccountV2Instruction,
-} from '@metaplex-foundation/mpl-token-metadata'
+import { createUmi } from '@metaplex-foundation/umi-bundle-defaults'
+import { updateV1, fetchAsset, fetchCollection } from '@metaplex-foundation/mpl-core'
+import { publicKey as umiPublicKey, createSignerFromKeypair, keypairIdentity } from '@metaplex-foundation/umi'
+import { getSolanaRpcUrl, SOLANA_CONNECTION_CONFIG, UMI_CONFIG } from '@/lib/solana/connection-config'
 
 export const runtime = 'nodejs'
 
 type UpdateRequestBody = {
   mint: string
   metadataUri: string
+  newName?: string
 }
 
-function getRpcUrl() {
-  const rpc = process.env.SOLANA_RPC_URL
-  if (!rpc) {
-    throw new Error('SOLANA_RPC_URL is not configured')
+function getUpdateAuthorityKeypair(): Keypair {
+  const updateAuthorityPrivateKey = process.env.NFT_UPDATE_AUTHORITY_PRIVATE_KEY
+
+  if (!updateAuthorityPrivateKey) {
+    throw new Error('NFT_UPDATE_AUTHORITY_PRIVATE_KEY is not set in environment variables')
   }
-  return rpc
-}
 
-function decodeSecretKey(value: string) {
-  const trimmed = value.trim()
-  if (trimmed.startsWith('[')) {
-    try {
-      const arr = JSON.parse(trimmed)
-      if (!Array.isArray(arr)) {
-        throw new Error('JSON secret must be an array')
+  try {
+    let secretKey: Uint8Array
+    const trimmedKey = updateAuthorityPrivateKey.trim()
+
+    console.log('Parsing private key...')
+
+    // Try parsing as JSON array first
+    if (trimmedKey.startsWith('[')) {
+      console.log('Format detected: JSON array')
+      const secretKeyArray = JSON.parse(trimmedKey)
+      if (!Array.isArray(secretKeyArray) || secretKeyArray.length !== 64) {
+        throw new Error(`Invalid secret key length: ${secretKeyArray.length}. Expected 64 bytes.`)
       }
-      return Uint8Array.from(arr)
-    } catch (error) {
-      throw new Error(`Unable to parse JSON secret: ${error instanceof Error ? error.message : 'unknown error'}`)
+      secretKey = Uint8Array.from(secretKeyArray)
     }
-  }
+    // Try as base58 string (from Phantom or other wallets)
+    else if (!trimmedKey.includes(',') && trimmedKey.length > 32) {
+      console.log('Format detected: Base58 string')
+      secretKey = bs58.decode(trimmedKey)
+      if (secretKey.length !== 64) {
+        throw new Error(`Invalid secret key length: ${secretKey.length}. Expected 64 bytes.`)
+      }
+    }
+    // Try as comma-separated numbers
+    else {
+      console.log('Format detected: Comma-separated')
+      const parts = trimmedKey.split(',')
+      const secretKeyArray = parts.map((num) => parseInt(num.trim()))
+      if (secretKeyArray.length !== 64) {
+        throw new Error(`Invalid secret key length: ${secretKeyArray.length}. Expected 64 bytes.`)
+      }
+      secretKey = Uint8Array.from(secretKeyArray)
+    }
 
-  try {
-    return bs58.decode(trimmed)
+    const keypair = Keypair.fromSecretKey(secretKey)
+    console.log('✅ Successfully loaded keypair')
+    console.log('Update authority public key:', keypair.publicKey.toBase58())
+    return keypair
   } catch (error) {
-    throw new Error(`Unable to decode base58 secret key: ${error instanceof Error ? error.message : 'unknown error'}`)
-  }
-}
-
-function getAdminKeypair() {
-  const jsonSecret = process.env.ADMIN_KEYPAIR_JSON
-  const legacySecret = process.env.NFT_UPDATE_AUTHORITY_PRIVATE_KEY
-
-  if (!jsonSecret && !legacySecret) {
-    throw new Error('Missing ADMIN_KEYPAIR_JSON or NFT_UPDATE_AUTHORITY_PRIVATE_KEY environment variable')
-  }
-
-  const secretBytes = decodeSecretKey(jsonSecret ?? legacySecret ?? '')
-  return Keypair.fromSecretKey(secretBytes)
-}
-
-async function fetchExistingMetadata(connection: Connection, metadataPda: PublicKey) {
-  try {
-    return await Metadata.fromAccountAddress(connection, metadataPda)
-  } catch (error) {
-    throw new Error(`Failed to fetch metadata account: ${error instanceof Error ? error.message : 'Unknown error'}`)
+    console.error('Failed to parse update authority private key:', error)
+    throw new Error(
+      `Invalid NFT_UPDATE_AUTHORITY_PRIVATE_KEY format: ${error instanceof Error ? error.message : 'Unknown error'}`,
+    )
   }
 }
 
 export async function POST(req: Request) {
   try {
     const body: UpdateRequestBody = await req.json()
-    const { mint, metadataUri } = body || {}
+    const { mint, metadataUri, newName } = body || {}
 
     if (!mint || !metadataUri) {
       return NextResponse.json({ error: 'mint and metadataUri are required' }, { status: 400 })
     }
 
-    const mintPublicKey = new PublicKey(mint)
+    console.log('Processing metadata update for Core NFT:', { mint, metadataUri, newName })
 
-    const connection = new Connection(getRpcUrl(), 'confirmed')
-    const adminKeypair = getAdminKeypair()
+    // Get RPC URL from global config
+    const rpcUrl = getSolanaRpcUrl()
 
-    const [metadataPda] = PublicKey.findProgramAddressSync(
-      [Buffer.from('metadata'), TOKEN_METADATA_PROGRAM_ID.toBuffer(), mintPublicKey.toBuffer()],
-      TOKEN_METADATA_PROGRAM_ID,
-    )
-
-    const metadataAccount = await fetchExistingMetadata(connection, metadataPda)
-
-    const existingData = metadataAccount.data.data
-    const nextData: DataV2 = {
-      ...existingData,
-      uri: metadataUri,
+    // Verify the NFT mint exists
+    const connection = new Connection(rpcUrl, SOLANA_CONNECTION_CONFIG)
+    try {
+      const mintPublicKey = new PublicKey(mint)
+      const accountInfo = await connection.getAccountInfo(mintPublicKey)
+      if (!accountInfo) {
+        return NextResponse.json({ error: 'NFT mint not found' }, { status: 404 })
+      }
+    } catch (error) {
+      console.error('Invalid NFT mint address:', error)
+      return NextResponse.json({ error: 'Invalid NFT mint address' }, { status: 400 })
     }
 
-    const instruction = createUpdateMetadataAccountV2Instruction(
-      {
-        metadata: metadataPda,
-        updateAuthority: adminKeypair.publicKey,
-      },
-      {
-        updateMetadataAccountArgsV2: {
-          data: nextData,
-          updateAuthority: adminKeypair.publicKey,
-          primarySaleHappened: metadataAccount.data.primarySaleHappened,
-          isMutable: metadataAccount.data.isMutable,
-        },
-      },
-    )
+    // Load update authority keypair
+    const updateAuthorityKeypair = getUpdateAuthorityKeypair()
 
-    const latestBlockhash = await connection.getLatestBlockhash()
+    // Initialize Umi with the signer
+    console.log('Initializing UMI with signer...')
+    const umi = createUmi(rpcUrl, UMI_CONFIG)
+    const umiKeypair = umi.eddsa.createKeypairFromSecretKey(updateAuthorityKeypair.secretKey)
+    const updateAuthoritySigner = createSignerFromKeypair(umi, umiKeypair)
+    umi.use({ install: () => ({ identity: updateAuthoritySigner }) })
+    umi.use(keypairIdentity(updateAuthoritySigner))
+    console.log('✅ UMI initialized with update authority signer')
 
-    const transaction = new Transaction().add(instruction)
-    transaction.feePayer = adminKeypair.publicKey
-    transaction.recentBlockhash = latestBlockhash.blockhash
+    // Convert mint to Umi PublicKey
+    const assetAddress = umiPublicKey(mint)
 
-    transaction.sign(adminKeypair)
-
-    const signature = await connection.sendRawTransaction(transaction.serialize(), { skipPreflight: false })
-
-    await connection.confirmTransaction({
-      blockhash: latestBlockhash.blockhash,
-      lastValidBlockHeight: latestBlockhash.lastValidBlockHeight,
-      signature,
+    // Fetch current Core NFT asset
+    console.log('Fetching Core asset...')
+    const asset = await fetchAsset(umi, assetAddress)
+    console.log('Current asset:', {
+      name: asset.name,
+      uri: asset.uri,
+      updateAuthority: asset.updateAuthority.address?.toString() || 'none',
     })
 
-    return NextResponse.json({ signature })
+    // Check if NFT is part of a collection and get collection public key if needed
+    const collectionAddress = process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS
+    let collectionPublicKey = null
+
+    if (collectionAddress) {
+      try {
+        console.log('Using collection from environment:', collectionAddress)
+        collectionPublicKey = umiPublicKey(collectionAddress)
+        // Verify the collection exists
+        const collection = await fetchCollection(umi, collectionPublicKey)
+        console.log('Collection verified:', collection.name)
+      } catch (error) {
+        console.warn('Failed to fetch collection (NFT may not be in a collection):', error)
+        collectionPublicKey = null
+      }
+    } else if (asset.updateAuthority.type === 'Collection') {
+      // If no collection address in env but asset has collection in updateAuthority
+      const assetCollectionAddress = asset.updateAuthority.address
+      if (assetCollectionAddress) {
+        try {
+          console.log('Using collection from asset updateAuthority:', assetCollectionAddress.toString())
+          collectionPublicKey = assetCollectionAddress
+          // Verify the collection exists
+          const collection = await fetchCollection(umi, collectionPublicKey)
+          console.log('Collection verified:', collection.name)
+        } catch (error) {
+          console.warn('Failed to fetch collection from asset:', error)
+          collectionPublicKey = null
+        }
+      }
+    }
+
+    // Build update params
+    const updateParams: Parameters<typeof updateV1>[1] = {
+      asset: assetAddress,
+      newUri: metadataUri,
+      ...(collectionPublicKey && { collection: collectionPublicKey }), // Conditionally add collection
+    }
+
+    // Add newName if provided
+    if (newName) {
+      updateParams.newName = newName
+    }
+
+    console.log('Update params:', {
+      asset: assetAddress.toString(),
+      newUri: metadataUri,
+      hasCollection: !!collectionPublicKey,
+      collectionAddress: collectionPublicKey?.toString() || 'none',
+      ...(newName && { newName }),
+    })
+
+    // Build and send the transaction
+    console.log('Building transaction...')
+    const updateInstruction = updateV1(umi, updateParams)
+
+    // Send and confirm with retry logic
+    let result
+    let lastError: Error | null = null
+    const maxRetries = 3
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log(`Attempt ${attempt}/${maxRetries}: Sending transaction...`)
+        result = await updateInstruction.sendAndConfirm(umi, {
+          send: {
+            skipPreflight: false,
+            preflightCommitment: 'confirmed',
+            maxRetries: 3,
+          },
+          confirm: {
+            strategy: {
+              type: 'blockhash',
+              ...(await umi.rpc.getLatestBlockhash()),
+            },
+          },
+        })
+        console.log('✅ Transaction confirmed!')
+        console.log('Signature:', result.signature)
+        break // Success, exit retry loop
+      } catch (error) {
+        lastError = error as Error
+        console.error(`Attempt ${attempt} failed:`, error)
+        if (attempt < maxRetries) {
+          const waitTime = attempt * 1000 // Progressive backoff
+          console.log(`Waiting ${waitTime}ms before retry...`)
+          await new Promise((resolve) => setTimeout(resolve, waitTime))
+        }
+      }
+    }
+
+    if (!result) {
+      throw new Error(
+        `Transaction failed after ${maxRetries} attempts. Last error: ${lastError?.message || 'Unknown error'}`,
+      )
+    }
+
+    console.log('Successfully updated Core NFT metadata')
+    console.log('Transaction signature:', result.signature)
+
+    return NextResponse.json({
+      success: true,
+      signature: result.signature,
+      mint,
+      newUri: metadataUri,
+      ...(newName && { newName }),
+      timestamp: new Date().toISOString(),
+    })
   } catch (error) {
     console.error('Metadata update failed:', error)
     return NextResponse.json(
-      { error: error instanceof Error ? error.message : 'Internal server error' },
+      {
+        error: 'Metadata update failed',
+        details: error instanceof Error ? error.message : 'Unknown error occurred',
+      },
       { status: 500 },
     )
   }
 }
-

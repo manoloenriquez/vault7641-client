@@ -1,5 +1,6 @@
 import sharp, { OverlayOptions } from 'sharp'
 import { getSupabaseServerClient } from '@/lib/supabase/server'
+import { TraitAttribute } from '@/types/traits'
 
 const CANVAS_WIDTH = 2048
 const CANVAS_HEIGHT = 2048
@@ -17,6 +18,34 @@ const TRAIT_DIRECTORIES = [
   '09-Hand Gear',
 ] as const
 
+type TraitDirectory = (typeof TRAIT_DIRECTORIES)[number]
+
+const TRAIT_LABELS: Record<TraitDirectory, string> = {
+  '01-Guild Backgrounds': 'Guild Backgrounds',
+  '02-Body': 'Body',
+  '03-Mouth': 'Mouth',
+  '04-Eyes': 'Eyes',
+  '05-Outfits': 'Outfits',
+  '06-Hair': 'Hair',
+  '07-Headwear': 'Headwear',
+  '08-Hand': 'Hand',
+  '09-Hand Gear': 'Hand Gear',
+}
+
+const ORDERED_TRAITS = [
+  'Guild Backgrounds',
+  'Body',
+  'Mouth',
+  'Eyes',
+  'Outfits',
+  'Hair',
+  'Headwear',
+  'Hand',
+  'Hand Gear',
+] as const
+
+const OPTIONAL_TRAITS = new Set<string>(['Headwear', 'Hand Gear'])
+
 const BACKGROUND_IDX = 0
 const BODY_IDX = 1
 const HAIR_IDX = 5
@@ -27,7 +56,15 @@ const SUPPORTED_GUILDS = ['Builder Guild', 'Farmer Guild', 'Gamer Guild', 'Pathf
 const GENDERS = ['Male', 'Female'] as const
 
 const GUILD_SPECIFIC_TRAITS = new Set(['05-Outfits', '07-Headwear', '09-Hand Gear'])
-const GENDER_SPECIFIC_TRAITS = new Set(['02-Body', '03-Mouth', '04-Eyes', '05-Outfits', '06-Hair', '07-Headwear', '08-Hand'])
+const GENDER_SPECIFIC_TRAITS = new Set([
+  '02-Body',
+  '03-Mouth',
+  '04-Eyes',
+  '05-Outfits',
+  '06-Hair',
+  '07-Headwear',
+  '08-Hand',
+])
 
 const BUZZ_CUT_ONLY_HEADWEAR: Record<string, string[]> = {
   'Builder Guild': ['Welding Mask'],
@@ -96,9 +133,7 @@ async function listTraitFiles(path: string): Promise<string[]> {
     return []
   }
 
-  const files = (data ?? [])
-    .filter((item) => item.name && item.metadata && item.metadata.size)
-    .map((item) => item.name)
+  const files = (data ?? []).filter((item) => item.name && item.metadata && item.metadata.size).map((item) => item.name)
 
   traitListCache.set(path, files)
   return files
@@ -132,6 +167,11 @@ function extractTraitName(filename: string): string {
     return parts.slice(1, -1).join('_')
   }
   return parts.slice(1).join('_') || withoutExt
+}
+
+function formatTraitValue(name: string | null | undefined): string {
+  if (!name) return ''
+  return name.replace(/[_-]+/g, ' ').replace(/\s+/g, ' ').trim()
 }
 
 function extractSkinTone(filename: string): string | null {
@@ -225,7 +265,7 @@ async function getValidHeadwear(
   random: () => number,
 ): Promise<{ filename: string; path: string } | null> {
   const primaryFolder = guild === 'General' ? 'General' : guild
-  let folderInUse = primaryFolder
+  let folderInUse: Guild | 'General' = primaryFolder
   let files = await listHeadwearFiles(traitDir, primaryFolder, gender)
 
   if (!files.length && primaryFolder !== 'General') {
@@ -278,9 +318,7 @@ async function selectHandWithSkinTone(
 
   const gendered = files.filter((file) => file.toLowerCase().endsWith(`_${gender.toLowerCase()}.png`))
   const matching =
-    skinTone && gendered.length
-      ? gendered.filter((file) => file.toLowerCase().includes(skinTone.toLowerCase()))
-      : []
+    skinTone && gendered.length ? gendered.filter((file) => file.toLowerCase().includes(skinTone.toLowerCase())) : []
 
   const pool = matching.length ? matching : gendered
   if (!pool.length) {
@@ -292,13 +330,30 @@ async function selectHandWithSkinTone(
   return { filename, path: `${traitDir}/${filename}` }
 }
 
-async function buildLayerPaths(tokenId: number, options: NftImageGenerationOptions) {
+type LayerPlan = {
+  layerPaths: string[]
+  traitMap: Map<string, string>
+  normalizedGender: Gender
+}
+
+function recordTraitSelection(traitMap: Map<string, string>, traitDir: TraitDirectory, filename: string | null) {
+  if (!filename) return
+  const label = TRAIT_LABELS[traitDir]
+  if (!label) return
+  const formatted = formatTraitValue(extractTraitName(filename))
+  if (formatted) {
+    traitMap.set(label, formatted)
+  }
+}
+
+async function buildLayerPlan(tokenId: number, options: NftImageGenerationOptions): Promise<LayerPlan> {
   const guild = normalizeGuild(options.guild)
   const gender = normalizeGender(options.gender)
   const seed = options.seed ?? Date.now()
   const random = createSeededRandom((tokenId + seed) & 0xffffffff)
 
-  const layers: string[] = []
+  const layerPaths: string[] = []
+  const traitMap = new Map<string, string>([['Guild Backgrounds', guild]])
   let bodySkinTone: string | null = null
   let hasBuzzCut = false
 
@@ -310,9 +365,10 @@ async function buildLayerPaths(tokenId: number, options: NftImageGenerationOptio
       if (!backgrounds.length) {
         continue
       }
-      const background =
-        backgrounds.find((file) => file.toLowerCase().includes(guild.toLowerCase())) ?? backgrounds[0]
-      layers.push(`${traitDir}/${background}`)
+      const background = backgrounds.find((file) => file.toLowerCase().includes(guild.toLowerCase())) ?? backgrounds[0]
+      layerPaths.push(`${traitDir}/${background}`)
+      const traitValue = formatTraitValue(extractTraitName(background)) || guild
+      traitMap.set('Guild Backgrounds', traitValue)
       continue
     }
 
@@ -322,10 +378,11 @@ async function buildLayerPaths(tokenId: number, options: NftImageGenerationOptio
         continue
       }
       bodySkinTone = extractSkinTone(filename)
-      layers.push(`${traitDir}/${filename}`)
+      layerPaths.push(`${traitDir}/${filename}`)
+      recordTraitSelection(traitMap, traitDir, filename)
       // Insert gender-specific nose at the correct position (between body and mouth)
       // Nose files are stored at the root of the traits bucket, not in a subdirectory
-      layers.push(`Nose_${gender}.png`)
+      layerPaths.push(`Nose_${gender}.png`)
       continue
     }
 
@@ -335,7 +392,8 @@ async function buildLayerPaths(tokenId: number, options: NftImageGenerationOptio
         continue
       }
       hasBuzzCut = isBuzzCut(result)
-      layers.push(`${traitDir}/${result}`)
+      layerPaths.push(`${traitDir}/${result}`)
+      recordTraitSelection(traitMap, traitDir, result)
       continue
     }
 
@@ -347,7 +405,8 @@ async function buildLayerPaths(tokenId: number, options: NftImageGenerationOptio
 
       const headwear = await getValidHeadwear(traitDir, guild, gender, hasBuzzCut, random)
       if (headwear) {
-        layers.push(headwear.path)
+        layerPaths.push(headwear.path)
+        recordTraitSelection(traitMap, traitDir, headwear.filename)
       }
       continue
     }
@@ -355,7 +414,8 @@ async function buildLayerPaths(tokenId: number, options: NftImageGenerationOptio
     if (idx === HAND_IDX) {
       const hand = await selectHandWithSkinTone(gender, bodySkinTone, random)
       if (hand) {
-        layers.push(hand.path)
+        layerPaths.push(hand.path)
+        recordTraitSelection(traitMap, traitDir, hand.filename)
       }
       continue
     }
@@ -363,21 +423,26 @@ async function buildLayerPaths(tokenId: number, options: NftImageGenerationOptio
     if (GUILD_SPECIFIC_TRAITS.has(traitDir)) {
       const selection = await selectGuildAwareTrait(traitDir, guild, gender, random)
       if (selection) {
-        layers.push(selection.path)
+        layerPaths.push(selection.path)
+        recordTraitSelection(traitMap, traitDir, selection.filename)
       }
       continue
     }
 
     const filename = await selectFileFromDirectory(traitDir, '', gender, random)
     if (filename) {
-      layers.push(`${traitDir}/${filename}`)
+      layerPaths.push(`${traitDir}/${filename}`)
+      recordTraitSelection(traitMap, traitDir, filename)
     }
   }
 
-  return layers
+  return { layerPaths, traitMap, normalizedGender: gender }
 }
 
-export async function buildImageBufferFromTraits(tokenId: number, options: NftImageGenerationOptions = {}): Promise<Buffer> {
+export async function buildImageBufferFromTraits(
+  tokenId: number,
+  options: NftImageGenerationOptions = {},
+): Promise<Buffer> {
   const fallbackBuffer = await sharp({
     create: {
       width: CANVAS_WIDTH,
@@ -390,7 +455,7 @@ export async function buildImageBufferFromTraits(tokenId: number, options: NftIm
     .toBuffer()
 
   try {
-    const layerPaths = await buildLayerPaths(tokenId, options)
+    const { layerPaths } = await buildLayerPlan(tokenId, options)
     const overlays = (
       await Promise.all(
         layerPaths.map(async (path) => {
@@ -421,3 +486,19 @@ export async function buildImageBufferFromTraits(tokenId: number, options: NftIm
   }
 }
 
+export async function generateTraitAttributes(
+  tokenId: number,
+  options: NftImageGenerationOptions = {},
+): Promise<TraitAttribute[]> {
+  const { traitMap, normalizedGender } = await buildLayerPlan(tokenId, options)
+
+  const baseTraits: TraitAttribute[] = ORDERED_TRAITS.map((traitType) => {
+    const value = traitMap.get(traitType)
+    if (value && value.length) {
+      return { trait_type: traitType, value }
+    }
+    return { trait_type: traitType, value: OPTIONAL_TRAITS.has(traitType) ? 'None' : 'Unknown' }
+  })
+
+  return [...baseTraits, { trait_type: 'Gender', value: normalizedGender }]
+}

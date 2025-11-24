@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
       transaction_signature: transactionSignature,
       wallet_address: walletAddress,
       created_at: timestamp || new Date().toISOString(),
-    })
+    }).select()
 
     if (error) {
       console.error('Failed to log regeneration event:', error)
@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({
       success: true,
-      id: data?.[0]?.id,
+      id: data?.[0] ? (data[0] as Record<string, unknown>).id : undefined,
     })
   } catch (error) {
     console.error('Error logging regeneration event:', error)
