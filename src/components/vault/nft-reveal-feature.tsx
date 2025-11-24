@@ -1,12 +1,12 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useRouter } from 'next/navigation'
 import { useWallet, useConnection } from '@solana/wallet-adapter-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
-import { Loader2, Sparkles, ChevronLeft, ChevronRight, CheckCircle, AlertTriangle } from 'lucide-react'
+import { Loader2, Sparkles, ChevronLeft, ChevronRight, CheckCircle, AlertTriangle, ArrowDown } from 'lucide-react'
 import Image from 'next/image'
 import { toast } from 'sonner'
 import { buildVaultMetadata } from '@/lib/vaultMetadata'
@@ -51,6 +51,9 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
   const [isLoading, setIsLoading] = useState(true)
   const [isProcessing, setIsProcessing] = useState(false)
   const [showConfirmDialog, setShowConfirmDialog] = useState(false)
+  const guildListRef = useRef<HTMLDivElement>(null)
+  const [isGuildListScrolledToTop, setIsGuildListScrolledToTop] = useState(true)
+  const [isGuildListScrolledToBottom, setIsGuildListScrolledToBottom] = useState(false)
 
   const loadNFT = useCallback(async () => {
     setIsLoading(true)
@@ -81,6 +84,37 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
   useEffect(() => {
     loadNFT()
   }, [loadNFT])
+
+  useEffect(() => {
+    const listEl = guildListRef.current
+    if (!listEl) return
+
+    const updateScrollHints = () => {
+      const { scrollTop, scrollHeight, clientHeight } = listEl
+      setIsGuildListScrolledToTop(scrollTop <= 4)
+      setIsGuildListScrolledToBottom(scrollTop + clientHeight >= scrollHeight - 4)
+    }
+
+    updateScrollHints()
+    listEl.addEventListener('scroll', updateScrollHints)
+    window.addEventListener('resize', updateScrollHints)
+
+    return () => {
+      listEl.removeEventListener('scroll', updateScrollHints)
+      window.removeEventListener('resize', updateScrollHints)
+    }
+  }, [nft])
+
+  useEffect(() => {
+    if (!isProcessing) return
+
+    const previousOverflow = document.body.style.overflow
+    document.body.style.overflow = 'hidden'
+
+    return () => {
+      document.body.style.overflow = previousOverflow
+    }
+  }, [isProcessing])
 
   const handleReveal = async () => {
     if (!selectedGuild || !nft || !publicKey) return
@@ -244,9 +278,14 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
   }
 
   return (
-    <div className="py-12">
-      <div className="container mx-auto px-4">
-        <div className="max-w-6xl mx-auto">
+    <div className="relative" aria-busy={isProcessing}>
+      <div
+        className={`py-12 transition duration-300 ${
+          isProcessing ? 'pointer-events-none select-none opacity-40 blur-[1px]' : ''
+        }`}
+      >
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
           {/* Header */}
           <div className="mb-8">
             <Button variant="ghost" onClick={() => router.push('/guild-selection')} className="mb-4">
@@ -307,31 +346,62 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
 
             {/* Guild Selection */}
             <div>
-              <h2 className="text-2xl font-bold text-white mb-6">Choose Your Guild</h2>
-              <div className="space-y-4 max-h-[640px] overflow-y-auto">
-                {GUILDS.map((guild) => (
-                  <Card
-                    key={guild.id}
-                    className={`cursor-pointer transition-all ${
-                      selectedGuild?.id === guild.id
-                        ? 'border-purple-500 bg-purple-500/10 scale-105'
-                        : 'border-zinc-800 hover:border-zinc-700 hover:scale-102'
-                    }`}
-                    onClick={() => setSelectedGuild(guild)}
-                  >
-                    <CardContent className="p-4">
-                      <div className={`h-1 bg-gradient-to-r ${guild.gradient} rounded-full mb-4`} />
+              <div className="mb-4">
+                <h2 className="text-2xl font-bold text-white">Choose Your Guild</h2>
+                <p className="text-sm text-zinc-400">
+                  Scroll to compare all {GUILDS.length} guilds and find the vibe that fits you best.
+                </p>
+              </div>
+              <div className="relative rounded-2xl border border-zinc-800/70 bg-zinc-950/40 p-2">
+                <div
+                  ref={guildListRef}
+                  className="space-y-4 max-h-[640px] overflow-y-auto pr-3 scroll-smooth vault-scroll-area"
+                >
+                  {GUILDS.map((guild) => (
+                    <Card
+                      key={guild.id}
+                      className={`cursor-pointer transition-all ${
+                        selectedGuild?.id === guild.id
+                          ? 'border-purple-500 bg-purple-500/10 scale-[1.02] shadow-[0_0_30px_rgba(147,51,234,0.25)]'
+                          : 'border-zinc-800 hover:border-zinc-700 hover:scale-[1.01]'
+                      }`}
+                      onClick={() => setSelectedGuild(guild)}
+                    >
+                      <CardContent className="p-4">
+                        <div className={`h-1 bg-gradient-to-r ${guild.gradient} rounded-full mb-4`} />
 
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className={`w-8 h-8 rounded-full ${guild.color}`} />
-                        <h3 className="font-bold text-white">{guild.name}</h3>
-                        {selectedGuild?.id === guild.id && <CheckCircle className="w-5 h-5 text-purple-400 ml-auto" />}
+                        <div className="flex items-center gap-3 mb-3">
+                          <div className={`w-8 h-8 rounded-full ${guild.color}`} />
+                          <h3 className="font-bold text-white">{guild.name}</h3>
+                          {selectedGuild?.id === guild.id && (
+                            <CheckCircle className="w-5 h-5 text-purple-400 ml-auto" />
+                          )}
+                        </div>
+
+                        <p className="text-sm text-zinc-400">{guild.description}</p>
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+
+                {!isGuildListScrolledToTop && (
+                  <div className="pointer-events-none absolute inset-x-2 top-2 h-16 bg-gradient-to-b from-zinc-900 via-zinc-900/80 to-transparent rounded-t-2xl" />
+                )}
+
+                {!isGuildListScrolledToBottom && (
+                  <>
+                    <div className="pointer-events-none absolute inset-x-2 bottom-2 h-16 bg-gradient-to-t from-zinc-900 via-zinc-900/80 to-transparent rounded-b-2xl" />
+                    <div
+                      className="pointer-events-none absolute bottom-6 left-1/2 w-max -translate-x-1/2 rounded-full border border-white/10 bg-zinc-900/80 px-5 py-2 text-[10px] font-semibold uppercase tracking-[0.4em] text-zinc-400 shadow-[0_20px_45px_rgba(10,10,10,0.8)]"
+                      aria-hidden="true"
+                    >
+                      <div className="flex items-center gap-2">
+                        Scroll
+                        <ArrowDown className="h-3 w-3" />
                       </div>
-
-                      <p className="text-sm text-zinc-400 mb-4">{guild.description}</p>
-                    </CardContent>
-                  </Card>
-                ))}
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -471,6 +541,23 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+    </div>
+
+      {isProcessing && (
+        <div
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/80 px-6 text-center text-white backdrop-blur-sm"
+          role="status"
+          aria-live="assertive"
+        >
+          <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl border border-purple-500/30 bg-purple-500/10">
+            <Loader2 className="h-10 w-10 animate-spin text-purple-400" />
+          </div>
+          <p className="text-2xl font-semibold">Revealing your NFT</p>
+          <p className="mt-2 max-w-md text-sm text-zinc-300">
+            Hang tight while we generate your guild art, upload to Arweave, and finalize the onchain metadata update.
+          </p>
+        </div>
+      )}
     </div>
   )
 }

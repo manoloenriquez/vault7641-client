@@ -159,3 +159,22 @@
 .wallet-adapter-modal-list-more {
   @apply !text-zinc-400 hover:!text-white;
 }
+
+/* Custom scroll affordance for reveal guild list */
+.vault-scroll-area {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(167, 139, 250, 0.6) transparent;
+}
+
+.vault-scroll-area::-webkit-scrollbar {
+  width: 6px;
+}
+
+.vault-scroll-area::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.vault-scroll-area::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  background: linear-gradient(180deg, rgba(167, 139, 250, 0.4), rgba(236, 72, 153, 0.5));
+}

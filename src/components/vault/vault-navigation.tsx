@@ -93,7 +93,10 @@ export function VaultNavigation() {
 
               {auth.isAuthenticated ? (
                 <Link href="/guild-selection" className="hidden sm:block">
-                  <Button variant="ghost" size="sm" className="text-zinc-300 hover:text-white">
+                  <Button
+                    size="sm"
+                    className="flex items-center gap-2 rounded-full border border-white/10 bg-white text-zinc-900 shadow-[0_15px_35px_rgba(255,255,255,0.2)] transition-all hover:-translate-y-0.5 hover:bg-white/90 hover:text-zinc-900"
+                  >
                     Guild Selection
                   </Button>
                 </Link>
