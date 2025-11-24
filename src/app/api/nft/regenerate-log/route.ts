@@ -18,7 +18,7 @@ type RegenerateLogEntry = {
 
 /**
  * POST /api/nft/regenerate-log
- * 
+ *
  * Logs a regeneration event to Supabase for audit and persistence.
  * Creates a table if it doesn't exist (requires manual setup first).
  */
@@ -49,18 +49,21 @@ export async function POST(req: NextRequest) {
     const supabase = getSupabaseServerClient()
 
     // Insert log entry
-    const { data, error } = await supabase.from('nft_regeneration_logs').insert({
-      token_id: tokenId,
-      nft_mint: nftMint,
-      guild,
-      gender,
-      seed,
-      metadata_uri: metadataUri,
-      image_uri: imageUri,
-      transaction_signature: transactionSignature,
-      wallet_address: walletAddress,
-      created_at: timestamp || new Date().toISOString(),
-    }).select()
+    const { data, error } = await supabase
+      .from('nft_regeneration_logs')
+      .insert({
+        token_id: tokenId,
+        nft_mint: nftMint,
+        guild,
+        gender,
+        seed,
+        metadata_uri: metadataUri,
+        image_uri: imageUri,
+        transaction_signature: transactionSignature,
+        wallet_address: walletAddress,
+        created_at: timestamp || new Date().toISOString(),
+      })
+      .select()
 
     if (error) {
       console.error('Failed to log regeneration event:', error)
@@ -93,7 +96,7 @@ export async function POST(req: NextRequest) {
 
 /**
  * GET /api/nft/regenerate-log?tokenId=X&mint=Y
- * 
+ *
  * Retrieves regeneration history for a specific NFT.
  */
 export async function GET(req: NextRequest) {
@@ -132,4 +135,3 @@ export async function GET(req: NextRequest) {
     )
   }
 }
-

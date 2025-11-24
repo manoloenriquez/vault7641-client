@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 /**
  * Environment Variables Checker
- * 
+ *
  * Verifies all required environment variables are set for the regeneration system.
  * Run with: npx tsx scripts/check-env.ts
  */
@@ -25,7 +25,7 @@ const REQUIRED_VARS = {
     default: 'traits',
     example: 'traits',
   },
-  
+
   // Solana
   SOLANA_RPC_URL: {
     required: true,
@@ -38,7 +38,7 @@ const REQUIRED_VARS = {
     description: 'Public Solana RPC URL (for client-side)',
     example: 'https://api.mainnet-beta.solana.com',
   },
-  
+
   // Update Authority
   NFT_UPDATE_AUTHORITY_PRIVATE_KEY: {
     required: true,
@@ -52,7 +52,7 @@ const REQUIRED_VARS = {
     example: '[1,2,3,...,64]',
     note: 'Can be used instead of NFT_UPDATE_AUTHORITY_PRIVATE_KEY',
   },
-  
+
   // Optional
   NEXT_PUBLIC_NFT_COLLECTION_ADDRESS: {
     required: false,
@@ -73,10 +73,10 @@ interface CheckResult {
   message: string
 }
 
-function checkEnvVar(name: string, config: typeof REQUIRED_VARS[keyof typeof REQUIRED_VARS]): CheckResult {
+function checkEnvVar(name: string, config: (typeof REQUIRED_VARS)[keyof typeof REQUIRED_VARS]): CheckResult {
   const value = process.env[name]
   const isSet = value !== undefined && value.trim() !== ''
-  
+
   if (!isSet) {
     if (config.required) {
       return {
@@ -93,7 +93,7 @@ function checkEnvVar(name: string, config: typeof REQUIRED_VARS[keyof typeof REQ
       }
     }
   }
-  
+
   // Validate format for specific vars
   let validationMessage = ''
   if (name === 'SUPABASE_URL' && !value.startsWith('https://')) {
@@ -108,8 +108,8 @@ function checkEnvVar(name: string, config: typeof REQUIRED_VARS[keyof typeof REQ
         JSON.parse(value)
         validationMessage = ' ✅ Valid JSON array format'
       } else if (value.includes(',')) {
-        const parts = value.split(',').map(n => parseInt(n.trim(), 10))
-        if (parts.length === 64 && parts.every(n => !isNaN(n))) {
+        const parts = value.split(',').map((n) => parseInt(n.trim(), 10))
+        if (parts.length === 64 && parts.every((n) => !isNaN(n))) {
           validationMessage = ' ✅ Valid comma-separated format'
         }
       } else if (value.length === 88) {
@@ -119,9 +119,9 @@ function checkEnvVar(name: string, config: typeof REQUIRED_VARS[keyof typeof REQ
       validationMessage = ' ⚠️  Format validation failed'
     }
   }
-  
+
   const maskedValue = value.length > 20 ? `${value.slice(0, 10)}...${value.slice(-4)}` : '***'
-  
+
   return {
     name,
     status: 'ok',
@@ -132,19 +132,19 @@ function checkEnvVar(name: string, config: typeof REQUIRED_VARS[keyof typeof REQ
 
 function main() {
   console.log('🔍 Checking Environment Variables\n')
-  console.log('=' .repeat(60))
-  
+  console.log('='.repeat(60))
+
   const results: CheckResult[] = []
   let hasErrors = false
-  
+
   for (const [name, config] of Object.entries(REQUIRED_VARS)) {
     const result = checkEnvVar(name, config)
     results.push(result)
-    
+
     if (result.status === 'missing') {
       hasErrors = true
     }
-    
+
     console.log(`\n${result.message}`)
     if (result.value) {
       console.log(`   Value: ${result.value}`)
@@ -156,44 +156,43 @@ function main() {
       console.log(`   Note: ${config.note}`)
     }
   }
-  
+
   console.log('\n' + '='.repeat(60))
-  
+
   // Summary
-  const okCount = results.filter(r => r.status === 'ok').length
-  const missingCount = results.filter(r => r.status === 'missing').length
-  const warningCount = results.filter(r => r.status === 'warning').length
-  
+  const okCount = results.filter((r) => r.status === 'ok').length
+  const missingCount = results.filter((r) => r.status === 'missing').length
+  const warningCount = results.filter((r) => r.status === 'warning').length
+
   console.log('\n📊 Summary:')
   console.log(`   ✅ Set: ${okCount}`)
   console.log(`   ❌ Missing (required): ${missingCount}`)
   console.log(`   ⚠️  Warnings (optional): ${warningCount}`)
-  
+
   if (hasErrors) {
     console.log('\n❌ Some required environment variables are missing!')
     console.log('   Please set them in your .env.local file or deployment environment.')
     process.exit(1)
   } else {
     console.log('\n✅ All required environment variables are set!')
-    
+
     // Additional checks
     console.log('\n🔧 Additional Checks:')
-    
+
     // Check Supabase connection
     if (process.env.SUPABASE_URL && process.env.SUPABASE_SERVICE_ROLE_KEY) {
       console.log('   Testing Supabase connection...')
       // Could add actual connection test here
       console.log('   ⚠️  Connection test not implemented (add if needed)')
     }
-    
+
     // Check Solana connection
     if (process.env.SOLANA_RPC_URL || process.env.NEXT_PUBLIC_SOLANA_RPC_URL) {
       console.log('   ✅ Solana RPC URL configured')
     }
-    
+
     console.log('\n✨ Environment check complete!')
   }
 }
 
 main()
-
