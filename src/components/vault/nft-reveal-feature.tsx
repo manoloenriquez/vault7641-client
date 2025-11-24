@@ -9,7 +9,7 @@ import { Card, CardContent } from '@/components/ui/card'
 import { Loader2, Sparkles, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react'
 import Image from 'next/image'
 import { toast } from 'sonner'
-import { useGuildAssignmentUserPaid } from '@/hooks/use-guild-assignment-user-paid'
+// import { useGuildAssignmentUserPaid } from '@/hooks/use-guild-assignment-user-paid'
 import { buildVaultMetadata } from '@/lib/vaultMetadata'
 import { TraitAttribute } from '@/types/traits'
 
@@ -139,7 +139,7 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
   const wallet = useWallet()
   const { publicKey } = wallet
   const { connection } = useConnection()
-  const { assignGuild, isAssigning } = useGuildAssignmentUserPaid()
+  // const { assignGuild, isAssigning } = useGuildAssignmentUserPaid()
   const [nft, setNft] = useState<NFTData | null>(null)
   const [selectedGuild, setSelectedGuild] = useState<Guild | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -285,45 +285,45 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
       console.log('✅ Metadata updated onchain:', metadataSignature)
 
       // Step 4: Assign guild
-      toast.loading('Assigning guild...', { id: 'reveal-process' })
-      const guildSignature = await assignGuild(
-        nft.mintAddress,
-        tokenNumber,
-        selectedGuild.id as 'builder' | 'trader' | 'farmer' | 'gamer' | 'pathfinder',
-      )
+      // toast.loading('Assigning guild...', { id: 'reveal-process' })
+      // const guildSignature = await assignGuild(
+      //   nft.mintAddress,
+      //   tokenNumber,
+      //   selectedGuild.id as 'builder' | 'trader' | 'farmer' | 'gamer' | 'pathfinder',
+      // )
 
-      if (!guildSignature) {
-        // User cancelled or error occurred (already handled by hook)
-        toast.dismiss('reveal-process')
-        return
-      }
+      // if (!guildSignature) {
+      //   // User cancelled or error occurred (already handled by hook)
+      //   toast.dismiss('reveal-process')
+      //   return
+      // }
 
       // Log regeneration event (non-blocking)
-      fetch('/api/nft/regenerate-log', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          tokenId: tokenNumber,
-          nftMint: nft.mintAddress,
-          guild: selectedGuild.name,
-          gender,
-          seed: generationSeed,
-          metadataUri,
-          imageUri,
-          transactionSignature: guildSignature,
-          walletAddress: publicKey.toBase58(),
-          timestamp: new Date().toISOString(),
-        }),
-      }).catch((err) => {
-        console.warn('Failed to log regeneration event:', err)
-      })
+      // fetch('/api/nft/regenerate-log', {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify({
+      //     tokenId: tokenNumber,
+      //     nftMint: nft.mintAddress,
+      //     guild: selectedGuild.name,
+      //     gender,
+      //     seed: generationSeed,
+      //     metadataUri,
+      //     imageUri,
+      //     transactionSignature: guildSignature,
+      //     walletAddress: publicKey.toBase58(),
+      //     timestamp: new Date().toISOString(),
+      //   }),
+      // }).catch((err) => {
+      //   console.warn('Failed to log regeneration event:', err)
+      // })
 
       toast.success(`Successfully revealed ${nft.name} and assigned to ${selectedGuild.name}!`, {
         id: 'reveal-process',
       })
 
       // Redirect to result page with transaction signature
-      router.push(`/reveal/${nftId}/result?guild=${selectedGuild.id}&tx=${guildSignature}`)
+      router.push(`/reveal/${nftId}/result?guild=${selectedGuild.id}&tx=${metadataSignature}`)
     } catch (error) {
       console.error('Error revealing NFT:', error)
       toast.error(error instanceof Error ? error.message : 'Failed to reveal NFT. Please try again.', {
@@ -484,11 +484,11 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
                   </p>
                   <Button
                     onClick={handleReveal}
-                    disabled={isAssigning || isProcessing}
+                    disabled={isProcessing}
                     size="lg"
                     className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 px-12"
                   >
-                    {isProcessing || isAssigning ? (
+                    {isProcessing ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                         {isProcessing ? 'Generating & uploading...' : 'Revealing...'}
