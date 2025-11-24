@@ -33,7 +33,7 @@ export const FEATURES = {
 
 // 🎨 MOCK MODE - Set to true to prevent actual transaction requests (but still shows real NFTs)
 // When true, transaction requests will be blocked to prevent on-chain operations
-export const USE_MOCK_TRANSACTIONS = true
+export const USE_MOCK_TRANSACTIONS = false
 
 // Guild configuration
 export const GUILD_CONFIG = {
