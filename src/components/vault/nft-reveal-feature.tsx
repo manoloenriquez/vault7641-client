@@ -6,12 +6,20 @@ import { useWallet, useConnection } from '@solana/wallet-adapter-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
-import { Loader2, Sparkles, ChevronLeft, ChevronRight, CheckCircle } from 'lucide-react'
+import { Loader2, Sparkles, ChevronLeft, ChevronRight, CheckCircle, AlertTriangle } from 'lucide-react'
 import Image from 'next/image'
 import { toast } from 'sonner'
-// import { useGuildAssignmentUserPaid } from '@/hooks/use-guild-assignment-user-paid'
 import { buildVaultMetadata } from '@/lib/vaultMetadata'
 import { TraitAttribute } from '@/types/traits'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
+import { GUILDS, type Guild } from '@/lib/guild-constants'
 
 // Types
 interface NFTData {
@@ -29,107 +37,6 @@ interface NFTData {
   isRevealed: boolean
 }
 
-interface Guild {
-  id: string
-  name: string
-  description: string
-  gradient: string
-  color: string
-  benefits: string[]
-}
-
-// Guild data
-const guilds: Guild[] = [
-  {
-    id: 'builder',
-    name: 'Builder Guild',
-    description:
-      'For Web3 engineers, designers, data researchers, automators, founders, product designers, anyone who builds & ships.',
-    gradient: 'from-yellow-300 via-yellow-500 to-yellow-800',
-    color: 'bg-yellow-500',
-    benefits: [
-      'Forum board',
-      'Build Logs',
-      'Code/Design Reviews',
-      'RFC (Request for Comments) lane',
-      'Advanced learning resources',
-      'Direct mentor & expert chats + AMAs',
-      'Partner perks',
-      'Live sessions + recaps',
-    ],
-  },
-  {
-    id: 'trader',
-    name: 'Trader Guild',
-    description:
-      'For new and experienced traders & investors who want structured, real market insights, clear setups & opportunities.',
-    gradient: 'from-orange-400 via-orange-600 to-red-700',
-    color: 'bg-orange-500',
-    benefits: [
-      'Exclusive Market Insights & Signals',
-      'Actionable Trade Setups',
-      'Market Watch & News',
-      'On-Chain Data & Reports',
-      'Community Coaching & Feedback',
-      'Market Outlook Newsletters',
-      'Whale Watch',
-      'Private Research',
-    ],
-  },
-  {
-    id: 'farmer',
-    name: 'Farmer Guild',
-    description: 'For DeFi participants, airdrop hunters, points farmers, and yield strategists.',
-    gradient: 'from-lime-600 via-green-900 to-green-600',
-    color: 'bg-green-500',
-    benefits: [
-      'Alerts & Routes',
-      'Walkthroughs',
-      'Points Meta',
-      'Risk Desk',
-      'Cohorts',
-      'Advanced resources',
-      'Mentor rooms with seasoned farmers',
-      'Access exclusive guild chat',
-    ],
-  },
-  {
-    id: 'gamer',
-    name: 'Gamer Guild',
-    description: 'For P2E gamers, NFT collectors, flippers, and enjoyers of game economies.',
-    gradient: 'from-fuchsia-600 via-violet-900 to-fuchsia-900',
-    color: 'bg-fuchsia-500',
-    benefits: [
-      'Mints Today & Exclusive Alpha',
-      'Game Nights & Playtests',
-      'Flip Desk',
-      'Economy Watch',
-      'Creator Corner',
-      'Advanced resources',
-      'Mentor rooms with creators and experts',
-      'Access exclusive guild chat',
-    ],
-  },
-  {
-    id: 'pathfinder',
-    name: 'Pathfinder Guild',
-    description:
-      'For Marketers, CMs, devs, analysts, designers, students, unemployed, and professionals who want Web3 careers.',
-    gradient: 'from-cyan-600 via-teal-400 to-cyan-500',
-    color: 'bg-cyan-500',
-    benefits: [
-      'Curated Job Board',
-      'Bounties & Paid Tasks',
-      'Application Sprints',
-      'Résumé/CV & Portfolio Reviews',
-      'Mock Interviews',
-      'Referral Network',
-      'Proof-of-Work Threads',
-      'Opportunity Radar',
-    ],
-  },
-]
-
 interface NFTRevealFeatureProps {
   nftId: string
 }
@@ -139,11 +46,11 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
   const wallet = useWallet()
   const { publicKey } = wallet
   const { connection } = useConnection()
-  // const { assignGuild, isAssigning } = useGuildAssignmentUserPaid()
   const [nft, setNft] = useState<NFTData | null>(null)
   const [selectedGuild, setSelectedGuild] = useState<Guild | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [isProcessing, setIsProcessing] = useState(false)
+  const [showConfirmDialog, setShowConfirmDialog] = useState(false)
 
   const loadNFT = useCallback(async () => {
     setIsLoading(true)
@@ -276,6 +183,7 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
         body: JSON.stringify({
           mint: nft.mintAddress,
           metadataUri,
+          walletAddress: publicKey.toBase58(), // For ownership verification
         }),
       })
 
@@ -287,41 +195,7 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
       const { signature: metadataSignature } = await updateResponse.json()
       console.log('✅ Metadata updated onchain:', metadataSignature)
 
-      // Step 4: Assign guild
-      // toast.loading('Assigning guild...', { id: 'reveal-process' })
-      // const guildSignature = await assignGuild(
-      //   nft.mintAddress,
-      //   tokenNumber,
-      //   selectedGuild.id as 'builder' | 'trader' | 'farmer' | 'gamer' | 'pathfinder',
-      // )
-
-      // if (!guildSignature) {
-      //   // User cancelled or error occurred (already handled by hook)
-      //   toast.dismiss('reveal-process')
-      //   return
-      // }
-
-      // Log regeneration event (non-blocking)
-      // fetch('/api/nft/regenerate-log', {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify({
-      //     tokenId: tokenNumber,
-      //     nftMint: nft.mintAddress,
-      //     guild: selectedGuild.name,
-      //     gender,
-      //     seed: generationSeed,
-      //     metadataUri,
-      //     imageUri,
-      //     transactionSignature: guildSignature,
-      //     walletAddress: publicKey.toBase58(),
-      //     timestamp: new Date().toISOString(),
-      //   }),
-      // }).catch((err) => {
-      //   console.warn('Failed to log regeneration event:', err)
-      // })
-
-      toast.success(`Successfully revealed ${nft.name} and assigned to ${selectedGuild.name}!`, {
+      toast.success(`Successfully revealed ${nft.name} with ${selectedGuild.name}!`, {
         id: 'reveal-process',
       })
 
@@ -342,8 +216,11 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
       <div className="py-12">
         <div className="container mx-auto px-4">
           <div className="max-w-4xl mx-auto text-center">
-            <Loader2 className="w-8 h-8 animate-spin mx-auto mb-4 text-purple-500" />
-            <p className="text-zinc-400">Loading NFT details...</p>
+            <div className="w-20 h-20 bg-purple-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-purple-500/20">
+              <Loader2 className="w-10 h-10 animate-spin text-purple-500" />
+            </div>
+            <h2 className="text-2xl font-bold text-white mb-2">Loading NFT Details</h2>
+            <p className="text-zinc-400">Fetching your NFT data from the blockchain...</p>
           </div>
         </div>
       </div>
@@ -432,7 +309,7 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
             <div>
               <h2 className="text-2xl font-bold text-white mb-6">Choose Your Guild</h2>
               <div className="space-y-4 max-h-[640px] overflow-y-auto">
-                {guilds.map((guild) => (
+                {GUILDS.map((guild) => (
                   <Card
                     key={guild.id}
                     className={`cursor-pointer transition-all ${
@@ -453,7 +330,7 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
 
                       <p className="text-sm text-zinc-400 mb-4">{guild.description}</p>
 
-                      {/* <div className="space-y-1">
+                      <div className="space-y-1">
                         <h4 className="text-sm font-semibold text-white">Key Benefits:</h4>
                         {guild.benefits.slice(0, 3).map((benefit, index) => (
                           <div key={index} className="flex items-center text-xs text-zinc-300">
@@ -464,7 +341,7 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
                         {guild.benefits.length > 3 && (
                           <div className="text-xs text-purple-400">+{guild.benefits.length - 3} more benefits</div>
                         )}
-                      </div> */}
+                      </div>
                     </CardContent>
                   </Card>
                 ))}
@@ -486,15 +363,15 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
                     be undone.
                   </p>
                   <Button
-                    onClick={handleReveal}
+                    onClick={() => setShowConfirmDialog(true)}
                     disabled={isProcessing}
                     size="lg"
-                    className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 px-12"
+                    className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 px-12 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     {isProcessing ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        {isProcessing ? 'Generating & uploading...' : 'Revealing...'}
+                        Processing...
                       </>
                     ) : (
                       <>
@@ -517,6 +394,100 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
           </div>
         </div>
       </div>
+
+      {/* Confirmation Dialog */}
+      <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
+        <DialogContent className="bg-zinc-950 border-zinc-800 text-white">
+          <DialogHeader>
+            <div className="w-12 h-12 bg-orange-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-orange-500/20">
+              <AlertTriangle className="w-6 h-6 text-orange-500" />
+            </div>
+            <DialogTitle className="text-center text-2xl">Confirm Guild Assignment</DialogTitle>
+            <DialogDescription className="text-center text-zinc-400">
+              This is a permanent action that cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-4">
+            {selectedGuild && (
+              <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-4">
+                <div className="flex items-center gap-3 mb-2">
+                  <div className={`w-6 h-6 rounded-full ${selectedGuild.color}`} />
+                  <h4 className="font-semibold text-white">{selectedGuild.name}</h4>
+                </div>
+                <p className="text-sm text-zinc-400">{selectedGuild.description}</p>
+              </div>
+            )}
+
+            <div className="space-y-2 text-sm text-zinc-400">
+              <p className="flex items-start gap-2">
+                <CheckCircle className="w-4 h-4 mt-0.5 text-green-500 flex-shrink-0" />
+                Your NFT will be revealed with custom guild artwork
+              </p>
+              <p className="flex items-start gap-2">
+                <CheckCircle className="w-4 h-4 mt-0.5 text-green-500 flex-shrink-0" />
+                Metadata will be uploaded to Arweave (permanent storage)
+              </p>
+              <p className="flex items-start gap-2">
+                <CheckCircle className="w-4 h-4 mt-0.5 text-green-500 flex-shrink-0" />
+                Guild selection will be recorded in the metadata
+              </p>
+              <p className="flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 mt-0.5 text-orange-500 flex-shrink-0" />
+                <span>
+                  You&apos;ll need to approve a transaction to update the NFT metadata
+                </span>
+              </p>
+              <p className="flex items-start gap-2">
+                <AlertTriangle className="w-4 h-4 mt-0.5 text-orange-500 flex-shrink-0" />
+                <span>
+                  Small fees will apply for Arweave storage (~0.003 SOL) and transaction fee (~0.00005 SOL)
+                </span>
+              </p>
+              <div className="mt-4 pt-4 border-t border-zinc-800">
+                <div className="flex justify-between text-sm">
+                  <span className="text-zinc-400">Estimated Total Cost:</span>
+                  <span className="font-semibold text-white">~0.00305 SOL</span>
+                </div>
+                <p className="text-xs text-zinc-500 mt-1">
+                  (Actual cost may vary based on network conditions and storage size)
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <DialogFooter className="flex-col sm:flex-row gap-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowConfirmDialog(false)}
+              disabled={isProcessing}
+              className="w-full sm:w-auto border-zinc-700"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={() => {
+                setShowConfirmDialog(false)
+                handleReveal()
+              }}
+              disabled={isProcessing}
+              className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700"
+            >
+              {isProcessing ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Processing...
+                </>
+              ) : (
+                <>
+                  Confirm & Reveal
+                  <ChevronRight className="w-4 h-4 ml-2" />
+                </>
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }

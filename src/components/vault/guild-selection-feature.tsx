@@ -13,6 +13,7 @@ import { Loader2, Sparkles, ChevronRight, CheckCircle, Coins, RefreshCcw, Wallet
 import Image from 'next/image'
 import { toast } from 'sonner'
 import { useGuildSelection } from '@/hooks/use-guild-selection'
+import { GUILDS, getGuildById } from '@/lib/guild-constants'
 
 // Helper function to convert IPFS URLs to gateway URLs
 const convertIPFSUrl = (url: string): string => {
@@ -58,89 +59,6 @@ interface NFTData {
   assignedGuild?: string
   isRevealed: boolean
 }
-
-interface Guild {
-  id: string
-  name: string
-  description: string
-  gradient: string
-  color: string
-  benefits: string[]
-}
-
-// Guild data
-const guilds: Guild[] = [
-  {
-    id: 'builder',
-    name: 'Builder Guild',
-    description:
-      'For Web3 engineers, designers, data researchers, automators, founders, product designers, anyone who builds & ships.',
-    gradient: 'from-yellow-300 via-yellow-500 to-yellow-800',
-    color: 'bg-yellow-500',
-    benefits: [
-      'Forum board',
-      'Build Logs',
-      'Code/Design Reviews',
-      'RFC (Request for Comments) lane',
-      'Advanced learning resources',
-      'Direct mentor & expert chats + AMAs',
-    ],
-  },
-  {
-    id: 'trader',
-    name: 'Trader Guild',
-    description:
-      'For new and experienced traders & investors who want structured, real market insights, clear setups & opportunities.',
-    gradient: 'from-orange-400 via-orange-600 to-red-700',
-    color: 'bg-orange-500',
-    benefits: [
-      'Exclusive Market Insights & Signals',
-      'Actionable Trade Setups',
-      'Market Watch & News',
-      'On-Chain Data & Reports',
-      'Community Coaching & Feedback',
-    ],
-  },
-  {
-    id: 'farmer',
-    name: 'Farmer Guild',
-    description: 'For DeFi participants, airdrop hunters, points farmers, and yield strategists.',
-    gradient: 'from-lime-600 via-green-900 to-green-600',
-    color: 'bg-green-500',
-    benefits: ['Alerts & Routes', 'Walkthroughs', 'Points Meta', 'Risk Desk', 'Cohorts', 'Advanced resources'],
-  },
-  {
-    id: 'gamer',
-    name: 'Gamer Guild',
-    description: 'For P2E gamers, NFT collectors, flippers, and enjoyers of game economies.',
-    gradient: 'from-fuchsia-600 via-violet-900 to-fuchsia-900',
-    color: 'bg-fuchsia-500',
-    benefits: [
-      'Mints Today & Exclusive Alpha',
-      'Game Nights & Playtests',
-      'Flip Desk',
-      'Economy Watch',
-      'Creator Corner',
-      'Advanced resources',
-    ],
-  },
-  {
-    id: 'pathfinder',
-    name: 'Pathfinder Guild',
-    description:
-      'For Marketers, CMs, devs, analysts, designers, students, unemployed, and professionals who want Web3 careers.',
-    gradient: 'from-cyan-600 via-teal-400 to-cyan-500',
-    color: 'bg-cyan-500',
-    benefits: [
-      'Curated Job Board',
-      'Bounties & Paid Tasks',
-      'Application Sprints',
-      'Résumé/CV & Portfolio Reviews',
-      'Mock Interviews',
-      'Referral Network',
-    ],
-  },
-]
 
 const TOKEN_ID_KEYS = ['token id', 'token_id', 'token', 'id']
 
@@ -257,6 +175,14 @@ export function GuildSelectionFeature() {
     loadUserNFTs()
   }
 
+  const handleImageError = useCallback((nftId: string) => {
+    setImageErrors((prev) => {
+      const newSet = new Set(prev)
+      newSet.add(nftId)
+      return newSet
+    })
+  }, [])
+
   // Load user's NFTs
   useEffect(() => {
     if (publicKey) {
@@ -274,10 +200,6 @@ export function GuildSelectionFeature() {
     }
     // Redirect to reveal page
     router.push(`/reveal/${nft.id}`)
-  }
-
-  const getGuildById = (guildId: string) => {
-    return guilds.find((guild) => guild.id === guildId)
   }
 
   const showSkeletons = isLoading && !hasNFTs
@@ -409,9 +331,9 @@ export function GuildSelectionFeature() {
           </div>
 
           {isLoading && hasNFTs && (
-            <div className="flex items-center justify-center gap-3 text-sm text-purple-200 bg-purple-500/5 border border-purple-500/20 rounded-2xl py-3">
+            <div className="flex items-center justify-center gap-3 text-sm text-purple-200 bg-purple-500/5 border border-purple-500/20 rounded-2xl py-3 animate-pulse">
               <Loader2 className="w-4 h-4 animate-spin" />
-              Syncing latest NFT data...
+              <span>Syncing latest NFT data...</span>
             </div>
           )}
 
@@ -478,9 +400,7 @@ export function GuildSelectionFeature() {
                             src={imageSrc}
                             alt={nft.name}
                             className="w-full h-64 object-cover rounded-t-2xl"
-                            onError={() => {
-                              setImageErrors((prev) => new Set(prev).add(nft.id))
-                            }}
+                            onError={() => handleImageError(nft.id)}
                           />
                         )}
 

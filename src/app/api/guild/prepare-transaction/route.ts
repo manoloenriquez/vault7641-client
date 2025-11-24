@@ -6,9 +6,7 @@ import { publicKey as umiPublicKey, createSignerFromKeypair, keypairIdentity } f
 import { toWeb3JsInstruction } from '@metaplex-foundation/umi-web3js-adapters'
 import bs58 from 'bs58'
 import { getSolanaRpcUrl, SOLANA_CONNECTION_CONFIG, UMI_CONFIG } from '@/lib/solana/connection-config'
-
-// Guild types
-type GuildType = 'builder' | 'trader' | 'farmer' | 'gamer' | 'pathfinder'
+import { type GuildType, VALID_GUILD_IDS } from '@/lib/guild-constants'
 
 interface PrepareTransactionRequest {
   nftMint: string
@@ -47,8 +45,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate guild ID
-    const validGuilds: GuildType[] = ['builder', 'trader', 'farmer', 'gamer', 'pathfinder']
-    if (!validGuilds.includes(guildId)) {
+    if (!VALID_GUILD_IDS.includes(guildId as GuildType)) {
       return NextResponse.json({ error: 'Invalid guild ID' }, { status: 400 })
     }
 
@@ -94,11 +91,10 @@ export async function POST(request: NextRequest) {
       return NextResponse.json({ error: 'Invalid update authority configuration' }, { status: 500 })
     }
 
-    // Create UMI instance
+    // Create UMI instance with update authority as identity (for signing) but NOT as payer
     const umi = createUmi(rpcUrl, UMI_CONFIG)
     const umiKeypair = umi.eddsa.createKeypairFromSecretKey(updateAuthorityKeypair.secretKey)
     const updateAuthoritySigner = createSignerFromKeypair(umi, umiKeypair)
-    umi.use({ install: (umi) => ({ ...umi, payer: updateAuthoritySigner }) })
     umi.use(keypairIdentity(updateAuthoritySigner))
 
     // Fetch the NFT asset
@@ -106,6 +102,22 @@ export async function POST(request: NextRequest) {
     const asset = await fetchAsset(umi, assetPublicKey)
 
     console.log('📦 [Prepare TX] Current NFT:', { name: asset.name, uri: asset.uri })
+
+    // Verify wallet ownership - security check
+    const userPublicKey = new PublicKey(walletAddress)
+    const ownerPublicKey = asset.owner ? new PublicKey(asset.owner) : null
+
+    if (!ownerPublicKey || !ownerPublicKey.equals(userPublicKey)) {
+      console.error('❌ [Prepare TX] Ownership verification failed')
+      console.error('   Asset owner:', ownerPublicKey?.toBase58() || 'unknown')
+      console.error('   Request wallet:', userPublicKey.toBase58())
+      return NextResponse.json(
+        { error: 'Wallet does not own this NFT. You can only assign guilds to NFTs you own.' },
+        { status: 403 },
+      )
+    }
+
+    console.log('✅ [Prepare TX] Ownership verified')
 
     // Construct new metadata URI
     const baseUrl = process.env.NEXT_PUBLIC_METADATA_BASE_URL || 'https://vault7641.com'

@@ -5,9 +5,7 @@ import { updateV1, fetchAsset, fetchCollection } from '@metaplex-foundation/mpl-
 import { publicKey as umiPublicKey, createSignerFromKeypair, keypairIdentity } from '@metaplex-foundation/umi'
 import bs58 from 'bs58'
 import { getSolanaRpcUrl, SOLANA_CONNECTION_CONFIG, UMI_CONFIG } from '@/lib/solana/connection-config'
-
-// Guild types
-type GuildType = 'builder' | 'trader' | 'farmer' | 'gamer' | 'pathfinder'
+import { type GuildType, VALID_GUILD_IDS } from '@/lib/guild-constants'
 
 interface GuildAssignmentRequest {
   nftMint: string
@@ -42,8 +40,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate guild ID
-    const validGuilds: GuildType[] = ['builder', 'trader', 'farmer', 'gamer', 'pathfinder']
-    if (!validGuilds.includes(guildId)) {
+    if (!VALID_GUILD_IDS.includes(guildId as GuildType)) {
       return NextResponse.json({ error: 'Invalid guild ID' }, { status: 400 })
     }
 
@@ -177,6 +174,25 @@ export async function POST(request: NextRequest) {
       uri: asset.uri,
       updateAuthority: asset.updateAuthority.address?.toString() || 'none',
     })
+
+    // Verify wallet ownership - security check
+    const userPublicKey = new PublicKey(walletAddress)
+    const ownerPublicKey = asset.owner ? new PublicKey(asset.owner) : null
+
+    if (!ownerPublicKey || !ownerPublicKey.equals(userPublicKey)) {
+      console.error('❌ Ownership verification failed!')
+      console.error('   Asset owner:', ownerPublicKey?.toBase58() || 'unknown')
+      console.error('   Request wallet:', userPublicKey.toBase58())
+      return NextResponse.json(
+        {
+          error: 'Unauthorized: Wallet does not own this NFT',
+          details: 'You can only assign guilds to NFTs that you own.',
+        },
+        { status: 403 },
+      )
+    }
+
+    console.log('✅ Ownership verified')
 
     // Verify server has update authority
     // const assetAuthority = asset.updateAuthority.address?.toString()

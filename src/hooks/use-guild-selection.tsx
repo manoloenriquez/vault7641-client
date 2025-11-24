@@ -3,8 +3,7 @@
 import { useWallet } from '@solana/wallet-adapter-react'
 import { toast } from 'sonner'
 import { useGuildAssignmentUserPaid } from './use-guild-assignment-user-paid'
-
-export type GuildType = 'builder' | 'trader' | 'farmer' | 'gamer' | 'pathfinder'
+import { type GuildType } from '@/lib/guild-constants'
 
 export function useGuildSelection() {
   const wallet = useWallet()

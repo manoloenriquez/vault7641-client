@@ -12,6 +12,7 @@ type UpdateRequestBody = {
   mint: string
   metadataUri: string
   newName?: string
+  walletAddress?: string // For ownership verification
 }
 
 function getUpdateAuthorityKeypair(): Keypair {
@@ -70,13 +71,13 @@ function getUpdateAuthorityKeypair(): Keypair {
 export async function POST(req: Request) {
   try {
     const body: UpdateRequestBody = await req.json()
-    const { mint, metadataUri, newName } = body || {}
+    const { mint, metadataUri, newName, walletAddress } = body || {}
 
     if (!mint || !metadataUri) {
       return NextResponse.json({ error: 'mint and metadataUri are required' }, { status: 400 })
     }
 
-    console.log('Processing metadata update for Core NFT:', { mint, metadataUri, newName })
+    console.log('Processing metadata update for Core NFT:', { mint, metadataUri, newName, walletAddress })
 
     // Get RPC URL from global config
     const rpcUrl = getSolanaRpcUrl()
@@ -117,6 +118,29 @@ export async function POST(req: Request) {
       uri: asset.uri,
       updateAuthority: asset.updateAuthority.address?.toString() || 'none',
     })
+
+    // Verify wallet ownership if walletAddress is provided
+    if (walletAddress) {
+      const userPublicKey = new PublicKey(walletAddress)
+      const ownerPublicKey = asset.owner ? new PublicKey(asset.owner) : null
+
+      if (!ownerPublicKey || !ownerPublicKey.equals(userPublicKey)) {
+        console.error('❌ Ownership verification failed!')
+        console.error('   Asset owner:', ownerPublicKey?.toBase58() || 'unknown')
+        console.error('   Request wallet:', userPublicKey.toBase58())
+        return NextResponse.json(
+          {
+            error: 'Unauthorized: Wallet does not own this NFT',
+            details: 'You can only update metadata for NFTs that you own.',
+          },
+          { status: 403 },
+        )
+      }
+
+      console.log('✅ Ownership verified')
+    } else {
+      console.warn('⚠️ No walletAddress provided - skipping ownership verification')
+    }
 
     // Check if NFT is part of a collection and get collection public key if needed
     const collectionAddress = process.env.NEXT_PUBLIC_NFT_COLLECTION_ADDRESS

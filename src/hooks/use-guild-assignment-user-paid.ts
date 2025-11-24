@@ -5,8 +5,7 @@ import { useConnection, useWallet } from '@solana/wallet-adapter-react'
 import { Transaction } from '@solana/web3.js'
 import { toast } from 'sonner'
 import { USE_MOCK_TRANSACTIONS } from '@/lib/constants'
-
-type GuildType = 'builder' | 'trader' | 'farmer' | 'gamer' | 'pathfinder'
+import { type GuildType } from '@/lib/guild-constants'
 
 interface UseGuildAssignmentUserPaidReturn {
   assignGuild: (nftMint: string, tokenNumber: number, guildId: GuildType) => Promise<string | null>
@@ -30,8 +29,24 @@ export function useGuildAssignmentUserPaid(): UseGuildAssignmentUserPaidReturn {
   const [isAssigning, setIsAssigning] = useState(false)
 
   const assignGuild = async (nftMint: string, tokenNumber: number, guildId: GuildType): Promise<string | null> => {
+    // Validation
     if (!publicKey || !signTransaction) {
       toast.error('Please connect your wallet first')
+      return null
+    }
+
+    if (!nftMint || typeof nftMint !== 'string') {
+      toast.error('Invalid NFT mint address')
+      return null
+    }
+
+    if (!tokenNumber || tokenNumber < 1) {
+      toast.error('Invalid token number')
+      return null
+    }
+
+    if (!guildId) {
+      toast.error('Please select a guild')
       return null
     }
 
