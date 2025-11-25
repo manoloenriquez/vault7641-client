@@ -384,6 +384,7 @@ async function buildLayerPlan(tokenId: number, options: NftImageGenerationOption
       recordTraitSelection(traitMap, traitDir, filename)
       // Insert gender-specific nose at the correct position (between body and mouth)
       // Nose files are stored at the root of the traits bucket, not in a subdirectory
+      // Use capitalized gender to match file naming convention: Nose_Male.png, Nose_Female.png
       layerPaths.push(`Nose_${gender}.png`)
       continue
     }

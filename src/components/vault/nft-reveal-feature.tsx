@@ -134,9 +134,16 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
       return
     }
 
-    // Extract gender from attributes, or randomly assign 50/50
+    // Extract gender from attributes, or deterministically assign based on token number (50/50 distribution)
+    // Uses hash-like function for more random-looking distribution while staying deterministic
     const genderAttr = nft.metadata.attributes.find((attr) => attr.trait_type?.toLowerCase() === 'gender')
-    const gender = genderAttr?.value || (Math.random() < 0.5 ? 'Male' : 'Female')
+    const gender =
+      genderAttr?.value ||
+      (() => {
+        // Simple hash function using token number - appears random but deterministic
+        const hash = (tokenNumber * 2654435761) % 2147483648 >>> 0
+        return hash % 2 === 0 ? 'Male' : 'Female'
+      })()
 
     try {
       setIsProcessing(true)
@@ -404,10 +411,10 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
                     {GUILDS.map((guild) => (
                       <Card
                         key={guild.id}
-                        className={`cursor-pointer transition-all ${
+                        className={`cursor-pointer transition-all bg-zinc-950/50 ${
                           selectedGuild?.id === guild.id
-                            ? 'border-purple-500 bg-purple-500/10 scale-[1.02] shadow-[0_0_30px_rgba(147,51,234,0.25)]'
-                            : 'border-zinc-800 hover:border-zinc-700 hover:scale-[1.01]'
+                            ? 'border-purple-500 !bg-purple-500/10 scale-[1.02] shadow-[0_0_30px_rgba(147,51,234,0.25)]'
+                            : 'border-zinc-800 hover:border-zinc-700 hover:scale-[1.01] hover:bg-zinc-900/50'
                         }`}
                         onClick={() => setSelectedGuild(guild)}
                       >
