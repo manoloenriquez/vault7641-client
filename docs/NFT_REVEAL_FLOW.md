@@ -11,6 +11,7 @@ This document explains how the NFT reveal and guild assignment process works, in
 - User selects an NFT from their wallet
 - User chooses a guild to join
 - Token number is extracted from NFT name (e.g., "Vault Pass #1234" → 1234)
+- Client requests a short-lived signed token from `/api/security/sign-params` to hash the generation parameters
 - Client calls `/api/guild/assign` endpoint
 
 ### 2. **Server-Side Metadata Update** (`/api/guild/assign/route.ts`)
@@ -21,6 +22,7 @@ This document explains how the NFT reveal and guild assignment process works, in
 - Constructs new NFT name: `Vault 7641 - {Guild} #{tokenNumber}`
 - Calls Metaplex Core `updateV1()` to update on-chain metadata
 - Returns transaction signature and new metadata details
+- All parameterized API routes verify the hashed token before performing work to prevent tampering
 
 ### 3. **Client Redirect** (`nft-reveal-feature.tsx`)
 

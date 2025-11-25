@@ -216,6 +216,7 @@ git push origin main
   - `NEXT_PUBLIC_SOLANA_RPC_URL`
   - `NFT_UPDATE_AUTHORITY_PRIVATE_KEY`
   - `NEXT_PUBLIC_METADATA_BASE_URL`
+  - `API_PARAM_SIGNATURE_SECRET` (used for hashing sensitive API parameters)
 
 3. **Deploy**
 

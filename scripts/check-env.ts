@@ -53,6 +53,13 @@ const REQUIRED_VARS = {
     note: 'Can be used instead of NFT_UPDATE_AUTHORITY_PRIVATE_KEY',
   },
 
+  API_PARAM_SIGNATURE_SECRET: {
+    required: true,
+    description: 'Secret used to hash and sign sensitive API parameters',
+    example: 'super-long-random-string',
+    note: 'Keep on the server only',
+  },
+
   // Optional
   NEXT_PUBLIC_NFT_COLLECTION_ADDRESS: {
     required: false,

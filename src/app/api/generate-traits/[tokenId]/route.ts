@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { generateTraitAttributes } from '@/lib/buildNftImage'
+import { verifySignedToken, GenerationSignedPayload } from '@/lib/security/param-signature'
 
 export async function GET(request: NextRequest, { params }: { params: Promise<{ tokenId: string }> }) {
   try {
@@ -11,10 +12,26 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     }
 
     const searchParams = request.nextUrl.searchParams
-    const guild = searchParams.get('guild') ?? undefined
-    const gender = searchParams.get('gender') ?? undefined
-    const seedParam = searchParams.get('seed')
-    const seed = seedParam ? Number.parseInt(seedParam, 10) : undefined
+    const token = searchParams.get('token')
+    const signature = searchParams.get('signature')
+
+    const verification = verifySignedToken<GenerationSignedPayload>(token, signature)
+
+    if (!verification.valid || !verification.payload) {
+      return NextResponse.json({ error: verification.error ?? 'Invalid signature' }, { status: 401 })
+    }
+
+    const { payload } = verification
+
+    if (payload.type !== 'generation') {
+      return NextResponse.json({ error: 'Token type mismatch' }, { status: 400 })
+    }
+
+    if (payload.tokenNumber !== tokenId) {
+      return NextResponse.json({ error: 'Token number mismatch' }, { status: 400 })
+    }
+
+    const { guild, gender, seed } = payload
 
     const attributes = await generateTraitAttributes(tokenId, {
       guild,

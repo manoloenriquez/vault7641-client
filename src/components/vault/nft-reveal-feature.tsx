@@ -41,6 +41,12 @@ interface NFTRevealFeatureProps {
   nftId: string
 }
 
+type SignedParamResponse = {
+  token: string
+  signature: string
+  payload: Record<string, unknown>
+}
+
 export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
   const router = useRouter()
   const wallet = useWallet()
@@ -137,15 +143,33 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
 
       // Step 1: Generate new art on server
       toast.loading('Generating guild art...', { id: 'reveal-process' })
-      const generationSeed = Date.now()
-      const params = new URLSearchParams()
-      params.set('guild', selectedGuild.name)
-      params.set('gender', gender)
-      params.set('seed', generationSeed.toString())
+      const signResponse = await fetch('/api/security/sign-params', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'generation',
+          mint: nft.mintAddress,
+          tokenNumber,
+          guild: selectedGuild.name,
+          gender,
+          walletAddress: publicKey.toBase58(),
+        }),
+      })
 
-      const queryString = params.toString()
+      if (!signResponse.ok) {
+        const body = await signResponse.json().catch(() => ({}))
+        throw new Error(body.error ?? 'Failed to authorize art generation')
+      }
 
-      const imageResponse = await fetch(`/api/generate-image/${tokenNumber}?${queryString}`)
+      const generationSignature = (await signResponse.json()) as SignedParamResponse
+      const signatureParams = new URLSearchParams({
+        token: generationSignature.token,
+        signature: generationSignature.signature,
+      })
+
+      const imageResponse = await fetch(`/api/generate-image/${tokenNumber}?${signatureParams.toString()}`)
       if (!imageResponse.ok) {
         throw new Error(`Failed to generate image (${imageResponse.status})`)
       }
@@ -181,7 +205,7 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
       const imageUri = `https://gateway.irys.xyz/${imageReceipt.id}`
       console.log('✅ Image uploaded:', imageUri)
 
-      const traitsResponse = await fetch(`/api/generate-traits/${tokenNumber}?${queryString}`)
+      const traitsResponse = await fetch(`/api/generate-traits/${tokenNumber}?${signatureParams.toString()}`)
       if (!traitsResponse.ok) {
         throw new Error('Failed to generate metadata traits')
       }
@@ -209,15 +233,35 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
 
       // Step 3: Update onchain metadata
       toast.loading('Updating onchain metadata...', { id: 'reveal-process' })
+      const metadataSignResponse = await fetch('/api/security/sign-params', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'update',
+          mint: nft.mintAddress,
+          metadataUri,
+          walletAddress: publicKey.toBase58(),
+        }),
+      })
+
+      if (!metadataSignResponse.ok) {
+        const body = await metadataSignResponse.json().catch(() => ({}))
+        throw new Error(body.error ?? 'Failed to authorize metadata update')
+      }
+
+      const metadataSignaturePayload = (await metadataSignResponse.json()) as SignedParamResponse
+
       const updateResponse = await fetch('/api/nft/update-metadata', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          mint: nft.mintAddress,
-          metadataUri,
-          walletAddress: publicKey.toBase58(), // For ownership verification
+          token: metadataSignaturePayload.token,
+          signature: metadataSignaturePayload.signature,
+          payload: metadataSignaturePayload.payload,
         }),
       })
 

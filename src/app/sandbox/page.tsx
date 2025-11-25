@@ -22,6 +22,7 @@ export default function SandboxPage() {
   const { connection } = useConnection()
 
   const [tokenId, setTokenId] = useState('1')
+  const [mintAddress, setMintAddress] = useState('')
   const [guild, setGuild] = useState('Builder Guild')
   const [gender, setGender] = useState('Male')
   const [seed, setSeed] = useState(Date.now().toString())
@@ -38,6 +39,11 @@ export default function SandboxPage() {
   const [uploadStatus, setUploadStatus] = useState<string | null>(null)
   const [irysBalance, setIrysBalance] = useState<string | null>(null)
 
+  type SignedParamResponse = {
+    token: string
+    signature: string
+  }
+
   const handleGenerate = async () => {
     setIsGenerating(true)
     setError(null)
@@ -49,15 +55,48 @@ export default function SandboxPage() {
     setUploadStatus(null)
 
     try {
-      // Generate the image
-      const params = new URLSearchParams({
-        guild,
-        gender,
-        seed,
+      if (!wallet.connected || !wallet.publicKey) {
+        throw new Error('Please connect your wallet to generate images')
+      }
+
+      if (!mintAddress) {
+        throw new Error('Enter the NFT mint address to authorize generation')
+      }
+
+      const tokenNumber = Number.parseInt(tokenId, 10)
+      if (!Number.isFinite(tokenNumber) || tokenNumber <= 0) {
+        throw new Error('Token ID must be a positive number')
+      }
+
+      const signResponse = await fetch('/api/security/sign-params', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'generation',
+          mint: mintAddress,
+          tokenNumber,
+          guild,
+          gender,
+          seed,
+          walletAddress: wallet.publicKey.toBase58(),
+        }),
       })
 
-      const queryString = params.toString()
-      const response = await fetch(`/api/generate-image/${tokenId}?${queryString}`)
+      if (!signResponse.ok) {
+        const body = await signResponse.json().catch(() => ({}))
+        throw new Error(body.error ?? 'Failed to authorize generation')
+      }
+
+      const signedParams = (await signResponse.json()) as SignedParamResponse
+      const queryString = new URLSearchParams({
+        token: signedParams.token,
+        signature: signedParams.signature,
+      }).toString()
+
+      // Generate the image
+      const response = await fetch(`/api/generate-image/${tokenNumber}?${queryString}`)
 
       if (!response.ok) {
         throw new Error(`Failed to generate image: ${response.statusText}`)
@@ -69,7 +108,7 @@ export default function SandboxPage() {
       setImageUrl(url)
       setImageBlob(blob)
 
-      const traitsResponse = await fetch(`/api/generate-traits/${tokenId}?${queryString}`)
+      const traitsResponse = await fetch(`/api/generate-traits/${tokenNumber}?${queryString}`)
       if (!traitsResponse.ok) {
         throw new Error('Failed to generate metadata traits')
       }
@@ -79,7 +118,6 @@ export default function SandboxPage() {
 
       const metadataAttributes = traitsJson.attributes ?? []
 
-      const tokenNumber = parseInt(tokenId, 10)
       const generatedMetadata = buildVaultMetadata({
         tokenNumber,
         imageUri: url,
@@ -385,6 +423,21 @@ export default function SandboxPage() {
                   value={tokenId}
                   onChange={(e) => setTokenId(e.target.value)}
                   className="w-full px-3 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+                />
+              </div>
+
+              {/* Mint Address */}
+              <div className="space-y-2">
+                <Label htmlFor="mintAddress" className="text-zinc-300">
+                  NFT Mint Address
+                </Label>
+                <input
+                  id="mintAddress"
+                  type="text"
+                  value={mintAddress}
+                  onChange={(e) => setMintAddress(e.target.value.trim())}
+                  placeholder="Enter the mint address that owns this token ID"
+                  className="w-full px-3 py-2 bg-zinc-900 border border-zinc-800 rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-purple-500 font-mono text-sm"
                 />
               </div>
 

@@ -5,14 +5,14 @@ import { createUmi } from '@metaplex-foundation/umi-bundle-defaults'
 import { updateV1, fetchAsset, fetchCollection } from '@metaplex-foundation/mpl-core'
 import { publicKey as umiPublicKey, createSignerFromKeypair, keypairIdentity } from '@metaplex-foundation/umi'
 import { getSolanaRpcUrl, SOLANA_CONNECTION_CONFIG, UMI_CONFIG } from '@/lib/solana/connection-config'
+import { verifySignedPayload, verifySignedToken, UpdateSignedPayload } from '@/lib/security/param-signature'
 
 export const runtime = 'nodejs'
 
 type UpdateRequestBody = {
-  mint: string
-  metadataUri: string
-  newName?: string
-  walletAddress?: string // For ownership verification
+  token: string
+  signature: string
+  payload?: UpdateSignedPayload
 }
 
 function getUpdateAuthorityKeypair(): Keypair {
@@ -71,7 +71,23 @@ function getUpdateAuthorityKeypair(): Keypair {
 export async function POST(req: Request) {
   try {
     const body: UpdateRequestBody = await req.json()
-    const { mint, metadataUri, newName, walletAddress } = body || {}
+
+    let verification = verifySignedToken<UpdateSignedPayload>(body.token, body.signature)
+
+    if ((!verification.valid || !verification.payload) && body.payload) {
+      verification = verifySignedPayload<UpdateSignedPayload>(body.payload, body.signature)
+      if (verification.valid) {
+        console.warn('[update-metadata] Token verification failed but payload signature succeeded. Falling back to payload.')
+      }
+    }
+
+    if (!verification.valid || !verification.payload) {
+      return NextResponse.json({ error: verification.error ?? 'Invalid signature' }, { status: 401 })
+    }
+
+    const payload = verification.payload
+
+    const { mint, metadataUri, newName, walletAddress } = payload
 
     if (!mint || !metadataUri) {
       return NextResponse.json({ error: 'mint and metadataUri are required' }, { status: 400 })
