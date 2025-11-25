@@ -1,7 +1,7 @@
 import { ThemeProvider } from './theme-provider'
 import { Toaster } from './ui/sonner'
 import { VaultNavigation } from '@/components/vault/vault-navigation'
-import { DiscordJoinBanner } from '@/components/vault/discord-join-banner'
+// import { DiscordJoinBanner } from '@/components/vault/discord-join-banner'
 import React from 'react'
 import { AppFooterV2 } from '@/components/app-footer-v2'
 
@@ -21,7 +21,7 @@ export function AppLayout({
         <VaultNavigation />
         <main className="pt-32">{children}</main>
         <AppFooterV2 />
-        <DiscordJoinBanner />
+        {/* <DiscordJoinBanner /> */}
       </div>
       <Toaster />
     </ThemeProvider>
