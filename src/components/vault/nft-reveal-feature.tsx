@@ -376,36 +376,36 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
   }
 
   return (
-    <div className="relative" aria-busy={isProcessing}>
+    <div className="relative min-h-screen" aria-busy={isProcessing}>
       <div
-        className={`py-12 transition duration-300 ${
+        className={`py-4 sm:py-6 md:py-12 transition duration-300 ${
           isProcessing ? 'pointer-events-none select-none opacity-40 blur-[1px]' : ''
         }`}
       >
-        <div className="container mx-auto px-4">
+        <div className="container mx-auto px-3 sm:px-4">
           <div className="max-w-6xl mx-auto">
             {/* Header */}
-            <div className="mb-8">
-              <Button variant="ghost" onClick={() => router.push('/guild-selection')} className="mb-4">
-                <ChevronLeft className="w-4 h-4 mr-2" />
+            <div className="mb-4 sm:mb-6 md:mb-8">
+              <Button variant="ghost" onClick={() => router.push('/guild-selection')} className="mb-2 sm:mb-3 text-xs sm:text-sm -ml-2">
+                <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                 Back to NFT Collection
               </Button>
 
               <div className="text-center">
-                <div className="w-20 h-20 bg-purple-500/10 rounded-2xl flex items-center justify-center mx-auto mb-6 border border-purple-500/20">
-                  <Sparkles className="w-10 h-10 text-purple-500" />
+                <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-purple-500/10 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4 md:mb-6 border border-purple-500/20">
+                  <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 text-purple-500" />
                 </div>
-                <h1 className="text-4xl md:text-6xl font-bold mb-4 text-white">Reveal Your NFT</h1>
-                <p className="text-xl text-zinc-400 mb-8 max-w-3xl mx-auto">
+                <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-2 sm:mb-3 md:mb-4 text-white px-4">Reveal Your NFT</h1>
+                <p className="text-sm sm:text-base md:text-xl text-zinc-400 mb-4 sm:mb-6 md:mb-8 max-w-3xl mx-auto px-4">
                   Choose a guild to reveal your {nft.name} and unlock exclusive benefits and access.
                 </p>
               </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 mb-12">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 lg:gap-12 mb-6 sm:mb-8 lg:mb-12">
               {/* NFT Preview */}
               <div>
-                <h2 className="text-2xl font-bold text-white mb-6">Your NFT</h2>
+                <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white mb-3 sm:mb-4 md:mb-6">Your NFT</h2>
                 <Card className="bg-zinc-950/50 border-zinc-800">
                   <CardContent className="p-0">
                     <div className="relative">
@@ -414,24 +414,24 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
                         alt={nft.name}
                         width={400}
                         height={400}
-                        className="w-full h-80 object-cover rounded-t-lg"
+                        className="w-full h-56 sm:h-64 md:h-80 object-cover rounded-t-lg"
                       />
 
-                      <div className="absolute top-3 right-3">
-                        <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30">
-                          <Sparkles className="w-3 h-3 mr-1" />
+                      <div className="absolute top-2 sm:top-3 right-2 sm:right-3">
+                        <Badge className="bg-orange-500/20 text-orange-400 border-orange-500/30 text-[10px] sm:text-xs">
+                          <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 mr-1" />
                           Unrevealed
                         </Badge>
                       </div>
                     </div>
 
-                    <div className="p-6">
-                      <h3 className="text-xl font-bold text-white mb-4">{nft.name}</h3>
-                      <div className="space-y-2">
-                        <h4 className="text-sm font-semibold text-white">Attributes:</h4>
-                        <div className="flex flex-wrap gap-2">
+                    <div className="p-3 sm:p-4 md:p-6">
+                      <h3 className="text-base sm:text-lg md:text-xl font-bold text-white mb-2 sm:mb-3 md:mb-4">{nft.name}</h3>
+                      <div className="space-y-1.5 sm:space-y-2">
+                        <h4 className="text-[11px] sm:text-xs md:text-sm font-semibold text-white">Attributes:</h4>
+                        <div className="flex flex-wrap gap-1 sm:gap-1.5 md:gap-2">
                           {nft.metadata.attributes.map((attr, index) => (
-                            <Badge key={index} variant="secondary" className="text-xs">
+                            <Badge key={index} variant="secondary" className="text-[9px] sm:text-[10px] md:text-xs px-1.5 py-0.5 sm:px-2 sm:py-1">
                               {attr.trait_type}: {attr.value}
                             </Badge>
                           ))}
@@ -444,58 +444,58 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
 
               {/* Guild Selection */}
               <div>
-                <div className="mb-4">
-                  <h2 className="text-2xl font-bold text-white">Choose Your Guild</h2>
-                  <p className="text-sm text-zinc-400">
+                <div className="mb-2 sm:mb-3 md:mb-4">
+                  <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-white">Choose Your Guild</h2>
+                  <p className="text-[11px] sm:text-xs md:text-sm text-zinc-400 mt-1">
                     Scroll to compare all {GUILDS.length} guilds and find the vibe that fits you best.
                   </p>
                 </div>
-                <div className="relative rounded-2xl border border-zinc-800/70 bg-zinc-950/40 p-2">
+                <div className="relative rounded-xl sm:rounded-2xl border border-zinc-800/70 bg-zinc-950/40 p-1 sm:p-1.5 md:p-2">
                   <div
                     ref={guildListRef}
-                    className="space-y-4 max-h-[640px] overflow-y-auto pr-3 scroll-smooth vault-scroll-area"
+                    className="space-y-1.5 sm:space-y-2 md:space-y-4 max-h-[400px] sm:max-h-[500px] md:max-h-[640px] overflow-y-auto pr-1.5 sm:pr-2 md:pr-3 scroll-smooth vault-scroll-area"
                   >
                     {GUILDS.map((guild) => (
                       <Card
                         key={guild.id}
                         className={`cursor-pointer transition-all bg-zinc-950/50 ${
                           selectedGuild?.id === guild.id
-                            ? 'border-purple-500 !bg-purple-500/10 scale-[1.02] shadow-[0_0_30px_rgba(147,51,234,0.25)]'
-                            : 'border-zinc-800 hover:border-zinc-700 hover:scale-[1.01] hover:bg-zinc-900/50'
+                            ? 'border-purple-500 !bg-purple-500/10 scale-[1.01] sm:scale-[1.02] shadow-[0_0_20px_rgba(147,51,234,0.2)] sm:shadow-[0_0_30px_rgba(147,51,234,0.25)]'
+                            : 'border-zinc-800 hover:border-zinc-700 hover:scale-[1.005] sm:hover:scale-[1.01] hover:bg-zinc-900/50'
                         }`}
                         onClick={() => setSelectedGuild(guild)}
                       >
-                        <CardContent className="p-4">
-                          <div className={`h-1 bg-gradient-to-r ${guild.gradient} rounded-full mb-4`} />
+                        <CardContent className="p-2 sm:p-3 md:p-4">
+                          <div className={`h-0.5 sm:h-0.5 md:h-1 bg-gradient-to-r ${guild.gradient} rounded-full mb-1.5 sm:mb-2 md:mb-4`} />
 
-                          <div className="flex items-center gap-3 mb-3">
-                            <div className={`w-8 h-8 rounded-full ${guild.color}`} />
-                            <h3 className="font-bold text-white">{guild.name}</h3>
+                          <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 mb-1 sm:mb-2 md:mb-3">
+                            <div className={`w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 rounded-full ${guild.color} flex-shrink-0`} />
+                            <h3 className="font-bold text-white text-xs sm:text-sm md:text-base">{guild.name}</h3>
                             {selectedGuild?.id === guild.id && (
-                              <CheckCircle className="w-5 h-5 text-purple-400 ml-auto" />
+                              <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 text-purple-400 ml-auto flex-shrink-0" />
                             )}
                           </div>
 
-                          <p className="text-sm text-zinc-400">{guild.description}</p>
+                          <p className="text-[10px] sm:text-xs md:text-sm text-zinc-400 leading-relaxed">{guild.description}</p>
                         </CardContent>
                       </Card>
                     ))}
                   </div>
 
                   {!isGuildListScrolledToTop && (
-                    <div className="pointer-events-none absolute inset-x-2 top-2 h-16 bg-gradient-to-b from-zinc-900 via-zinc-900/80 to-transparent rounded-t-2xl" />
+                    <div className="pointer-events-none absolute inset-x-1 sm:inset-x-1.5 md:inset-x-2 top-1 sm:top-1.5 md:top-2 h-8 sm:h-12 md:h-16 bg-gradient-to-b from-zinc-900 via-zinc-900/80 to-transparent rounded-t-xl sm:rounded-t-2xl" />
                   )}
 
                   {!isGuildListScrolledToBottom && (
                     <>
-                      <div className="pointer-events-none absolute inset-x-2 bottom-2 h-16 bg-gradient-to-t from-zinc-900 via-zinc-900/80 to-transparent rounded-b-2xl" />
+                      <div className="pointer-events-none absolute inset-x-1 sm:inset-x-1.5 md:inset-x-2 bottom-1 sm:bottom-1.5 md:bottom-2 h-8 sm:h-12 md:h-16 bg-gradient-to-t from-zinc-900 via-zinc-900/80 to-transparent rounded-b-xl sm:rounded-b-2xl" />
                       <div
-                        className="pointer-events-none absolute bottom-6 left-1/2 w-max -translate-x-1/2 rounded-full border border-white/10 bg-zinc-900/80 px-5 py-2 text-[10px] font-semibold uppercase tracking-[0.4em] text-zinc-400 shadow-[0_20px_45px_rgba(10,10,10,0.8)]"
+                        className="pointer-events-none absolute bottom-2 sm:bottom-4 md:bottom-6 left-1/2 w-max -translate-x-1/2 rounded-full border border-white/10 bg-zinc-900/90 px-2 sm:px-3 md:px-5 py-1 sm:py-1.5 md:py-2 text-[8px] sm:text-[9px] md:text-[10px] font-semibold uppercase tracking-[0.25em] sm:tracking-[0.3em] md:tracking-[0.4em] text-zinc-400 shadow-[0_10px_30px_rgba(10,10,10,0.8)] sm:shadow-[0_20px_45px_rgba(10,10,10,0.8)]"
                         aria-hidden="true"
                       >
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-1 sm:gap-1.5">
                           Scroll
-                          <ArrowDown className="h-3 w-3" />
+                          <ArrowDown className="h-2 w-2 sm:h-2.5 sm:w-2.5 md:h-3 md:w-3" />
                         </div>
                       </div>
                     </>
@@ -506,14 +506,14 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
 
             {/* Reveal Button */}
             <div className="text-center">
-              <div className="bg-zinc-950/50 border border-zinc-800 rounded-2xl p-8 max-w-2xl mx-auto">
+              <div className="bg-zinc-950/50 border border-zinc-800 rounded-xl sm:rounded-2xl p-3 sm:p-4 md:p-8 max-w-2xl mx-auto">
                 {selectedGuild ? (
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-center gap-3 mb-4">
-                      <div className={`w-6 h-6 rounded-full ${selectedGuild.color}`} />
-                      <span className="text-lg font-semibold text-white">Ready to join {selectedGuild.name}?</span>
+                  <div className="space-y-2 sm:space-y-3 md:space-y-4">
+                    <div className="flex items-center justify-center gap-1.5 sm:gap-2 md:gap-3 mb-1 sm:mb-2 md:mb-4">
+                      <div className={`w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 rounded-full ${selectedGuild.color} flex-shrink-0`} />
+                      <span className="text-sm sm:text-base md:text-lg font-semibold text-white">Ready to join {selectedGuild.name}?</span>
                     </div>
-                    <p className="text-sm text-zinc-400 mb-6">
+                    <p className="text-[11px] sm:text-xs md:text-sm text-zinc-400 mb-2 sm:mb-4 md:mb-6 px-2">
                       This action will reveal your NFT and permanently assign it to the {selectedGuild.name}. This
                       cannot be undone.
                     </p>
@@ -521,26 +521,26 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
                       onClick={() => setShowConfirmDialog(true)}
                       disabled={isProcessing}
                       size="lg"
-                      className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 px-12 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 px-6 sm:px-8 md:px-12 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto text-sm sm:text-base h-10 sm:h-11"
                     >
                       {isProcessing ? (
                         <>
-                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2 animate-spin" />
                           Processing...
                         </>
                       ) : (
                         <>
                           Reveal & Join Guild
-                          <ChevronRight className="w-4 h-4 ml-2" />
+                          <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-2" />
                         </>
                       )}
                     </Button>
                   </div>
                 ) : (
-                  <div className="text-center">
-                    <Sparkles className="w-12 h-12 text-zinc-500 mx-auto mb-4" />
-                    <h3 className="text-lg font-bold text-white mb-2">Choose a Guild</h3>
-                    <p className="text-zinc-400">
+                  <div className="text-center py-2 sm:py-4">
+                    <Sparkles className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-zinc-500 mx-auto mb-2 sm:mb-3 md:mb-4" />
+                    <h3 className="text-sm sm:text-base md:text-lg font-bold text-white mb-1 sm:mb-2">Choose a Guild</h3>
+                    <p className="text-xs sm:text-sm md:text-base text-zinc-400 px-4">
                       Select a guild above to reveal your NFT and unlock exclusive benefits.
                     </p>
                   </div>
@@ -552,67 +552,64 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
 
         {/* Confirmation Dialog */}
         <Dialog open={showConfirmDialog} onOpenChange={setShowConfirmDialog}>
-          <DialogContent className="bg-zinc-950 border-zinc-800 text-white">
-            <DialogHeader>
-              <div className="w-12 h-12 bg-orange-500/10 rounded-full flex items-center justify-center mx-auto mb-4 border border-orange-500/20">
-                <AlertTriangle className="w-6 h-6 text-orange-500" />
+          <DialogContent className="bg-zinc-950 border-zinc-800 text-white sm:max-w-[500px] w-[calc(100%-1rem)] max-h-[90vh] sm:max-h-[85vh] flex flex-col p-4 sm:p-6">
+            <DialogHeader className="space-y-1.5 sm:space-y-2 flex-shrink-0">
+              <div className="w-10 h-10 sm:w-12 sm:h-12 bg-orange-500/10 rounded-full flex items-center justify-center mx-auto border border-orange-500/20">
+                <AlertTriangle className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500" />
               </div>
-              <DialogTitle className="text-center text-2xl">Confirm Guild Assignment</DialogTitle>
-              <DialogDescription className="text-center text-zinc-400">
+              <DialogTitle className="text-center text-base sm:text-lg md:text-xl">Confirm Guild Assignment</DialogTitle>
+              <DialogDescription className="text-center text-zinc-400 text-[11px] sm:text-xs md:text-sm">
                 This is a permanent action that cannot be undone.
               </DialogDescription>
             </DialogHeader>
 
-            <div className="space-y-4 py-4">
+            <div className="space-y-2 sm:space-y-3 py-2 sm:py-3 overflow-y-auto flex-1 min-h-0 -mx-4 px-4 sm:-mx-6 sm:px-6">
               {selectedGuild && (
-                <div className="bg-zinc-900/50 border border-zinc-800 rounded-xl p-4">
-                  <div className="flex items-center gap-3 mb-2">
-                    <div className={`w-6 h-6 rounded-full ${selectedGuild.color}`} />
-                    <h4 className="font-semibold text-white">{selectedGuild.name}</h4>
+                <div className="bg-zinc-900/50 border border-zinc-800 rounded-lg sm:rounded-xl p-2.5 sm:p-3.5">
+                  <div className="flex items-center gap-2 mb-1">
+                    <div className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full ${selectedGuild.color} flex-shrink-0`} />
+                    <h4 className="font-semibold text-white text-sm sm:text-base">{selectedGuild.name}</h4>
                   </div>
-                  <p className="text-sm text-zinc-400">{selectedGuild.description}</p>
+                  <p className="text-[11px] sm:text-xs text-zinc-400 line-clamp-2 sm:line-clamp-none">{selectedGuild.description}</p>
                 </div>
               )}
 
-              <div className="space-y-2 text-sm text-zinc-400">
-                <p className="flex items-start gap-2">
-                  <CheckCircle className="w-4 h-4 mt-0.5 text-green-500 flex-shrink-0" />
-                  Your NFT will be revealed with custom guild artwork
+              <div className="space-y-1 sm:space-y-1.5 text-[10px] sm:text-[11px] md:text-xs text-zinc-400">
+                <p className="flex items-start gap-1.5">
+                  <CheckCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 mt-0.5 text-green-500 flex-shrink-0" />
+                  <span>NFT revealed with custom guild artwork</span>
                 </p>
-                <p className="flex items-start gap-2">
-                  <CheckCircle className="w-4 h-4 mt-0.5 text-green-500 flex-shrink-0" />
-                  Metadata will be uploaded to Arweave (permanent storage)
+                <p className="flex items-start gap-1.5">
+                  <CheckCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 mt-0.5 text-green-500 flex-shrink-0" />
+                  <span>Metadata uploaded to Arweave</span>
                 </p>
-                <p className="flex items-start gap-2">
-                  <CheckCircle className="w-4 h-4 mt-0.5 text-green-500 flex-shrink-0" />
-                  Guild selection will be recorded in the metadata
+                <p className="flex items-start gap-1.5">
+                  <CheckCircle className="w-3 h-3 sm:w-3.5 sm:h-3.5 mt-0.5 text-green-500 flex-shrink-0" />
+                  <span>Guild selection recorded</span>
                 </p>
-                <p className="flex items-start gap-2">
-                  <AlertTriangle className="w-4 h-4 mt-0.5 text-orange-500 flex-shrink-0" />
-                  <span>You&apos;ll need to approve a transaction to update the NFT metadata</span>
+                <p className="flex items-start gap-1.5">
+                  <AlertTriangle className="w-3 h-3 sm:w-3.5 sm:h-3.5 mt-0.5 text-orange-500 flex-shrink-0" />
+                  <span>Transaction approval required</span>
                 </p>
-                <p className="flex items-start gap-2">
-                  <AlertTriangle className="w-4 h-4 mt-0.5 text-orange-500 flex-shrink-0" />
-                  <span>Small fees will apply for Arweave storage (~0.003 SOL) and transaction fee (~0.00005 SOL)</span>
+                <p className="flex items-start gap-1.5">
+                  <AlertTriangle className="w-3 h-3 sm:w-3.5 sm:h-3.5 mt-0.5 text-orange-500 flex-shrink-0" />
+                  <span>Fees: ~0.003 SOL + ~0.00005 SOL</span>
                 </p>
-                <div className="mt-4 pt-4 border-t border-zinc-800">
-                  <div className="flex justify-between text-sm">
-                    <span className="text-zinc-400">Estimated Total Cost:</span>
+                <div className="mt-2 sm:mt-3 pt-2 sm:pt-3 border-t border-zinc-800">
+                  <div className="flex justify-between text-[10px] sm:text-[11px] md:text-xs">
+                    <span className="text-zinc-400">Estimated Total:</span>
                     <span className="font-semibold text-white">~0.00305 SOL</span>
                   </div>
-                  <p className="text-xs text-zinc-500 mt-1">
-                    (Actual cost may vary based on network conditions and storage size)
-                  </p>
                 </div>
               </div>
             </div>
 
-            <DialogFooter className="flex-col sm:flex-row gap-2">
+            <DialogFooter className="flex-col-reverse sm:flex-row gap-2 mt-3 sm:mt-4 pt-3 sm:pt-4 border-t border-zinc-800/50 flex-shrink-0">
               <Button
                 variant="outline"
                 onClick={() => setShowConfirmDialog(false)}
                 disabled={isProcessing}
-                className="w-full sm:w-auto border-zinc-700"
+                className="w-full sm:w-auto border-zinc-700 text-xs sm:text-sm h-10 sm:h-10"
               >
                 Cancel
               </Button>
@@ -622,17 +619,17 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
                   handleReveal()
                 }}
                 disabled={isProcessing}
-                className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700"
+                className="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-xs sm:text-sm h-10 sm:h-10 font-semibold"
               >
                 {isProcessing ? (
                   <>
-                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    <Loader2 className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-2 animate-spin" />
                     Processing...
                   </>
                 ) : (
                   <>
                     Confirm & Reveal
-                    <ChevronRight className="w-4 h-4 ml-2" />
+                    <ChevronRight className="w-3.5 h-3.5 sm:w-4 sm:h-4 ml-2" />
                   </>
                 )}
               </Button>
@@ -643,15 +640,15 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
 
       {isProcessing && (
         <div
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/80 px-6 text-center text-white backdrop-blur-sm"
+          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/80 px-4 sm:px-6 text-center text-white backdrop-blur-sm"
           role="status"
           aria-live="assertive"
         >
-          <div className="mb-6 flex h-20 w-20 items-center justify-center rounded-2xl border border-purple-500/30 bg-purple-500/10">
-            <Loader2 className="h-10 w-10 animate-spin text-purple-400" />
+          <div className="mb-4 sm:mb-6 flex h-16 w-16 sm:h-20 sm:w-20 items-center justify-center rounded-xl sm:rounded-2xl border border-purple-500/30 bg-purple-500/10">
+            <Loader2 className="h-8 w-8 sm:h-10 sm:w-10 animate-spin text-purple-400" />
           </div>
-          <p className="text-2xl font-semibold">Revealing your NFT</p>
-          <p className="mt-2 max-w-md text-sm text-zinc-300">
+          <p className="text-xl sm:text-2xl font-semibold mb-2">Revealing your NFT</p>
+          <p className="max-w-md text-xs sm:text-sm text-zinc-300 px-4">
             Hang tight while we generate your guild art, upload to Arweave, and finalize the onchain metadata update.
           </p>
         </div>

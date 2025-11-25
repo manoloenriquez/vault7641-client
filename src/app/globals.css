@@ -178,3 +178,47 @@
   border-radius: 9999px;
   background: linear-gradient(180deg, rgba(167, 139, 250, 0.4), rgba(236, 72, 153, 0.5));
 }
+
+/* Mobile dialog improvements - ensure proper scrolling and safe area handling */
+@media (max-width: 640px) {
+  [data-slot='dialog-content'] {
+    max-height: 90vh;
+    max-height: calc(100vh - env(safe-area-inset-top) - env(safe-area-inset-bottom) - 1rem);
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Ensure dialog is scrollable on mobile when content overflows */
+  [data-slot='dialog-content'] {
+    touch-action: pan-y;
+    overscroll-behavior: contain;
+  }
+  
+  /* Better touch targets for mobile */
+  [data-slot='dialog-content'] button {
+    min-height: 2.5rem;
+  }
+  
+  /* Ensure footer buttons are always visible on mobile */
+  [data-slot='dialog-footer'] {
+    flex-shrink: 0;
+    position: sticky;
+    bottom: 0;
+    background: inherit;
+    z-index: 10;
+  }
+  
+  /* Make dialog header non-scrollable */
+  [data-slot='dialog-header'] {
+    flex-shrink: 0;
+  }
+}
+
+/* Ensure dialog overlay doesn't interfere with scrolling */
+@supports (height: 100dvh) {
+  @media (max-width: 640px) {
+    [data-slot='dialog-content'] {
+      max-height: 90dvh;
+    }
+  }
+}
