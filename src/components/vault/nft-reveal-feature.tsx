@@ -134,9 +134,9 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
       return
     }
 
-    // Extract gender from attributes
+    // Extract gender from attributes, or randomly assign 50/50
     const genderAttr = nft.metadata.attributes.find((attr) => attr.trait_type?.toLowerCase() === 'gender')
-    const gender = genderAttr?.value || 'Male'
+    const gender = genderAttr?.value || (Math.random() < 0.5 ? 'Male' : 'Female')
 
     try {
       setIsProcessing(true)
