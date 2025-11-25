@@ -319,7 +319,7 @@ export function GuildSelectionFeature() {
                       )}
                     </Button>
                     <Button asChild className="gap-2 bg-purple-600 hover:bg-purple-500 text-sm">
-                      <a href="/mint">
+                      <a href="https://launchmynft.io/sol/21270">
                         <ShieldCheck className="w-4 h-4" />
                         Mint another
                       </a>
@@ -513,7 +513,7 @@ export function GuildSelectionFeature() {
                   Check again
                 </Button>
                 <Button asChild className="w-full sm:w-auto bg-purple-600 hover:bg-purple-500">
-                  <a href="/mint">Go to mint</a>
+                  <a href="https://launchmynft.io/sol/21270">Go to mint</a>
                 </Button>
               </div>
             </div>
