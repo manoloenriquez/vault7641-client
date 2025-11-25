@@ -64,10 +64,56 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
   const loadNFT = useCallback(async () => {
     setIsLoading(true)
     try {
-      const response = await fetch(`/api/nft/${nftId}`)
+      // Check if wallet is connected
+      if (!publicKey) {
+        toast.error('Please connect your wallet to access this page')
+        router.push('/guild-selection')
+        return
+      }
+
+      // Step 1: Request a signed token for secure access
+      const signResponse = await fetch('/api/security/sign-params', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          type: 'nft-access',
+          nftId: nftId,
+          mint: nftId, // For Core NFTs, the nftId is the mint address
+          walletAddress: publicKey.toBase58(),
+        }),
+      })
+
+      if (!signResponse.ok) {
+        const errorData = await signResponse.json().catch(() => ({}))
+        
+        // Handle unauthorized access (user doesn't own the NFT)
+        if (signResponse.status === 403) {
+          toast.error('You do not own this NFT')
+          router.push('/guild-selection')
+          return
+        }
+        
+        throw new Error(errorData.error || 'Failed to authorize access')
+      }
+
+      const { token, signature } = await signResponse.json()
+
+      // Step 2: Fetch NFT data using the signed token
+      const response = await fetch(`/api/nft/${nftId}?token=${token}&signature=${signature}`)
 
       if (!response.ok) {
-        throw new Error('Failed to fetch NFT')
+        const errorData = await response.json().catch(() => ({}))
+        
+        // Handle unauthorized access
+        if (response.status === 401 || response.status === 403) {
+          toast.error('You do not own this NFT')
+          router.push('/guild-selection')
+          return
+        }
+        
+        throw new Error(errorData.message || 'Failed to fetch NFT')
       }
 
       const result = await response.json()
@@ -75,6 +121,7 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
 
       // If NFT is already revealed, redirect to guild selection
       if (result.data.isRevealed) {
+        toast.info('This NFT has already been revealed')
         router.push('/guild-selection')
         return
       }
@@ -85,7 +132,7 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
     } finally {
       setIsLoading(false)
     }
-  }, [nftId, router])
+  }, [nftId, router, publicKey])
 
   useEffect(() => {
     loadNFT()

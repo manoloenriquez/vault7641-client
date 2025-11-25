@@ -3,7 +3,7 @@ import { createHmac, randomBytes } from 'crypto'
 const TOKEN_VERSION = 'v1'
 const DEFAULT_TTL_MS = 5 * 60 * 1000 // 5 minutes
 
-export type SignedTokenType = 'generation' | 'update'
+export type SignedTokenType = 'generation' | 'update' | 'nft-access'
 
 export interface BaseSignedPayload {
   type: SignedTokenType
@@ -27,7 +27,12 @@ export interface UpdateSignedPayload extends BaseSignedPayload {
   newName?: string
 }
 
-export type AnySignedPayload = GenerationSignedPayload | UpdateSignedPayload
+export interface NFTAccessSignedPayload extends BaseSignedPayload {
+  type: 'nft-access'
+  nftId: string
+}
+
+export type AnySignedPayload = GenerationSignedPayload | UpdateSignedPayload | NFTAccessSignedPayload
 
 export interface SignedToken<TPayload extends AnySignedPayload = AnySignedPayload> {
   token: string

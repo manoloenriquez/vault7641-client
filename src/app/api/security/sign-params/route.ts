@@ -9,6 +9,7 @@ import {
   generateSeed,
   GenerationSignedPayload,
   UpdateSignedPayload,
+  NFTAccessSignedPayload,
 } from '@/lib/security/param-signature'
 import { getSolanaRpcUrl, UMI_CONFIG } from '@/lib/solana/connection-config'
 
@@ -32,7 +33,14 @@ type UpdateRequest = {
   walletAddress: string
 }
 
-type SignParamsRequest = GenerationRequest | UpdateRequest
+type NFTAccessRequest = {
+  type: 'nft-access'
+  nftId: string
+  mint: string
+  walletAddress: string
+}
+
+type SignParamsRequest = GenerationRequest | UpdateRequest | NFTAccessRequest
 
 const guildNameSet = new Set(GUILDS.map((guild) => guild.name))
 
@@ -51,6 +59,8 @@ export async function POST(request: NextRequest) {
         return await handleGenerationRequest(body, umi)
       case 'update':
         return await handleUpdateRequest(body, umi)
+      case 'nft-access':
+        return await handleNFTAccessRequest(body, umi)
       default:
         return NextResponse.json({ error: 'Unsupported request type' }, { status: 400 })
     }
@@ -138,6 +148,32 @@ async function handleUpdateRequest(body: UpdateRequest, umi: ReturnType<typeof c
   }
 
   const signed = createSignedToken<UpdateSignedPayload>(payload)
+  return NextResponse.json({
+    token: signed.token,
+    signature: signed.signature,
+    payload: signed.payload,
+  })
+}
+
+async function handleNFTAccessRequest(body: NFTAccessRequest, umi: ReturnType<typeof createUmi>) {
+  if (!body.nftId) {
+    return NextResponse.json({ error: 'nftId is required' }, { status: 400 })
+  }
+
+  // Verify ownership using mint address
+  const ownershipResult = await verifyOwnership(umi, body.mint, body.walletAddress)
+  if (!ownershipResult.valid) {
+    return NextResponse.json({ error: ownershipResult.error }, { status: ownershipResult.statusCode })
+  }
+
+  const payload: Omit<NFTAccessSignedPayload, 'issuedAt' | 'expiresAt'> = {
+    type: 'nft-access',
+    mint: body.mint,
+    nftId: body.nftId,
+    walletAddress: body.walletAddress,
+  }
+
+  const signed = createSignedToken<NFTAccessSignedPayload>(payload)
   return NextResponse.json({
     token: signed.token,
     signature: signed.signature,

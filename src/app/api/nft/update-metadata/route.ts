@@ -256,11 +256,17 @@ export async function POST(req: Request) {
     }
 
     console.log('Successfully updated Core NFT metadata')
-    console.log('Transaction signature:', result.signature)
+    
+    // Convert signature to base58 string for display
+    const signatureString = typeof result.signature === 'string' 
+      ? result.signature 
+      : bs58.encode(result.signature)
+    
+    console.log('Transaction signature:', signatureString)
 
     return NextResponse.json({
       success: true,
-      signature: result.signature,
+      signature: signatureString,
       mint,
       newUri: metadataUri,
       ...(newName && { newName }),

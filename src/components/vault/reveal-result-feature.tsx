@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
+import { useWallet } from '@solana/wallet-adapter-react'
 import { Button } from '@/components/ui/button'
 import { Badge } from '@/components/ui/badge'
 import { Card, CardContent } from '@/components/ui/card'
@@ -133,6 +134,7 @@ interface RevealResultFeatureProps {
 export function RevealResultFeature({ nftId }: RevealResultFeatureProps) {
   const router = useRouter()
   const searchParams = useSearchParams()
+  const { publicKey } = useWallet()
   const [nft, setNft] = useState<NFTData | null>(null)
   const [guild, setGuild] = useState<Guild | null>(null)
   const [isLoading, setIsLoading] = useState(true)
@@ -144,6 +146,13 @@ export function RevealResultFeature({ nftId }: RevealResultFeatureProps) {
   const loadNFT = useCallback(async () => {
     setIsLoading(true)
     try {
+      // Check if wallet is connected
+      if (!publicKey) {
+        toast.error('Please connect your wallet to access this page')
+        router.push('/guild-selection')
+        return
+      }
+
       // Poll for updated NFT data (metadata update may take a moment to propagate)
       // Reduced polling since the update is usually immediate
       let attempts = 0
@@ -151,10 +160,69 @@ export function RevealResultFeature({ nftId }: RevealResultFeatureProps) {
       let nftData = null
 
       while (attempts < maxAttempts) {
-        const response = await fetch(`/api/nft/${nftId}`)
+        // Step 1: Request a signed token for secure access (only on first attempt)
+        if (attempts === 0) {
+          try {
+            const signResponse = await fetch('/api/security/sign-params', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify({
+                type: 'nft-access',
+                nftId: nftId,
+                mint: nftId, // For Core NFTs, the nftId is the mint address
+                walletAddress: publicKey.toBase58(),
+              }),
+            })
+
+            if (!signResponse.ok) {
+              const errorData = await signResponse.json().catch(() => ({}))
+              
+              // Handle unauthorized access (user doesn't own the NFT)
+              if (signResponse.status === 403) {
+                toast.error('You do not own this NFT')
+                router.push('/guild-selection')
+                return
+              }
+              
+              throw new Error(errorData.error || 'Failed to authorize access')
+            }
+
+            const { token, signature } = await signResponse.json()
+            
+            // Store token for subsequent attempts
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            ;(window as any).__nftAccessToken = { token, signature }
+          } catch (authError) {
+            console.error('Authorization error:', authError)
+            toast.error('Failed to authorize access')
+            router.push('/guild-selection')
+            return
+          }
+        }
+
+        // Step 2: Fetch NFT data using the signed token
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const { token, signature } = (window as any).__nftAccessToken || {}
+        
+        if (!token || !signature) {
+          throw new Error('No access token available')
+        }
+
+        const response = await fetch(`/api/nft/${nftId}?token=${token}&signature=${signature}`)
 
         if (!response.ok) {
-          throw new Error('Failed to fetch NFT')
+          const errorData = await response.json().catch(() => ({}))
+          
+          // Handle unauthorized access
+          if (response.status === 401 || response.status === 403) {
+            toast.error('You do not own this NFT')
+            router.push('/guild-selection')
+            return
+          }
+          
+          throw new Error(errorData.message || 'Failed to fetch NFT')
         }
 
         const result = await response.json()
@@ -206,7 +274,7 @@ export function RevealResultFeature({ nftId }: RevealResultFeatureProps) {
     } finally {
       setIsLoading(false)
     }
-  }, [nftId, guildId, router])
+  }, [nftId, guildId, router, publicKey])
 
   useEffect(() => {
     loadNFT()
