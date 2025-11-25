@@ -4,7 +4,7 @@ const DEFAULT_DESCRIPTION =
   'Holding this NFT gives you access to Vault 7641. Inside, members get access to focused classrooms, resources, reports, and opportunities designed to turn knowledge into real skills, better decisions, and long-term outcomes.'
 const DEFAULT_SYMBOL = 'V7641'
 const DEFAULT_CREATOR_ADDRESS =
-  process.env.NEXT_PUBLIC_VAULT_CREATOR_ADDRESS ?? '6KKqACpnaftW9R1VroQGnsssoRkQYEtR7Ut5U8Jf4FiM'
+  process.env.NEXT_PUBLIC_VAULT_CREATOR_ADDRESS ?? '7rKiWKoN5hwmUDtuuE8PDhAbzLmjHMRqKjBuEKdxcKV7'
 
 type BuildVaultMetadataOptions = {
   tokenNumber: number
@@ -23,7 +23,7 @@ export function buildVaultMetadata({
   edition = tokenNumber,
   description = DEFAULT_DESCRIPTION,
   symbol = DEFAULT_SYMBOL,
-  creatorAddress = DEFAULT_CREATOR_ADDRESS,
+  // creatorAddress = DEFAULT_CREATOR_ADDRESS,
 }: BuildVaultMetadataOptions) {
   return {
     name: `Vault #${tokenNumber}`,
@@ -37,7 +37,11 @@ export function buildVaultMetadata({
       category: 'image',
       creators: [
         {
-          address: creatorAddress,
+          address: '9vuA7sVkss6jB2dMUw6w1Hcubr4MBiXtYMYrhBPhhSiT',
+          share: 0,
+        },
+        {
+          address: '7rKiWKoN5hwmUDtuuE8PDhAbzLmjHMRqKjBuEKdxcKV7',
           share: 100,
         },
       ],
