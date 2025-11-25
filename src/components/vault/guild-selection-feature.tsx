@@ -156,7 +156,7 @@ export function GuildSelectionFeature() {
       setNFTs(allNFTs)
 
       if (transformedNFTs.length === 0) {
-        toast.info('Showing mock NFTs for screenshot purposes')
+        // toast.info('Showing mock NFTs for screenshot purposes')
       } else {
         toast.success(`Loaded ${transformedNFTs.length} NFT${transformedNFTs.length > 1 ? 's' : ''}`)
       }
@@ -164,7 +164,7 @@ export function GuildSelectionFeature() {
       console.error('❌ [Guild Selection] Error loading NFTs:', error)
       const errorMessage = error instanceof Error ? error.message : 'Unknown error occurred'
       setLoadError(errorMessage)
-      toast.error('Failed to load your NFTs - showing mock NFTs')
+      // toast.error('Failed to load your NFTs - showing mock NFTs')
     } finally {
       setIsLoading(false)
     }
