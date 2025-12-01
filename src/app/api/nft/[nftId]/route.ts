@@ -148,9 +148,12 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       }
 
       // Construct response
+      // Use metadata name as fallback if on-chain name is empty or not set
+      const nftName = asset.name && asset.name.trim() ? asset.name : (metadata?.name || 'Unknown NFT')
+      
       const nftData = {
         id: nftId,
-        name: asset.name || 'Unknown NFT',
+        name: nftName,
         image: metadata?.image || metadata?.image_uri || '/Logo_Full_nobg.png',
         metadata: {
           attributes: metadata?.attributes || [],
@@ -164,7 +167,13 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         assignedGuild,
       }
 
-      console.log('NFT data prepared:', { name: nftData.name, isRevealed, assignedGuild })
+      console.log('NFT data prepared:', { 
+        name: nftData.name, 
+        onChainName: asset.name,
+        metadataName: metadata?.name,
+        isRevealed, 
+        assignedGuild 
+      })
 
       return NextResponse.json({
         success: true,

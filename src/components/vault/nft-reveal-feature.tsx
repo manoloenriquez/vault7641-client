@@ -173,11 +173,12 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
     if (!selectedGuild || !nft || !publicKey) return
 
     // Extract token number from NFT name (e.g., "Vault Pass #1234" -> 1234)
+    // nft.name already includes fallback to metadata.name from the API route
     const tokenNumberMatch = nft.name.match(/#(\d+)/)
     const tokenNumber = tokenNumberMatch ? parseInt(tokenNumberMatch[1], 10) : 0
 
     if (!tokenNumber) {
-      toast.error('Could not determine token number from NFT name')
+      toast.error(`Could not extract token number from NFT name: "${nft.name}". Expected format: "Name #123"`)
       return
     }
 
