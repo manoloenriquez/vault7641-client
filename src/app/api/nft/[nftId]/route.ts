@@ -25,11 +25,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
     let verifiedWalletAddress: string | null = null
     if (token && signature) {
       const verification = verifySignedToken<NFTAccessSignedPayload>(token, signature)
-      
+
       if (!verification.valid || !verification.payload) {
         return NextResponse.json(
           { error: 'Unauthorized', message: verification.error ?? 'Invalid signature' },
-          { status: 401 }
+          { status: 401 },
         )
       }
 
@@ -37,17 +37,11 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
       // Verify the token is for this specific NFT
       if (payload.type !== 'nft-access') {
-        return NextResponse.json(
-          { error: 'Unauthorized', message: 'Token type mismatch' },
-          { status: 401 }
-        )
+        return NextResponse.json({ error: 'Unauthorized', message: 'Token type mismatch' }, { status: 401 })
       }
 
       if (payload.nftId !== nftId) {
-        return NextResponse.json(
-          { error: 'Unauthorized', message: 'Token NFT ID mismatch' },
-          { status: 401 }
-        )
+        return NextResponse.json({ error: 'Unauthorized', message: 'Token NFT ID mismatch' }, { status: 401 })
       }
 
       verifiedWalletAddress = payload.walletAddress
@@ -131,8 +125,7 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
       if (metadata && metadata.attributes && Array.isArray(metadata.attributes)) {
         // Look for the "Guild" trait in the attributes
         const guildTrait = metadata.attributes.find(
-          (attr: { trait_type: string; value: string }) =>
-            attr.trait_type && attr.trait_type.toLowerCase() === 'guild'
+          (attr: { trait_type: string; value: string }) => attr.trait_type && attr.trait_type.toLowerCase() === 'guild',
         )
 
         if (guildTrait && guildTrait.value) {
@@ -149,8 +142,8 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
 
       // Construct response
       // Use metadata name as fallback if on-chain name is empty or not set
-      const nftName = asset.name && asset.name.trim() ? asset.name : (metadata?.name || 'Unknown NFT')
-      
+      const nftName = asset.name && asset.name.trim() ? asset.name : metadata?.name || 'Unknown NFT'
+
       const nftData = {
         id: nftId,
         name: nftName,
@@ -167,12 +160,12 @@ export async function GET(request: NextRequest, { params }: { params: Promise<{ 
         assignedGuild,
       }
 
-      console.log('NFT data prepared:', { 
-        name: nftData.name, 
+      console.log('NFT data prepared:', {
+        name: nftData.name,
         onChainName: asset.name,
         metadataName: metadata?.name,
-        isRevealed, 
-        assignedGuild 
+        isRevealed,
+        assignedGuild,
       })
 
       return NextResponse.json({

@@ -87,14 +87,14 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
 
       if (!signResponse.ok) {
         const errorData = await signResponse.json().catch(() => ({}))
-        
+
         // Handle unauthorized access (user doesn't own the NFT)
         if (signResponse.status === 403) {
           toast.error('You do not own this NFT')
           router.push('/guild-selection')
           return
         }
-        
+
         throw new Error(errorData.error || 'Failed to authorize access')
       }
 
@@ -105,14 +105,14 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
 
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}))
-        
+
         // Handle unauthorized access
         if (response.status === 401 || response.status === 403) {
           toast.error('You do not own this NFT')
           router.push('/guild-selection')
           return
         }
-        
+
         throw new Error(errorData.message || 'Failed to fetch NFT')
       }
 
@@ -387,7 +387,11 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
           <div className="max-w-6xl mx-auto">
             {/* Header */}
             <div className="mb-4 sm:mb-6 md:mb-8">
-              <Button variant="ghost" onClick={() => router.push('/guild-selection')} className="mb-2 sm:mb-3 text-xs sm:text-sm -ml-2">
+              <Button
+                variant="ghost"
+                onClick={() => router.push('/guild-selection')}
+                className="mb-2 sm:mb-3 text-xs sm:text-sm -ml-2"
+              >
                 <ChevronLeft className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1 sm:mr-2" />
                 Back to NFT Collection
               </Button>
@@ -396,7 +400,9 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
                 <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 bg-purple-500/10 rounded-xl sm:rounded-2xl flex items-center justify-center mx-auto mb-3 sm:mb-4 md:mb-6 border border-purple-500/20">
                   <Sparkles className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10 text-purple-500" />
                 </div>
-                <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-2 sm:mb-3 md:mb-4 text-white px-4">Reveal Your NFT</h1>
+                <h1 className="text-2xl sm:text-3xl md:text-5xl lg:text-6xl font-bold mb-2 sm:mb-3 md:mb-4 text-white px-4">
+                  Reveal Your NFT
+                </h1>
                 <p className="text-sm sm:text-base md:text-xl text-zinc-400 mb-4 sm:mb-6 md:mb-8 max-w-3xl mx-auto px-4">
                   Choose a guild to reveal your {nft.name} and unlock exclusive benefits and access.
                 </p>
@@ -427,12 +433,18 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
                     </div>
 
                     <div className="p-3 sm:p-4 md:p-6">
-                      <h3 className="text-base sm:text-lg md:text-xl font-bold text-white mb-2 sm:mb-3 md:mb-4">{nft.name}</h3>
+                      <h3 className="text-base sm:text-lg md:text-xl font-bold text-white mb-2 sm:mb-3 md:mb-4">
+                        {nft.name}
+                      </h3>
                       <div className="space-y-1.5 sm:space-y-2">
                         <h4 className="text-[11px] sm:text-xs md:text-sm font-semibold text-white">Attributes:</h4>
                         <div className="flex flex-wrap gap-1 sm:gap-1.5 md:gap-2">
                           {nft.metadata.attributes.map((attr, index) => (
-                            <Badge key={index} variant="secondary" className="text-[9px] sm:text-[10px] md:text-xs px-1.5 py-0.5 sm:px-2 sm:py-1">
+                            <Badge
+                              key={index}
+                              variant="secondary"
+                              className="text-[9px] sm:text-[10px] md:text-xs px-1.5 py-0.5 sm:px-2 sm:py-1"
+                            >
                               {attr.trait_type}: {attr.value}
                             </Badge>
                           ))}
@@ -467,17 +479,23 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
                         onClick={() => setSelectedGuild(guild)}
                       >
                         <CardContent className="p-2 sm:p-3 md:p-4">
-                          <div className={`h-0.5 sm:h-0.5 md:h-1 bg-gradient-to-r ${guild.gradient} rounded-full mb-1.5 sm:mb-2 md:mb-4`} />
+                          <div
+                            className={`h-0.5 sm:h-0.5 md:h-1 bg-gradient-to-r ${guild.gradient} rounded-full mb-1.5 sm:mb-2 md:mb-4`}
+                          />
 
                           <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 mb-1 sm:mb-2 md:mb-3">
-                            <div className={`w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 rounded-full ${guild.color} flex-shrink-0`} />
+                            <div
+                              className={`w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 rounded-full ${guild.color} flex-shrink-0`}
+                            />
                             <h3 className="font-bold text-white text-xs sm:text-sm md:text-base">{guild.name}</h3>
                             {selectedGuild?.id === guild.id && (
                               <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5 text-purple-400 ml-auto flex-shrink-0" />
                             )}
                           </div>
 
-                          <p className="text-[10px] sm:text-xs md:text-sm text-zinc-400 leading-relaxed">{guild.description}</p>
+                          <p className="text-[10px] sm:text-xs md:text-sm text-zinc-400 leading-relaxed">
+                            {guild.description}
+                          </p>
                         </CardContent>
                       </Card>
                     ))}
@@ -511,8 +529,12 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
                 {selectedGuild ? (
                   <div className="space-y-2 sm:space-y-3 md:space-y-4">
                     <div className="flex items-center justify-center gap-1.5 sm:gap-2 md:gap-3 mb-1 sm:mb-2 md:mb-4">
-                      <div className={`w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 rounded-full ${selectedGuild.color} flex-shrink-0`} />
-                      <span className="text-sm sm:text-base md:text-lg font-semibold text-white">Ready to join {selectedGuild.name}?</span>
+                      <div
+                        className={`w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 rounded-full ${selectedGuild.color} flex-shrink-0`}
+                      />
+                      <span className="text-sm sm:text-base md:text-lg font-semibold text-white">
+                        Ready to join {selectedGuild.name}?
+                      </span>
                     </div>
                     <p className="text-[11px] sm:text-xs md:text-sm text-zinc-400 mb-2 sm:mb-4 md:mb-6 px-2">
                       This action will reveal your NFT and permanently assign it to the {selectedGuild.name}. This
@@ -540,7 +562,9 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
                 ) : (
                   <div className="text-center py-2 sm:py-4">
                     <Sparkles className="w-8 h-8 sm:w-10 sm:h-10 md:w-12 md:h-12 text-zinc-500 mx-auto mb-2 sm:mb-3 md:mb-4" />
-                    <h3 className="text-sm sm:text-base md:text-lg font-bold text-white mb-1 sm:mb-2">Choose a Guild</h3>
+                    <h3 className="text-sm sm:text-base md:text-lg font-bold text-white mb-1 sm:mb-2">
+                      Choose a Guild
+                    </h3>
                     <p className="text-xs sm:text-sm md:text-base text-zinc-400 px-4">
                       Select a guild above to reveal your NFT and unlock exclusive benefits.
                     </p>
@@ -558,7 +582,9 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
               <div className="w-10 h-10 sm:w-12 sm:h-12 bg-orange-500/10 rounded-full flex items-center justify-center mx-auto border border-orange-500/20">
                 <AlertTriangle className="w-5 h-5 sm:w-6 sm:h-6 text-orange-500" />
               </div>
-              <DialogTitle className="text-center text-base sm:text-lg md:text-xl">Confirm Guild Assignment</DialogTitle>
+              <DialogTitle className="text-center text-base sm:text-lg md:text-xl">
+                Confirm Guild Assignment
+              </DialogTitle>
               <DialogDescription className="text-center text-zinc-400 text-[11px] sm:text-xs md:text-sm">
                 This is a permanent action that cannot be undone.
               </DialogDescription>
@@ -571,7 +597,9 @@ export function NFTRevealFeature({ nftId }: NFTRevealFeatureProps) {
                     <div className={`w-4 h-4 sm:w-5 sm:h-5 rounded-full ${selectedGuild.color} flex-shrink-0`} />
                     <h4 className="font-semibold text-white text-sm sm:text-base">{selectedGuild.name}</h4>
                   </div>
-                  <p className="text-[11px] sm:text-xs text-zinc-400 line-clamp-2 sm:line-clamp-none">{selectedGuild.description}</p>
+                  <p className="text-[11px] sm:text-xs text-zinc-400 line-clamp-2 sm:line-clamp-none">
+                    {selectedGuild.description}
+                  </p>
                 </div>
               )}
 
