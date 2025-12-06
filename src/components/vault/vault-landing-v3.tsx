@@ -526,7 +526,7 @@ export function VaultLandingV3() {
       </div>
 
       {/* Experts Carousel */}
-      <ExpertsCarousel />
+      {/* <ExpertsCarousel /> */}
 
       {/* Member Benefits */}
       {/* <div className="py-4">
